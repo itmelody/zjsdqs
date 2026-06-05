@@ -89,6 +89,7 @@ import {
   UserOutlined,
   DownOutlined,
   FileTextOutlined,
+  HomeOutlined,
 } from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 
