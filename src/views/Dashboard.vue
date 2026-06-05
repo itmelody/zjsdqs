@@ -31,7 +31,7 @@
               </div>
               <div class="stat-card road-card">
                 <div class="stat-label">路网密度</div>
-                <div class="stat-value">6.52 <span class="stat-unit">公里/km²</span></div>
+                <div class="stat-value">6.52 <span class="stat-unit">公里/平方公里</span></div>
               </div>
               <div class="stat-card road-card">
                 <div class="stat-label">道路面积率</div>
@@ -145,22 +145,30 @@ const tunnelChartRef = ref<HTMLElement>()
 const charts: echarts.ECharts[] = []
 
 // 初始化柱状图
-function initBarChart(container: HTMLElement | undefined, title: string, data: { name: string; value: number }[], color: string) {
+function initBarChart(container: HTMLElement | undefined, title: string, data: any[], color: string, isRoad = false) {
   if (!container) return
   const chart = echarts.init(container)
   charts.push(chart)
-  const option = {
+  
+  let option: any = {
     tooltip: {
       trigger: 'axis',
       axisPointer: {
         type: 'shadow',
       },
     },
+    legend: {
+      data: isRoad ? ['道路长度', '密度', '规范推荐值'] : [title],
+      top: 0,
+      textStyle: {
+        fontSize: 11,
+      },
+    },
     grid: {
       left: '3%',
       right: '4%',
       bottom: '8%',
-      top: '15%',
+      top: isRoad ? '20%' : '15%',
       containLabel: true,
     },
     xAxis: {
@@ -194,6 +202,64 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: {
       },
     ],
   }
+  
+  // 道路统计特殊处理：添加密度和规范推荐值
+  if (isRoad) {
+    option.yAxis.name = '长度(km) / 密度(km/km²)'
+    option.series = [
+      {
+        name: '道路长度',
+        type: 'bar',
+        data: data.map(item => item.length),
+        itemStyle: {
+          color: '#1677ff',
+        },
+        barWidth: '30%',
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 11,
+          formatter: '{c} km',
+        },
+      },
+      {
+        name: '密度',
+        type: 'bar',
+        data: data.map(item => item.density),
+        itemStyle: {
+          color: '#52c41a',
+        },
+        barWidth: '30%',
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 11,
+          formatter: '{c}',
+        },
+      },
+      {
+        name: '规范推荐值',
+        type: 'bar',
+        data: data.map(item => item.recommend),
+        itemStyle: {
+          color: '#ff7a45',
+          borderColor: '#ff7a45',
+          borderWidth: 2,
+          borderType: 'dashed',
+        },
+        barWidth: '30%',
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 11,
+          formatter: '{c}',
+        },
+      },
+    ]
+  } else {
+    option.series[0].data = data.map(item => item.value)
+  }
+  
   chart.setOption(option)
   return chart
 }
@@ -254,12 +320,12 @@ function handleResize() {
 onMounted(async () => {
   await nextTick()
   
-  // 道路类型统计
+  // 道路类型统计 - 包含密度和规范推荐值
   const roadData = [
-    { name: '快速路', value: 285 },
-    { name: '主干路', value: 456 },
-    { name: '次干路', value: 328 },
-    { name: '支路', value: 187 },
+    { name: '快速路', length: 22.7, density: 0.35, recommend: 0.35 },
+    { name: '主干路', length: 63.2, density: 0.97, recommend: 1.1 },
+    { name: '次干路', length: 46.4, density: 0.71, recommend: 1.3 },
+    { name: '支路', length: 112.4, density: 1.73, recommend: 3.5 },
   ]
   
   // 桥梁类型统计
@@ -280,7 +346,7 @@ onMounted(async () => {
     { name: '短隧道', value: 524 },
   ]
   
-  initBarChart(roadChartRef.value, '道路统计', roadData, '#1677ff')
+  initBarChart(roadChartRef.value, '道路统计', roadData, '#1677ff', true)
   initBarChart(bridgeChartRef.value, '桥梁统计', bridgeData, '#13c2c2')
   initBarChart(tunnelChartRef.value, '隧道统计', tunnelData, '#722ed1')
 
