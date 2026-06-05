@@ -31,7 +31,7 @@
               </div>
               <div class="stat-card road-card">
                 <div class="stat-label">路网密度</div>
-                <div class="stat-value">6.52 <span class="stat-unit">公里/平方公里</span></div>
+                <div class="stat-value">1.52 <span class="stat-unit">公里/平方公里</span></div>
               </div>
               <div class="stat-card road-card">
                 <div class="stat-label">道路面积率</div>
@@ -166,7 +166,7 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
     },
     grid: {
       left: '3%',
-      right: '4%',
+      right: '10%',
       bottom: '8%',
       top: isRoad ? '20%' : '15%',
       containLabel: true,
@@ -203,9 +203,42 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
     ],
   }
   
-  // 道路统计特殊处理：添加密度和规范推荐值
+  // 道路统计特殊处理：添加密度（折线图）
   if (isRoad) {
-    option.yAxis.name = '长度(km) / 密度(km/km²)'
+    option.legend.data = ['道路长度', '路网密度']
+    option.yAxis = [
+      {
+        type: 'value',
+        name: '长度(km)',
+        position: 'left',
+        max: 150,
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#1677ff',
+          },
+        },
+        axisLabel: {
+          formatter: '{value}',
+        },
+      },
+      {
+        type: 'value',
+        name: '路网密度(km/km²)',
+        position: 'right',
+        min: 0,
+        max: 4.0,
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#52c41a',
+          },
+        },
+        axisLabel: {
+          formatter: '{value}',
+        },
+      },
+    ]
     option.series = [
       {
         name: '道路长度',
@@ -214,22 +247,9 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
         itemStyle: {
           color: '#1677ff',
         },
-        barWidth: '30%',
-        label: {
-          show: true,
-          position: 'top',
-          fontSize: 11,
-          formatter: '{c} km',
-        },
-      },
-      {
-        name: '密度',
-        type: 'bar',
-        data: data.map(item => item.density),
-        itemStyle: {
-          color: '#52c41a',
-        },
-        barWidth: '30%',
+        barWidth: '40%',
+        barGap: '60%',
+        yAxisIndex: 0,
         label: {
           show: true,
           position: 'top',
@@ -238,16 +258,18 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
         },
       },
       {
-        name: '规范推荐值',
-        type: 'bar',
-        data: data.map(item => item.recommend),
+        name: '路网密度',
+        type: 'line',
+        data: data.map(item => item.density),
         itemStyle: {
-          color: '#ff7a45',
-          borderColor: '#ff7a45',
-          borderWidth: 2,
-          borderType: 'dashed',
+          color: '#52c41a',
         },
-        barWidth: '30%',
+        lineStyle: {
+          width: 3,
+        },
+        symbol: 'circle',
+        symbolSize: 8,
+        yAxisIndex: 1,
         label: {
           show: true,
           position: 'top',
@@ -322,7 +344,7 @@ onMounted(async () => {
   
   // 道路类型统计 - 包含密度和规范推荐值
   const roadData = [
-    { name: '快速路', length: 22.7, density: 0.35, recommend: 0.35 },
+    { name: '快速路', length: 42.7, density: 0.35, recommend: 0.35 },
     { name: '主干路', length: 63.2, density: 0.97, recommend: 1.1 },
     { name: '次干路', length: 46.4, density: 0.71, recommend: 1.3 },
     { name: '支路', length: 112.4, density: 1.73, recommend: 3.5 },
