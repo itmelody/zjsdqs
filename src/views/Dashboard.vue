@@ -1,95 +1,140 @@
 <template>
   <div class="dashboard-page">
-    <!-- 设施统计 -->
-    <div class="dashboard-row">
-      <div class="card facility-stats-card">
-        <div class="card-header">
-          <h3 class="card-title">设施统计</h3>
-          <div class="filter-group">
-            <a-select v-model:value="province" placeholder="省" style="width: 100px" allow-clear>
-              <a-select-option value="浙江省">浙江省</a-select-option>
-            </a-select>
-            <a-select v-model:value="city" placeholder="市" style="width: 100px" allow-clear>
-              <a-select-option value="杭州市">杭州市</a-select-option>
-              <a-select-option value="宁波市">宁波市</a-select-option>
-            </a-select>
-            <a-select v-model:value="district" placeholder="区" style="width: 100px" allow-clear>
-              <a-select-option value="上城区">上城区</a-select-option>
-              <a-select-option value="拱墅区">拱墅区</a-select-option>
-            </a-select>
-          </div>
+    <!-- 设施统计 - 占满整个第一行 -->
+    <div class="card facility-stats-card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <FundOutlined class="card-icon" />
+          设施统计
+        </h3>
+        <div class="filter-group">
+          <a-select v-model:value="province" placeholder="省" style="width: 100px" allow-clear>
+            <a-select-option value="浙江省">浙江省</a-select-option>
+          </a-select>
+          <a-select v-model:value="city" placeholder="市" style="width: 100px" allow-clear>
+            <a-select-option value="杭州市">杭州市</a-select-option>
+            <a-select-option value="宁波市">宁波市</a-select-option>
+          </a-select>
+          <a-select v-model:value="district" placeholder="区" style="width: 100px" allow-clear>
+            <a-select-option value="上城区">上城区</a-select-option>
+            <a-select-option value="拱墅区">拱墅区</a-select-option>
+          </a-select>
         </div>
+      </div>
 
-        <div class="facility-content">
-          <!-- 道路统计 -->
-          <div class="stat-section road-section">
-            <h4 class="section-title"><EnvironmentOutlined class="section-icon road-icon" />道路统计</h4>
-            <div class="stat-cards">
-              <div class="stat-card road-card">
+      <div class="facility-content">
+        <!-- 道路统计 -->
+        <div class="stat-section road-section">
+          <h4 class="section-title">
+            <EnvironmentOutlined class="section-icon road-icon" />
+            道路统计
+          </h4>
+          <div class="stat-cards">
+            <div class="stat-card road-card">
+              <div class="stat-icon">
+                <RocketOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">道路总长</div>
                 <div class="stat-value">1,256.8 <span class="stat-unit">公里</span></div>
               </div>
-              <div class="stat-card road-card">
-                <div class="stat-label">路网密度</div>
-                <div class="stat-value">1.52 <span class="stat-unit">公里/平方公里</span></div>
+            </div>
+            <div class="stat-card road-card">
+              <div class="stat-icon">
+                <ClusterOutlined />
               </div>
-              <div class="stat-card road-card">
+              <div class="stat-info">
+                <div class="stat-label">路网密度</div>
+                <div class="stat-value">1.52 <span class="stat-unit">km/km²</span></div>
+              </div>
+            </div>
+            <div class="stat-card road-card">
+              <div class="stat-icon">
+                <ApartmentOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">道路面积率</div>
                 <div class="stat-value">18.5 <span class="stat-unit">%</span></div>
               </div>
             </div>
-            <div ref="roadChartRef" class="bar-chart"></div>
           </div>
+          <div ref="roadChartRef" class="bar-chart"></div>
+        </div>
 
-          <!-- 桥梁统计 -->
-          <div class="stat-section bridge-section">
-            <h4 class="section-title"><BankOutlined class="section-icon bridge-icon" />桥梁统计</h4>
-            <div class="stat-cards">
-              <div class="stat-card bridge-card">
+        <!-- 桥梁统计 -->
+        <div class="stat-section bridge-section">
+          <h4 class="section-title">
+            <BankOutlined class="section-icon bridge-icon" />
+            桥梁统计
+          </h4>
+          <div class="stat-cards">
+            <div class="stat-card bridge-card">
+              <div class="stat-icon">
+                <BankOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">城市桥梁总数</div>
                 <div class="stat-value">3,908 <span class="stat-unit">座</span></div>
               </div>
-              <div class="stat-card bridge-card">
+            </div>
+            <div class="stat-card bridge-card">
+              <div class="stat-icon">
+                <GlobalOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">涉航桥梁总数</div>
                 <div class="stat-value">1,024 <span class="stat-unit">座</span></div>
               </div>
-              <div class="stat-card bridge-card">
+            </div>
+            <div class="stat-card bridge-card">
+              <div class="stat-icon">
+                <ClockCircleOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">30年以上桥龄</div>
                 <div class="stat-value">256 <span class="stat-unit">座</span></div>
               </div>
             </div>
-            <div ref="bridgeChartRef" class="bar-chart"></div>
           </div>
+          <div ref="bridgeChartRef" class="bar-chart"></div>
+        </div>
 
-          <!-- 隧道统计 -->
-          <div class="stat-section tunnel-section">
-            <h4 class="section-title"><GatewayOutlined class="section-icon tunnel-icon" />隧道统计</h4>
-            <div class="stat-cards">
-              <div class="stat-card tunnel-card">
+        <!-- 隧道统计 -->
+        <div class="stat-section tunnel-section">
+          <h4 class="section-title">
+            <GatewayOutlined class="section-icon tunnel-icon" />
+            隧道统计
+          </h4>
+          <div class="stat-cards">
+            <div class="stat-card tunnel-card">
+              <div class="stat-icon">
+                <GatewayOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">城市隧道总数</div>
                 <div class="stat-value">892 <span class="stat-unit">座</span></div>
               </div>
-              <div class="stat-card tunnel-card">
+            </div>
+            <div class="stat-card tunnel-card">
+              <div class="stat-icon">
+                <ApartmentOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">地下隧道</div>
                 <div class="stat-value">456 <span class="stat-unit">座</span></div>
               </div>
-              <div class="stat-card tunnel-card">
+            </div>
+            <div class="stat-card tunnel-card">
+              <div class="stat-icon">
+                <UserOutlined />
+              </div>
+              <div class="stat-info">
                 <div class="stat-label">人行地道</div>
                 <div class="stat-value">128 <span class="stat-unit">座</span></div>
               </div>
             </div>
-            <div ref="tunnelChartRef" class="bar-chart"></div>
           </div>
-        </div>
-      </div>
-
-      <!-- 检测管理 -->
-      <div class="card detection-card">
-        <div class="card-header">
-          <h3 class="card-title">检测管理</h3>
-        </div>
-        <div class="card-content">
-          <!-- 检测管理内容 -->
+          <div ref="tunnelChartRef" class="bar-chart"></div>
         </div>
       </div>
     </div>
@@ -130,6 +175,13 @@ import {
   EnvironmentOutlined,
   BankOutlined,
   GatewayOutlined,
+  FundOutlined,
+  RocketOutlined,
+  ClusterOutlined,
+  ApartmentOutlined,
+  GlobalOutlined,
+  ClockCircleOutlined,
+  UserOutlined,
 } from '@ant-design/icons-vue'
 
 // 省市区筛选
@@ -176,7 +228,6 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
       data: data.map(item => item.name),
       axisLabel: {
         interval: 0,
-        rotate: 45,
         fontSize: 11,
       },
     },
@@ -205,7 +256,47 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
   
   // 道路统计特殊处理：添加密度（折线图）
   if (isRoad) {
-    option.legend.data = ['道路长度', '路网密度']
+    option.tooltip = {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow',
+      },
+      formatter: (params: any) => {
+        const index = params[0]?.dataIndex ?? 0
+        const item = data[index]
+        const isInRange = item.density >= item.recommendRange[0] && item.density <= item.recommendRange[1]
+        const statusColor = isInRange ? '#52c41a' : '#ff4d4f'
+        const statusText = isInRange ? '达标' : '不达标'
+        return `<div style="padding: 4px 0">
+          <div style="font-weight: bold; margin-bottom: 8px; font-size: 13px">${item.name}</div>
+          <div style="margin-bottom: 4px">
+            <span style="display:inline-block;width:8px;height:8px;background:#1677ff;border-radius:2px;margin-right:6px"></span>
+            道路长度：<b>${item.length}</b> km
+          </div>
+          <div style="margin-bottom: 4px">
+            <span style="display:inline-block;width:8px;height:8px;background:${statusColor};border-radius:50%;margin-right:6px"></span>
+            路网密度：<b>${item.density}</b> km/km²
+            <span style="color:${statusColor};margin-left:4px">(${statusText})</span>
+          </div>
+          <div style="color:#fa8c16">
+            规范推荐值：<b>[${item.recommendRange[0]}, ${item.recommendRange[1]}]</b> km/km²
+          </div>
+        </div>`
+      },
+    }
+    option.legend = {
+      data: [
+        { name: '道路长度', icon: 'rect' },
+        { name: '路网密度达标', icon: 'circle', itemStyle: { color: '#52c41a' } },
+        { name: '路网密度不达标', icon: 'circle', itemStyle: { color: '#ff4d4f' } },
+      ],
+      top: 0,
+      textStyle: {
+        fontSize: 11,
+      },
+      itemWidth: 10,
+      itemHeight: 10,
+    }
     option.yAxis = [
       {
         type: 'value',
@@ -224,7 +315,7 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
       },
       {
         type: 'value',
-        name: '路网密度(km/km²)',
+        name: '密度(km/km²)',
         position: 'right',
         min: 0,
         max: 4.0,
@@ -237,9 +328,31 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
         axisLabel: {
           formatter: '{value}',
         },
+        splitLine: {
+          show: false,
+        },
       },
     ]
     option.series = [
+      {
+        name: '路网密度连线',
+        type: 'line',
+        data: data.map((item, index) => [index, item.density]),
+        lineStyle: {
+          color: '#52c41a',
+          width: 2,
+        },
+        itemStyle: {
+          color: '#52c41a',
+          opacity: 0,
+        },
+        symbol: 'none',
+        yAxisIndex: 1,
+        silent: true,
+        tooltip: {
+          show: false,
+        },
+      },
       {
         name: '道路长度',
         type: 'bar',
@@ -258,23 +371,43 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
         },
       },
       {
-        name: '路网密度',
-        type: 'line',
-        data: data.map(item => item.density),
-        itemStyle: {
-          color: '#52c41a',
-        },
-        lineStyle: {
-          width: 3,
-        },
-        symbol: 'circle',
-        symbolSize: 8,
+        name: '路网密度达标',
+        type: 'scatter',
+        data: data
+          .filter(item => item.density >= item.recommendRange[0] && item.density <= item.recommendRange[1])
+          .map((item, index) => ({
+            value: [data.indexOf(item), item.density],
+            itemStyle: {
+              color: '#52c41a',
+            },
+          })),
+        symbolSize: 12,
         yAxisIndex: 1,
         label: {
           show: true,
           position: 'top',
           fontSize: 11,
-          formatter: '{c}',
+          formatter: (params: any) => params.value[1],
+        },
+      },
+      {
+        name: '路网密度不达标',
+        type: 'scatter',
+        data: data
+          .filter(item => item.density < item.recommendRange[0] || item.density > item.recommendRange[1])
+          .map((item, index) => ({
+            value: [data.indexOf(item), item.density],
+            itemStyle: {
+              color: '#ff4d4f',
+            },
+          })),
+        symbolSize: 12,
+        yAxisIndex: 1,
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 11,
+          formatter: (params: any) => params.value[1],
         },
       },
     ]
@@ -344,10 +477,10 @@ onMounted(async () => {
   
   // 道路类型统计 - 包含密度和规范推荐值
   const roadData = [
-    { name: '快速路', length: 42.7, density: 0.35, recommend: 0.35 },
-    { name: '主干路', length: 63.2, density: 0.97, recommend: 1.1 },
-    { name: '次干路', length: 46.4, density: 0.71, recommend: 1.3 },
-    { name: '支路', length: 112.4, density: 1.73, recommend: 3.5 },
+    { name: '快速路', length: 42.7, density: 0.35, recommendRange: [0.3, 0.4] },
+    { name: '主干路', length: 63.2, density: 0.97, recommendRange: [1.0, 1.2] },
+    { name: '次干路', length: 46.4, density: 0.71, recommendRange: [1.2, 1.4] },
+    { name: '支路', length: 112.4, density: 1.73, recommendRange: [3.0, 4.0] },
   ]
   
   // 桥梁类型统计
@@ -369,8 +502,8 @@ onMounted(async () => {
   ]
   
   initBarChart(roadChartRef.value, '道路统计', roadData, '#1677ff', true)
-  initBarChart(bridgeChartRef.value, '桥梁统计', bridgeData, '#13c2c2')
-  initBarChart(tunnelChartRef.value, '隧道统计', tunnelData, '#722ed1')
+  initBarChart(bridgeChartRef.value, '桥梁数量', bridgeData, '#13c2c2')
+  initBarChart(tunnelChartRef.value, '隧道数量', tunnelData, '#722ed1')
 
   window.addEventListener('resize', handleResize)
   // 延迟再次resize确保图表正确渲染
@@ -419,6 +552,14 @@ onUnmounted(() => {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-icon {
+  font-size: 20px;
+  color: #1677ff;
 }
 
 // 设施统计
@@ -427,11 +568,14 @@ onUnmounted(() => {
   gap: 8px;
 }
 
+.facility-stats-card {
+  flex-shrink: 0;
+}
+
 .facility-content {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
-  height: calc(100% - 40px);
 }
 
 .stat-section {
@@ -441,6 +585,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   transition: box-shadow 0.3s;
+  overflow: hidden;
 
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -458,13 +603,15 @@ onUnmounted(() => {
 }
 
 .section-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   color: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .section-icon {
@@ -484,39 +631,51 @@ onUnmounted(() => {
 }
 
 .stat-cards {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .stat-card {
-  flex: none;
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 10px 16px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   border-left: 3px solid transparent;
   transition: all 0.2s;
 
   &:hover {
-    transform: translateX(2px);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .stat-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .stat-info {
+    flex: 1;
   }
 
   &.road-card {
     background: linear-gradient(135deg, #e6f4ff 0%, #f0f5ff 100%);
     border-left-color: #1677ff;
+    .stat-icon { color: #1677ff; }
     .stat-value { color: #1677ff; }
   }
   &.bridge-card {
     background: linear-gradient(135deg, #e6fffb 0%, #f0fffe 100%);
     border-left-color: #13c2c2;
+    .stat-icon { color: #13c2c2; }
     .stat-value { color: #08979c; }
   }
   &.tunnel-card {
     background: linear-gradient(135deg, #f9f0ff 0%, #fcf5ff 100%);
     border-left-color: #722ed1;
+    .stat-icon { color: #722ed1; }
     .stat-value { color: #722ed1; }
   }
 }
@@ -541,8 +700,9 @@ onUnmounted(() => {
 
 .bar-chart {
   width: 100%;
-  flex: 1;
-  min-height: 0;
+  height: 220px;
+  min-height: 220px;
+  flex-shrink: 0;
 }
 
 // 检测管理
