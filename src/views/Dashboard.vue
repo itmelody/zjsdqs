@@ -683,7 +683,7 @@ onUnmounted(() => {
 .stat-label {
   font-size: 13px;
   color: rgba(0, 0, 0, 0.65);
-  margin-bottom: 0;
+  margin-bottom: 6px;
   font-weight: 500;
 }
 
