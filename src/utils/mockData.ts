@@ -1,4 +1,4 @@
-import type { BridgeItem, BridgeSearchParams, PaginationResponse } from '@/types/bridge'
+import type { BridgeItem, BridgeSearchParams, PaginationResponse, BridgeDetail } from '@/types/bridge'
 
 // Mock桥梁数据
 const mockBridges: BridgeItem[] = [
@@ -186,6 +186,63 @@ export function batchDeleteBridge(keys: string[]): Promise<boolean> {
     setTimeout(() => {
       resolve(true)
     }, 500)
+  })
+}
+
+// 模拟获取桥梁详情
+export function getBridgeDetail(key: string): Promise<BridgeDetail> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // 查找对应的桥梁
+      const bridge = mockBridges.find(item => item.key === key)
+      
+      if (bridge) {
+        resolve({
+          key: bridge.key,
+          region: bridge.region,
+          name: bridge.name,
+          location: '浙江省杭州市市辖区古墩路',
+          buildTime: bridge.buildTime,
+          type: bridge.type,
+          industryManager: '杭州市交通运输局',
+          responsiblePerson: '张三',
+          contactPhone: '0571-88888888',
+          operationUnit: '杭州市市政设施管理中心',
+          siteSupervisor: '李四',
+          supervisorContact: '13800138000',
+          siteResponsiblePerson: '王五',
+          responsibleContact: '13900139000',
+          isNavigationBridge: bridge.isNavigationBridge,
+          hasAntiCollision: false,
+          hasShipCollisionWarning: false,
+          hasMonitoring: bridge.hasMonitorDevice,
+          hasMonitorFacility: bridge.hasMonitorFacility,
+        })
+      } else {
+        // 默认值
+        resolve({
+          key,
+          region: '浙江省 / 杭州市 / 市辖区',
+          name: '古墩路跨线桥',
+          location: '浙江省杭州市市辖区古墩路',
+          buildTime: '2009-01-01',
+          type: '立交桥',
+          industryManager: '',
+          responsiblePerson: '',
+          contactPhone: '',
+          operationUnit: '',
+          siteSupervisor: '',
+          supervisorContact: '',
+          siteResponsiblePerson: '',
+          responsibleContact: '',
+          isNavigationBridge: false,
+          hasAntiCollision: false,
+          hasShipCollisionWarning: false,
+          hasMonitoring: false,
+          hasMonitorFacility: false,
+        })
+      }
+    }, 300)
   })
 }
 

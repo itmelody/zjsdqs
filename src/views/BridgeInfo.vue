@@ -165,6 +165,185 @@
         @showSizeChange="handlePageSizeChange"
       />
     </div>
+
+    <!-- 桥梁详情弹窗 -->
+    <a-modal
+      v-model:open="detailVisible"
+      title="查看桥梁"
+      :footer="null"
+      width="900px"
+      :body-style="{ padding: '24px' }"
+    >
+      <a-tabs v-model:activeKey="activeTab">
+        <!-- 基础信息 Tab -->
+        <a-tab-pane key="basic" tab="基础信息">
+          <div class="detail-form">
+            <!-- 基本信息 -->
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="归属地区" required>
+                  <a-input v-model:value="bridgeDetail.region" disabled />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="桥梁名称" required>
+                  <a-input v-model:value="bridgeDetail.name" disabled />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="18">
+                <a-form-item label="桥梁位置" required>
+                  <a-input v-model:value="bridgeDetail.location" disabled />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item label="&nbsp;">
+                  <a-button type="primary">查看点位位置</a-button>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="建成时间" required>
+                  <a-input v-model:value="bridgeDetail.buildTime" disabled />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="桥梁类型" required>
+                  <a-select v-model:value="bridgeDetail.type" disabled>
+                    <a-select-option
+                      v-for="item in bridgeTypeOptions"
+                      :key="item.value"
+                      :value="item.value"
+                    >
+                      {{ item.label }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+            </a-row>
+
+            <!-- 三级责任体系 -->
+            <div class="section-title">三级责任体系：</div>
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="行业主管单位" required>
+                  <a-input v-model:value="bridgeDetail.industryManager" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="责任人" required>
+                  <a-input v-model:value="bridgeDetail.responsiblePerson" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="联系方式" required>
+                  <a-input v-model:value="bridgeDetail.contactPhone" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="现场运维单位" required>
+                  <a-input v-model:value="bridgeDetail.operationUnit" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="现场监督管理人" required>
+                  <a-input v-model:value="bridgeDetail.siteSupervisor" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="管理人联系方式" required>
+                  <a-input v-model:value="bridgeDetail.supervisorContact" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="现场责任人" required>
+                  <a-input v-model:value="bridgeDetail.siteResponsiblePerson" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="责任人联系方式" required>
+                  <a-input v-model:value="bridgeDetail.responsibleContact" placeholder="点击选择" disabled />
+                </a-form-item>
+              </a-col>
+            </a-row>
+
+            <!-- 通航安全管理 -->
+            <div class="section-title">通航安全管理：</div>
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="是否涉航桥梁" required>
+                  <a-radio-group v-model:value="bridgeDetail.isNavigationBridge" disabled>
+                    <a-radio :value="false">否</a-radio>
+                    <a-radio :value="true">是</a-radio>
+                  </a-radio-group>
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="是否设置防撞设施" required>
+                  <a-radio-group v-model:value="bridgeDetail.hasAntiCollision" disabled>
+                    <a-radio :value="false">否</a-radio>
+                    <a-radio :value="true">是</a-radio>
+                  </a-radio-group>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="是否安装防船撞预警系统" required>
+                  <a-radio-group v-model:value="bridgeDetail.hasShipCollisionWarning" disabled>
+                    <a-radio :value="false">否</a-radio>
+                    <a-radio :value="true">是</a-radio>
+                  </a-radio-group>
+                </a-form-item>
+              </a-col>
+              <a-col :span="12">
+                <a-form-item label="是否设置监控设施" required>
+                  <a-radio-group v-model:value="bridgeDetail.hasMonitoring" disabled>
+                    <a-radio :value="false">否</a-radio>
+                    <a-radio :value="true">是</a-radio>
+                  </a-radio-group>
+                </a-form-item>
+              </a-col>
+            </a-row>
+            
+            <a-row :gutter="16" style="margin-bottom: 24px">
+              <a-col :span="12">
+                <a-form-item label="是否设置监测设施" required>
+                  <a-radio-group v-model:value="bridgeDetail.hasMonitorFacility" disabled>
+                    <a-radio :value="false">否</a-radio>
+                    <a-radio :value="true">是</a-radio>
+                  </a-radio-group>
+                </a-form-item>
+              </a-col>
+            </a-row>
+          </div>
+        </a-tab-pane>
+        
+        <!-- 桥梁资料卡 Tab -->
+        <a-tab-pane key="card" tab="桥梁资料卡">
+          <div class="bridge-card-placeholder">
+            <a-empty description="桥梁资料卡功能开发中" />
+          </div>
+        </a-tab-pane>
+      </a-tabs>
+    </a-modal>
   </div>
 </template>
 
@@ -181,9 +360,10 @@ import {
   DeleteOutlined,
   SettingOutlined,
 } from '@ant-design/icons-vue'
-import type { BridgeItem, BridgeSearchParams } from '@/types/bridge'
+import type { BridgeItem, BridgeSearchParams, BridgeDetail } from '@/types/bridge'
 import {
   getBridgeList,
+  getBridgeDetail,
   deleteBridge,
   batchDeleteBridge,
   regionOptions,
@@ -388,11 +568,6 @@ function handleBatchDelete() {
   })
 }
 
-// 查看
-function handleView(record: BridgeItem) {
-  message.info(`查看桥梁: ${record.name}`)
-}
-
 // 编辑
 function handleEdit(record: BridgeItem) {
   message.info(`编辑桥梁: ${record.name}`)
@@ -421,6 +596,39 @@ function handleDelete(record: BridgeItem) {
 // 日志
 function handleLog(record: BridgeItem) {
   message.info(`查看日志: ${record.name}`)
+}
+
+// 详情弹窗
+const detailVisible = ref(false)
+const activeTab = ref('basic')
+const bridgeDetail = ref<BridgeDetail>({
+  key: '',
+  region: '',
+  name: '',
+  location: '',
+  buildTime: '',
+  type: '',
+  industryManager: '',
+  responsiblePerson: '',
+  contactPhone: '',
+  operationUnit: '',
+  siteSupervisor: '',
+  supervisorContact: '',
+  siteResponsiblePerson: '',
+  responsibleContact: '',
+  isNavigationBridge: false,
+  hasAntiCollision: false,
+  hasShipCollisionWarning: false,
+  hasMonitoring: false,
+  hasMonitorFacility: false,
+})
+
+// 查看详情
+function handleView(record: BridgeItem) {
+  getBridgeDetail(record.key).then(data => {
+    bridgeDetail.value = data
+    detailVisible.value = true
+  })
 }
 
 // 页码改变
@@ -484,6 +692,37 @@ onMounted(() => {
     display: flex;
     justify-content: flex-end;
     margin-top: 16px;
+  }
+  
+  // 详情弹窗样式
+  .detail-form {
+    :deep(.ant-form-item) {
+      margin-bottom: 0;
+    }
+    
+    :deep(.ant-form-item-label) {
+      label {
+        font-weight: 500;
+        
+        &:before {
+          content: '*';
+          color: #ff4d4f;
+          margin-right: 4px;
+        }
+      }
+    }
+    
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+      margin: 24px 0 16px;
+    }
+  }
+  
+  .bridge-card-placeholder {
+    padding: 60px 0;
+    text-align: center;
   }
 }
 </style>
