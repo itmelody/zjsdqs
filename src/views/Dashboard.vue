@@ -5,11 +5,10 @@
       <div class="card-header">
         <h3 class="card-title">
           <FundOutlined class="card-icon" />
-          设施统计
-        </h3>
+          设施统计    </h3>
         <div class="filter-group">
           <a-select v-model:value="province" placeholder="省" style="width: 100px" allow-clear>
-            <a-select-option value="浙江省">浙江省</a-select-option>
+            <a-select-option value="浙江省">江苏省</a-select-option>
           </a-select>
           <a-select v-model:value="city" placeholder="市" style="width: 100px" allow-clear>
             <a-select-option value="杭州市">杭州市</a-select-option>
