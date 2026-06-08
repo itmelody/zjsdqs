@@ -8,7 +8,7 @@
           设施统计    </h3>
         <div class="filter-group">
           <a-select v-model:value="province" placeholder="省" style="width: 100px" allow-clear>
-            <a-select-option value="浙江省">江苏省</a-select-option>
+            <a-select-option value="浙江省">浙江省</a-select-option>
           </a-select>
           <a-select v-model:value="city" placeholder="市" style="width: 100px" allow-clear>
             <a-select-option value="杭州市">杭州市</a-select-option>
@@ -138,7 +138,119 @@
       </div>
     </div>
 
-    <!-- 物联监管 -->
+    <!-- 检测管理 -->
+    <div class="card detection-card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <SafetyCertificateOutlined class="card-icon" style="color: #52c41a" />
+          检测管理
+        </h3>
+        <a-button type="link" size="small">查看详情 ›</a-button>
+      </div>
+      <div class="detection-content">
+        <!-- 左侧：检测进度 -->
+        <div class="detection-grid">
+          <!-- 道路检测 -->
+          <div class="detection-item">
+            <div class="detection-title">道路检测</div>
+            <div class="progress-circle road-progress">
+              <span>86%</span>
+            </div>
+            <div class="detection-stats">已检 / 总数</div>
+            <div class="detection-detail">
+              <div class="detail-info">已检 <b>1,082</b> km</div>
+              <div class="detail-info">总计 <b>1,256</b> km</div>
+            </div>
+            <div class="indicator-group">
+              <div class="indicator-row primary road-primary">
+                <span class="indicator-label">D级道路</span>
+                <span class="indicator-value">86</span>
+              </div>
+              <div class="indicator-divider"></div>
+              <div class="indicator-row">
+                <span class="indicator-label">已维修整治</span>
+                <span class="indicator-value">52</span>
+              </div>
+              <div class="indicator-row">
+                <span class="indicator-label">已拆除或完全封控</span>
+                <span class="indicator-value">34</span>
+              </div>
+            </div>
+          </div>
+          <!-- 桥梁检测 -->
+          <div class="detection-item">
+            <div class="detection-title">桥梁检测</div>
+            <div class="progress-circle bridge-progress">
+              <span>72%</span>
+            </div>
+            <div class="detection-stats">已检 / 总数</div>
+            <div class="detection-detail">
+              <div class="detail-info">已检 <b>2,814</b> 座</div>
+              <div class="detail-info">总计 <b>3,908</b> 座</div>
+            </div>
+            <div class="indicator-group">
+              <div class="indicator-row primary bridge-primary">
+                <span class="indicator-label">D、E级桥梁</span>
+                <span class="indicator-value">312</span>
+              </div>
+              <div class="indicator-row primary bridge-primary">
+                <span class="indicator-label">不合格桥梁</span>
+                <span class="indicator-value">89</span>
+              </div>
+              <div class="indicator-divider"></div>
+              <div class="indicator-row">
+                <span class="indicator-label">已维修整治</span>
+                <span class="indicator-value">278</span>
+              </div>
+              <div class="indicator-row">
+                <span class="indicator-label">已拆除或完全封控</span>
+                <span class="indicator-value">123</span>
+              </div>
+            </div>
+          </div>
+          <!-- 隧道检测 -->
+          <div class="detection-item">
+            <div class="detection-title">隧道检测</div>
+            <div class="progress-circle tunnel-progress">
+              <span>91%</span>
+            </div>
+            <div class="detection-stats">已检 / 总数</div>
+            <div class="detection-detail">
+              <div class="detail-info">已检 <b>812</b> 座</div>
+              <div class="detail-info">总计 <b>892</b> 座</div>
+            </div>
+            <div class="indicator-group">
+              <div class="indicator-row primary tunnel-primary">
+                <span class="indicator-label">D、E级隧道</span>
+                <span class="indicator-value">47</span>
+              </div>
+              <div class="indicator-divider"></div>
+              <div class="indicator-row">
+                <span class="indicator-label">已维修整治</span>
+                <span class="indicator-value">31</span>
+              </div>
+              <div class="indicator-row">
+                <span class="indicator-label">已拆除或完全封控</span>
+                <span class="indicator-value">16</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 右侧：超期/预警柱状图 -->
+        <div class="detection-charts-right">
+          <div class="chart-section">
+            <div class="chart-title">超期未检</div>
+            <div ref="overdueChartRef" class="detection-bar-chart"></div>
+          </div>
+          <div class="chart-section">
+            <div class="chart-title">即将到期（30天内）</div>
+            <div ref="warningChartRef" class="detection-bar-chart"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 物联监管 + 隐患排查 -->
     <div class="dashboard-row">
       <div class="card iot-card">
         <div class="card-header">
@@ -149,7 +261,6 @@
         </div>
       </div>
 
-      <!-- 隐患排查 -->
       <div class="card inspection-card">
         <div class="card-header">
           <h3 class="card-title">隐患排查</h3>
@@ -181,6 +292,7 @@ import {
   GlobalOutlined,
   ClockCircleOutlined,
   UserOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons-vue'
 
 // 省市区筛选
@@ -192,6 +304,8 @@ const district = ref<string>()
 const roadChartRef = ref<HTMLElement>()
 const bridgeChartRef = ref<HTMLElement>()
 const tunnelChartRef = ref<HTMLElement>()
+const overdueChartRef = ref<HTMLElement>()
+const warningChartRef = ref<HTMLElement>()
 
 const charts: echarts.ECharts[] = []
 
@@ -418,6 +532,56 @@ function initBarChart(container: HTMLElement | undefined, title: string, data: a
   return chart
 }
 
+// 初始化检测管理柱状图
+function initDetectionChart(container: HTMLElement | undefined, categories: string[], data: number[], color: string) {
+  if (!container) return
+  const chart = echarts.init(container)
+  charts.push(chart)
+  const option = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+    },
+    grid: {
+      left: '10%',
+      right: '10%',
+      top: '10%',
+      bottom: '15%',
+      containLabel: true,
+    },
+    xAxis: {
+      type: 'category',
+      data: categories,
+      axisLabel: { fontSize: 12, color: 'rgba(0,0,0,0.65)' },
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: '#e8e8e8' } },
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { fontSize: 11, color: 'rgba(0,0,0,0.45)' },
+      splitLine: { lineStyle: { color: '#f0f0f0' } },
+    },
+    series: [
+      {
+        type: 'bar',
+        data,
+        itemStyle: { color, borderRadius: [4, 4, 0, 0] },
+        barWidth: '45%',
+        label: {
+          show: true,
+          position: 'top',
+          fontSize: 13,
+          fontWeight: 'bold',
+          color,
+          formatter: '{c}',
+        },
+      },
+    ],
+  }
+  chart.setOption(option)
+  return chart
+}
+
 // 隐患排查表格
 const inspectionColumns: TableColumnsType = [
   { title: '地市', dataIndex: 'city', key: 'city', width: 100 },
@@ -503,6 +667,10 @@ onMounted(async () => {
   initBarChart(roadChartRef.value, '道路统计', roadData, '#1677ff', true)
   initBarChart(bridgeChartRef.value, '桥梁数量', bridgeData, '#13c2c2')
   initBarChart(tunnelChartRef.value, '隧道数量', tunnelData, '#722ed1')
+
+  // 检测管理右侧柱状图
+  initDetectionChart(overdueChartRef.value, ['道路', '桥梁', '隧道'], [23, 156, 41], '#ff4d4f')
+  initDetectionChart(warningChartRef.value, ['道路', '桥梁', '隧道'], [8, 94, 17], '#fa8c16')
 
   window.addEventListener('resize', handleResize)
   // 延迟再次resize确保图表正确渲染
@@ -705,9 +873,14 @@ onUnmounted(() => {
 }
 
 // 检测管理
+.detection-card {
+  flex-shrink: 0;
+}
+
 .detection-content {
   display: flex;
-  gap: 16px;
+  gap: 20px;
+  align-items: flex-start;
 }
 
 .detection-grid {
@@ -731,8 +904,8 @@ onUnmounted(() => {
 }
 
 .progress-circle {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   border: 6px solid #52c41a;
   display: flex;
@@ -741,12 +914,28 @@ onUnmounted(() => {
   font-size: 14px;
   font-weight: 600;
   color: #52c41a;
+  flex-shrink: 0;
 
   &.small {
     width: 40px;
     height: 40px;
     border-width: 4px;
     font-size: 12px;
+  }
+
+  &.road-progress {
+    border-color: #1677ff;
+    color: #1677ff;
+  }
+
+  &.bridge-progress {
+    border-color: #13c2c2;
+    color: #13c2c2;
+  }
+
+  &.tunnel-progress {
+    border-color: #722ed1;
+    color: #722ed1;
   }
 }
 
@@ -755,6 +944,58 @@ onUnmounted(() => {
   font-size: 12px;
   color: rgba(0, 0, 0, 0.65);
   line-height: 1.8;
+}
+
+.indicator-group {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #f7f8fa;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.indicator-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+
+  &.primary {
+    .indicator-label {
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    .indicator-value {
+      font-weight: 700;
+      font-size: 15px;
+    }
+  }
+
+  &.road-primary .indicator-value { color: #1677ff; }
+  &.bridge-primary .indicator-value { color: #13c2c2; }
+  &.tunnel-primary .indicator-value { color: #722ed1; }
+}
+
+.indicator-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.indicator-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  min-width: 28px;
+  text-align: right;
+}
+
+.indicator-divider {
+  height: 1px;
+  background: #e8e8e8;
+  margin: 2px 0;
 }
 
 .detection-detail {
@@ -769,58 +1010,31 @@ onUnmounted(() => {
   line-height: 1.8;
 }
 
-.detection-stats-right {
+.detection-charts-right {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 200px;
+  width: 260px;
+  flex-shrink: 0;
 }
 
-.stats-card {
-  border-radius: 4px;
-  padding: 16px;
-  color: #fff;
+.chart-section {
+  background: #f7f8fa;
+  border-radius: 6px;
+  padding: 10px 8px 4px;
 
-  &.overdue {
-    background: #ff4d4f;
+  .chart-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.85);
+    text-align: center;
+    margin-bottom: 4px;
   }
-
-  &.warning {
-    background: #ff7875;
-    border: 1px solid #ff4d4f;
-  }
 }
 
-.stats-card-title {
-  font-size: 14px;
-  font-weight: 500;
-  margin-bottom: 12px;
-  text-align: center;
-}
-
-.stats-row {
-  display: flex;
-  justify-content: space-around;
-}
-
-.stats-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stats-label {
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-
-.stats-value {
-  font-size: 20px;
-  font-weight: 600;
-
-  &.red {
-    color: #fff;
-  }
+.detection-bar-chart {
+  width: 100%;
+  height: 160px;
 }
 
 // 物联监管
