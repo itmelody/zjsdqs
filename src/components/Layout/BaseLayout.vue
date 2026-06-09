@@ -7,7 +7,7 @@
           <div class="logo-icon">
             <HomeOutlined style="font-size: 24px" />
           </div>
-          <span class="logo-text">浙江省城市桥隧安全监管</span>
+          <span class="logo-text">浙江省城市道桥隧安全监管</span>
         </div>
         <a-menu
           v-model:selectedKeys="selectedKeys"
@@ -182,7 +182,7 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  background: linear-gradient(90deg, #001529 0%, #1677ff 100%);
+  background: linear-gradient(135deg, #4487ec 0%, #4487ec 40%, #4487ec 70%, #4487ec 100%);
   color: #fff;
 
   &-left {
