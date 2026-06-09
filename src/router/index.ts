@@ -16,6 +16,14 @@ const routes = [
         },
       },
       {
+        path: 'todo',
+        name: 'Todo',
+        component: () => import('@/views/Todo.vue'),
+        meta: {
+          title: '待办事项',
+        },
+      },
+      {
         path: 'bridge-info',
         name: 'BridgeInfo',
         component: () => import('@/views/BridgeInfo.vue'),

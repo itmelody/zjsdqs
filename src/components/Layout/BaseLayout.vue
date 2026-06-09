@@ -65,7 +65,7 @@
           v-model:openKeys="openKeys"
           mode="inline"
           theme="light"
-          :items="siderMenuItems"
+          :items="currentSiderMenuItems"
           @click="handleSiderMenuClick"
         />
       </a-layout-sider>
@@ -97,7 +97,22 @@ const router = useRouter()
 const route = useRoute()
 
 const showSider = computed(() => {
-  return route.path !== '/dashboard'
+  return true
+})
+
+// 工作台侧边栏菜单（dashboard/todo页面使用）
+const workspaceMenuItems = ref<MenuProps['items']>([
+  { key: 'dashboard', label: '数据看板' },
+  { key: 'todo', label: '待办事项' },
+])
+
+// 当前使用的侧边栏菜单
+const currentSiderMenuItems = computed(() => {
+  const path = route.path
+  if (path === '/dashboard' || path === '/todo') {
+    return workspaceMenuItems.value
+  }
+  return siderMenuItems.value
 })
 
 const selectedKeys = ref<string[]>(['dashboard'])
@@ -117,7 +132,11 @@ watch(
     }
 
     // 侧边栏菜单
-    if (path.includes('bridge-info')) {
+    if (path === '/dashboard') {
+      siderSelectedKeys.value = ['dashboard']
+    } else if (path === '/todo') {
+      siderSelectedKeys.value = ['todo']
+    } else if (path.includes('bridge-info')) {
       siderSelectedKeys.value = ['bridge-info']
     } else if (path.includes('tunnel-info')) {
       siderSelectedKeys.value = ['tunnel-info']
@@ -160,7 +179,11 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
 }
 
 const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
-  if (info.key === 'bridge-info') {
+  if (info.key === 'dashboard') {
+    router.push('/dashboard')
+  } else if (info.key === 'todo') {
+    router.push('/todo')
+  } else if (info.key === 'bridge-info') {
     router.push('/bridge-info')
   } else if (info.key === 'tunnel-info') {
     router.push('/tunnel-info')
