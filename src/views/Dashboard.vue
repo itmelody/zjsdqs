@@ -740,7 +740,7 @@ const detectionDrillTitle = computed(() => {
 const inspectionCycles = ['一年', '两年', '三年']
 function genOverdueData(cityName: string, count: number, tabType: 'road' | 'bridge' | 'tunnel') {
   const namePrefix = { road: '路段', bridge: '桥梁', tunnel: '隧道' }
-  return Array.from({ length: Math.max(count, 2) }, (_, i) => {
+  return Array.from({ length: count }, (_, i) => {
     const cycle = inspectionCycles[i % 3]
     const years = cycle === '一年' ? 1 : cycle === '两年' ? 2 : 3
     const lastYear = 2024 - years - 1
@@ -760,11 +760,11 @@ function genExpiringData(cityName: string, count: number, tabType: 'road' | 'bri
   const namePrefix = { road: '路段', bridge: '桥梁', tunnel: '隧道' }
   const today = new Date()
   const pad = (n: number) => String(n).padStart(2, '0')
-  return Array.from({ length: Math.max(count, 2) }, (_, i) => {
+  return Array.from({ length: count }, (_, i) => {
     const cycle = inspectionCycles[i % 3]
     const years = cycle === '一年' ? 1 : cycle === '两年' ? 2 : 3
     // 到期时间：今天+1天 到 今天+29天之间
-    const offsetDays = 1 + (i * 29 / Math.max(count, 2)) | 0
+    const offsetDays = 1 + (i * 29 / Math.max(count, 1)) | 0
     const expireDate = new Date(today.getTime() + offsetDays * 86400000)
     const expStr = `${expireDate.getFullYear()}-${pad(expireDate.getMonth() + 1)}-${pad(expireDate.getDate())}`
     // 最新检测时间 = 到期时间 - 周期年数
@@ -806,7 +806,7 @@ function genDrillData(cityName: string, count: number, type: 'road' | 'bridge' |
   const typeMap = { road: '常规检测', bridge: '常规检测', tunnel: '常规检测', unqualified: '专项检测' }
   const namePrefix = { road: '路段', bridge: '桥梁', tunnel: '隧道', unqualified: '桥梁' }
   const results = type === 'unqualified' ? results3q : type === 'road' ? results3 : results3b
-  return Array.from({ length: Math.max(count, 2) }, (_, i) => ({
+  return Array.from({ length: count }, (_, i) => ({
     key: i, city: cityName,
     inspectName: `${cityName}${namePrefix[type]}检测-2024-${String(i + 1).padStart(3, '0')}`,
     inspectDate: `2024-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
