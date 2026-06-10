@@ -47,6 +47,38 @@ const routes = [
           title: '道路信息',
         },
       },
+      {
+        path: 'monitor-device',
+        name: 'MonitorDevice',
+        component: () => import('@/views/MonitorDevice.vue'),
+        meta: {
+          title: '桥梁监测设备',
+        },
+      },
+      {
+        path: 'monitor-data',
+        name: 'MonitorData',
+        component: () => import('@/views/MonitorData.vue'),
+        meta: {
+          title: '桥梁结构监测',
+        },
+      },
+      {
+        path: 'weigh-monitor',
+        name: 'WeighMonitor',
+        component: () => import('@/views/WeighMonitor.vue'),
+        meta: {
+          title: '桥梁超限监测',
+        },
+      },
+      {
+        path: 'monitor-alert',
+        name: 'MonitorAlert',
+        component: () => import('@/views/MonitorAlert.vue'),
+        meta: {
+          title: '桥梁监测预警',
+        },
+      },
     ],
   },
 ]

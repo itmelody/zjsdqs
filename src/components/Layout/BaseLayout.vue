@@ -55,8 +55,6 @@
       <!-- 左侧菜单 (工作台不显示) -->
       <a-layout-sider
         v-if="showSider"
-        v-model:collapsed="collapsed"
-        collapsible
         width="200"
         class="sider"
       >
@@ -112,6 +110,9 @@ const currentSiderMenuItems = computed(() => {
   if (path === '/dashboard' || path === '/todo') {
     return workspaceMenuItems.value
   }
+  if (path.includes('monitor-') || path.includes('weigh-monitor')) {
+    return iotMenuItems.value
+  }
   return siderMenuItems.value
 })
 
@@ -129,6 +130,8 @@ watch(
       selectedKeys.value = ['dashboard']
     } else if (path.includes('bridge-info') || path.includes('tunnel-info') || path.includes('road-info')) {
       selectedKeys.value = ['1']
+    } else if (path.includes('monitor-') || path.includes('weigh-monitor')) {
+      selectedKeys.value = ['3']
     }
 
     // 侧边栏菜单
@@ -142,6 +145,18 @@ watch(
       siderSelectedKeys.value = ['tunnel-info']
     } else if (path.includes('road-info')) {
       siderSelectedKeys.value = ['road-info']
+    } else if (path.includes('monitor-device')) {
+      siderSelectedKeys.value = ['monitor-device']
+      openKeys.value = ['iot-device']
+    } else if (path.includes('monitor-data')) {
+      siderSelectedKeys.value = ['monitor-data']
+      openKeys.value = ['iot-data']
+    } else if (path.includes('weigh-monitor')) {
+      siderSelectedKeys.value = ['weigh-monitor']
+      openKeys.value = ['iot-data']
+    } else if (path.includes('monitor-alert')) {
+      siderSelectedKeys.value = ['monitor-alert']
+      openKeys.value = ['iot-alert']
     }
   },
   { immediate: true }
@@ -151,7 +166,7 @@ watch(
 const menuItems = ref<MenuProps['items']>([
   { key: 'dashboard', label: '工作台' },
   { key: '1', label: '档案管理' },
-  { key: '2', label: '风险清单' },
+  { key: '2', label: '检测管理' },
   { key: '3', label: '物联监管' },
   { key: '4', label: '机构人员管理' },
 ])
@@ -169,11 +184,39 @@ const siderMenuItems = ref<MenuProps['items']>([
   },
 ])
 
+// 物联监管侧边栏菜单
+const iotMenuItems = ref<MenuProps['items']>([
+  {
+    key: 'iot-device',
+    label: '监测设备',
+    children: [
+      { key: 'monitor-device', label: '桥梁监测设备' },
+    ],
+  },
+  {
+    key: 'iot-data',
+    label: '监测数据',
+    children: [
+      { key: 'monitor-data', label: '桥梁结构监测' },
+      { key: 'weigh-monitor', label: '桥梁超限监测' },
+    ],
+  },
+  {
+    key: 'iot-alert',
+    label: '监测预警',
+    children: [
+      { key: 'monitor-alert', label: '桥梁监测预警' },
+    ],
+  },
+])
+
 const handleMenuClick: MenuProps['onClick'] = (info) => {
   if (info.key === 'dashboard') {
     router.push('/dashboard')
   } else if (info.key === '1') {
     router.push('/bridge-info')
+  } else if (info.key === '3') {
+    router.push('/monitor-device')
   }
   console.log('menu click', info)
 }
@@ -189,6 +232,14 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/tunnel-info')
   } else if (info.key === 'road-info') {
     router.push('/road-info')
+  } else if (info.key === 'monitor-device') {
+    router.push('/monitor-device')
+  } else if (info.key === 'monitor-data') {
+    router.push('/monitor-data')
+  } else if (info.key === 'weigh-monitor') {
+    router.push('/weigh-monitor')
+  } else if (info.key === 'monitor-alert') {
+    router.push('/monitor-alert')
   }
 }
 </script>
