@@ -79,6 +79,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import dayjs from 'dayjs'
 
 interface DataRow {
   id: number
@@ -136,13 +137,20 @@ const columns = [
   { title: '操作', key: 'action', width: 80, fixed: 'right' as const },
 ]
 
+const today = dayjs().format('YYYY-MM-DD')
+const todayShort = `${dayjs().format('YYYY-M-D')}`
+const d3 = dayjs().subtract(3, 'day').format('YYYY-MM-DD')
+const d3s = `${dayjs().subtract(3, 'day').format('YYYY-M-D')}`
+const d6 = dayjs().subtract(6, 'day').format('YYYY-MM-DD')
+const d6s = `${dayjs().subtract(6, 'day').format('YYYY-M-D')}`
+
 const data = ref<DataRow[]>([
-  { id: 1, city: '绍兴市越城区', facilityName: '沪漕立交桥', deviceName: '沪漕立交桥应变设备', monitorItem: '应变', pointName: '25-北副应变;第3号拱肋截面1/2等分点', monitorTime: '2026-05-09', dailyMax: '0.52', dailyMin: '-1.35', dailyAvg: '-0.42', latestTime: '2026-5-9 10:40:00', latestValue: '-1.07' },
-  { id: 2, city: '宁波市海曙区', facilityName: '甬江大桥', deviceName: '甬江大桥倾斜设备', monitorItem: '位移', pointName: '主塔顶部倾斜监测点', monitorTime: '2026-06-01', dailyMax: '0.08', dailyMin: '-0.02', dailyAvg: '0.03', latestTime: '2026-6-1 14:22:00', latestValue: '0.03' },
-  { id: 3, city: '湖州市吴兴区', facilityName: '苕溪桥', deviceName: '苕溪桥振动设备', monitorItem: '加速度', pointName: '跨中位置竖向加速度监测点', monitorTime: '2026-05-28', dailyMax: '0.0035', dailyMin: '-0.0028', dailyAvg: '0.0012', latestTime: '2026-5-28 09:15:00', latestValue: '0.0012' },
-  { id: 4, city: '衢州市柯城区', facilityName: '西安门大桥', deviceName: '西安门大桥位移设备', monitorItem: '挠度', pointName: '第2跨跨中挠度监测点', monitorTime: '2026-06-03', dailyMax: '3.20', dailyMin: '1.05', dailyAvg: '2.15', latestTime: '2026-6-3 16:50:00', latestValue: '2.15' },
-  { id: 5, city: '杭州市西湖区', facilityName: '钱塘江大桥', deviceName: '钱塘江大桥应变设备', monitorItem: '应变', pointName: '主跨1/4截面应变监测点', monitorTime: '2026-06-05', dailyMax: '1.85', dailyMin: '-0.62', dailyAvg: '0.58', latestTime: '2026-6-5 11:30:00', latestValue: '0.73' },
-  { id: 6, city: '温州市鹿城区', facilityName: '瓯江大桥', deviceName: '瓯江大桥索力设备', monitorItem: '吊杆索力振动', pointName: '第5号索索力监测点', monitorTime: '2026-06-02', dailyMax: '2850', dailyMin: '2680', dailyAvg: '2760', latestTime: '2026-6-2 15:45:00', latestValue: '2735' },
+  { id: 1, city: '绍兴市越城区', facilityName: '沪漕立交桥', deviceName: '沪漕立交桥应变设备', monitorItem: '应变', pointName: '25-北副应变;第3号拱肋截面1/2等分点', monitorTime: today, dailyMax: '0.52', dailyMin: '-1.35', dailyAvg: '-0.42', latestTime: `${todayShort} 10:40:00`, latestValue: '-1.07' },
+  { id: 2, city: '宁波市海曙区', facilityName: '甬江大桥', deviceName: '甬江大桥倾斜设备', monitorItem: '位移', pointName: '主塔顶部倾斜监测点', monitorTime: today, dailyMax: '0.08', dailyMin: '-0.02', dailyAvg: '0.03', latestTime: `${todayShort} 14:22:00`, latestValue: '0.03' },
+  { id: 3, city: '湖州市吴兴区', facilityName: '苕溪桥', deviceName: '苕溪桥振动设备', monitorItem: '加速度', pointName: '跨中位置竖向加速度监测点', monitorTime: today, dailyMax: '0.0035', dailyMin: '-0.0028', dailyAvg: '0.0012', latestTime: `${todayShort} 09:15:00`, latestValue: '0.0012' },
+  { id: 4, city: '衢州市柯城区', facilityName: '西安门大桥', deviceName: '西安门大桥位移设备', monitorItem: '挠度', pointName: '第2跨跨中挠度监测点', monitorTime: today, dailyMax: '3.20', dailyMin: '1.05', dailyAvg: '2.15', latestTime: `${todayShort} 16:50:00`, latestValue: '2.15' },
+  { id: 5, city: '杭州市西湖区', facilityName: '钱塘江大桥', deviceName: '钱塘江大桥应变设备', monitorItem: '应变', pointName: '主跨1/4截面应变监测点', monitorTime: d3, dailyMax: '1.85', dailyMin: '-0.62', dailyAvg: '0.58', latestTime: `${d3s} 11:30:00`, latestValue: '0.73' },
+  { id: 6, city: '温州市鹿城区', facilityName: '瓯江大桥', deviceName: '瓯江大桥索力设备', monitorItem: '吊杆索力振动', pointName: '第5号索索力监测点', monitorTime: d6, dailyMax: '2850', dailyMin: '2680', dailyAvg: '2760', latestTime: `${d6s} 15:45:00`, latestValue: '2735' },
 ])
 
 const filters = ref({
@@ -151,11 +159,11 @@ const filters = ref({
   deviceName: '',
   monitorItem: undefined as string | undefined,
   pointName: '',
-  monitorDate: null as any,
+  monitorDate: dayjs() as any,
 })
 
 function resetFilters() {
-  filters.value = { regionValue: undefined, facilityName: '', deviceName: '', monitorItem: undefined, pointName: '', monitorDate: null }
+  filters.value = { regionValue: undefined, facilityName: '', deviceName: '', monitorItem: undefined, pointName: '', monitorDate: dayjs() }
 }
 
 function handleSearch() {}

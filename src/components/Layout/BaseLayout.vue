@@ -113,6 +113,9 @@ const currentSiderMenuItems = computed(() => {
   if (path.includes('monitor-') || path.includes('weigh-monitor')) {
     return iotMenuItems.value
   }
+  if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
+    return orgPersonnelMenuItems.value
+  }
   return siderMenuItems.value
 })
 
@@ -132,6 +135,8 @@ watch(
       selectedKeys.value = ['1']
     } else if (path.includes('monitor-') || path.includes('weigh-monitor')) {
       selectedKeys.value = ['3']
+    } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
+      selectedKeys.value = ['4']
     }
 
     // 侧边栏菜单
@@ -145,18 +150,59 @@ watch(
       siderSelectedKeys.value = ['tunnel-info']
     } else if (path.includes('road-info')) {
       siderSelectedKeys.value = ['road-info']
+    } else if (path.includes('road-monitor-device')) {
+      siderSelectedKeys.value = ['road-monitor-device']
+      openKeys.value = ['iot-device']
+    } else if (path.includes('tunnel-monitor-device')) {
+      siderSelectedKeys.value = ['tunnel-monitor-device']
+      openKeys.value = ['iot-device']
     } else if (path.includes('monitor-device')) {
       siderSelectedKeys.value = ['monitor-device']
       openKeys.value = ['iot-device']
+    } else if (path.includes('road-monitor-data')) {
+      siderSelectedKeys.value = ['road-monitor-data']
+      openKeys.value = ['iot-data']
+    } else if (path.includes('tunnel-monitor-data')) {
+      siderSelectedKeys.value = ['tunnel-monitor-data']
+      openKeys.value = ['iot-data']
     } else if (path.includes('monitor-data')) {
       siderSelectedKeys.value = ['monitor-data']
       openKeys.value = ['iot-data']
     } else if (path.includes('weigh-monitor')) {
       siderSelectedKeys.value = ['weigh-monitor']
       openKeys.value = ['iot-data']
+    } else if (path.includes('road-monitor-alert')) {
+      siderSelectedKeys.value = ['road-monitor-alert']
+      openKeys.value = ['iot-alert']
+    } else if (path.includes('tunnel-monitor-alert')) {
+      siderSelectedKeys.value = ['tunnel-monitor-alert']
+      openKeys.value = ['iot-alert']
     } else if (path.includes('monitor-alert')) {
       siderSelectedKeys.value = ['monitor-alert']
       openKeys.value = ['iot-alert']
+    } else if (path.includes('org-personnel')) {
+      siderSelectedKeys.value = ['org-personnel']
+      openKeys.value = ['org-auth-config']
+    } else if (path.includes('org-enterprise')) {
+      siderSelectedKeys.value = ['org-enterprise']
+    } else if (path.includes('tp-maintenance')) {
+      siderSelectedKeys.value = ['org-tp-maintenance']
+      openKeys.value = ['org-third-party']
+    } else if (path.includes('tp-inspection')) {
+      siderSelectedKeys.value = ['org-tp-inspection']
+      openKeys.value = ['org-third-party']
+    } else if (path.includes('tp-assessment')) {
+      siderSelectedKeys.value = ['org-tp-assessment']
+      openKeys.value = ['org-third-party']
+    } else if (path.includes('cert-maintenance')) {
+      siderSelectedKeys.value = ['org-cert-maintenance']
+      openKeys.value = ['org-certification']
+    } else if (path.includes('cert-inspection')) {
+      siderSelectedKeys.value = ['org-cert-inspection']
+      openKeys.value = ['org-certification']
+    } else if (path.includes('cert-assessment')) {
+      siderSelectedKeys.value = ['org-cert-assessment']
+      openKeys.value = ['org-certification']
     }
   },
   { immediate: true }
@@ -190,22 +236,58 @@ const iotMenuItems = ref<MenuProps['items']>([
     key: 'iot-device',
     label: '监测设备',
     children: [
+      { key: 'road-monitor-device', label: '道路监测设备' },
       { key: 'monitor-device', label: '桥梁监测设备' },
+      { key: 'tunnel-monitor-device', label: '隧道监测设备' },
     ],
   },
   {
     key: 'iot-data',
     label: '监测数据',
     children: [
+      { key: 'road-monitor-data', label: '道路边坡监测' },
       { key: 'monitor-data', label: '桥梁结构监测' },
       { key: 'weigh-monitor', label: '桥梁超限监测' },
+      { key: 'tunnel-monitor-data', label: '隧道结构监测' }
     ],
   },
   {
     key: 'iot-alert',
     label: '监测预警',
     children: [
+      { key: 'road-monitor-alert', label: '道路监测预警' },
       { key: 'monitor-alert', label: '桥梁监测预警' },
+      { key: 'tunnel-monitor-alert', label: '隧道监测预警' },
+    ],
+  },
+])
+
+// 机构人员管理侧边栏菜单
+const orgPersonnelMenuItems = ref<MenuProps['items']>([
+  {
+    key: 'org-auth-config',
+    label: '主管部门授权配置',
+    children: [
+      { key: 'org-personnel', label: '人员权限配置' },
+    ],
+  },
+  { key: 'org-enterprise', label: '企业基本信息' },
+  {
+    key: 'org-third-party',
+    label: '第三方机构管理',
+    children: [
+      { key: 'org-tp-maintenance', label: '日常养护单位' },
+      { key: 'org-tp-inspection', label: '检测单位' },
+      { key: 'org-tp-assessment', label: '安全评估单位' },
+    ],
+  },
+  {
+    key: 'org-certification',
+    label: '从业人员认证',
+    children: [
+      { key: 'org-cert-maintenance', label: '日常养护单位从业人员' },
+      { key: 'org-cert-inspection', label: '检测单位从业人员' },
+      { key: 'org-cert-assessment', label: '安全评估单位从业人员' },
     ],
   },
 ])
@@ -217,6 +299,8 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/bridge-info')
   } else if (info.key === '3') {
     router.push('/monitor-device')
+  } else if (info.key === '4') {
+    router.push('/org-personnel')
   }
   console.log('menu click', info)
 }
@@ -232,14 +316,42 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/tunnel-info')
   } else if (info.key === 'road-info') {
     router.push('/road-info')
+  } else if (info.key === 'road-monitor-device') {
+    router.push('/road-monitor-device')
   } else if (info.key === 'monitor-device') {
     router.push('/monitor-device')
+  } else if (info.key === 'tunnel-monitor-device') {
+    router.push('/tunnel-monitor-device')
+  } else if (info.key === 'road-monitor-data') {
+    router.push('/road-monitor-data')
   } else if (info.key === 'monitor-data') {
     router.push('/monitor-data')
   } else if (info.key === 'weigh-monitor') {
     router.push('/weigh-monitor')
+  } else if (info.key === 'tunnel-monitor-data') {
+    router.push('/tunnel-monitor-data')
+  } else if (info.key === 'road-monitor-alert') {
+    router.push('/road-monitor-alert')
   } else if (info.key === 'monitor-alert') {
     router.push('/monitor-alert')
+  } else if (info.key === 'tunnel-monitor-alert') {
+    router.push('/tunnel-monitor-alert')
+  } else if (info.key === 'org-personnel') {
+    router.push('/org-personnel')
+  } else if (info.key === 'org-enterprise') {
+    router.push('/org-enterprise')
+  } else if (info.key === 'org-tp-maintenance') {
+    router.push('/tp-maintenance')
+  } else if (info.key === 'org-tp-inspection') {
+    router.push('/tp-inspection')
+  } else if (info.key === 'org-tp-assessment') {
+    router.push('/tp-assessment')
+  } else if (info.key === 'org-cert-maintenance') {
+    router.push('/cert-maintenance')
+  } else if (info.key === 'org-cert-inspection') {
+    router.push('/cert-inspection')
+  } else if (info.key === 'org-cert-assessment') {
+    router.push('/cert-assessment')
   }
 }
 </script>

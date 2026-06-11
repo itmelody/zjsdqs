@@ -3,6 +3,9 @@
     <!-- 筛选区 -->
     <div class="card filter-card">
       <a-form layout="inline" :model="filters" class="filter-form">
+        <a-form-item label="市区县">
+          <a-cascader v-model:value="filters.regionValue" :options="cascaderOptions" placeholder="请选择" allow-clear style="width: 220px" @change="onRegionChange" />
+        </a-form-item>
         <a-form-item label="设施ID">
           <a-input v-model:value="filters.facilityId" placeholder="请输入" allow-clear style="width: 140px" />
         </a-form-item>
@@ -64,7 +67,7 @@
     </div>
 
     <!-- 新增/编辑/查看弹窗 -->
-    <a-modal v-model:open="showAddModal" :title="isViewMode ? '查看监测设备' : editingId ? '编辑监测设备' : '新增监测设备'" width="640px" :footer="null">
+    <a-modal v-model:open="showAddModal" :title="isViewMode ? '查看监测设备' : editingId ? '编辑监测设备' : '新增监测设备'" width="700px" :footer="null">
       <a-form :model="form" layout="horizontal" :label-col="{ span: 7 }" :wrapper-col="{ span: 15 }" style="margin-top: 16px">
         <a-row :gutter="16">
           <a-col :span="12">
@@ -133,6 +136,11 @@
           </a-col>
         </a-row>
       </a-form>
+      <!-- 查看模式下显示近7天数据折线图 -->
+      <div v-if="isViewMode" class="chart-section">
+        <div class="chart-title">近7天点位数据（每日最大值 / 最小值 / 平均值）</div>
+        <div ref="chartRef" class="chart-container"></div>
+      </div>
       <div class="modal-footer">
         <template v-if="isViewMode">
           <a-button @click="showAddModal = false">关闭</a-button>
@@ -148,8 +156,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
+import * as echarts from 'echarts'
+import dayjs from 'dayjs'
 
 const cityDistrictMap: Record<string, string[]> = {
   '杭州市': ['上城区', '拱墅区', '西湖区', '滨江区', '萧山区', '余杭区', '临平区', '钱塘区', '富阳区', '临安区', '桐庐县', '淳安县', '建德市'],
@@ -189,6 +199,7 @@ interface DeviceRow {
 }
 
 const columns = [
+  { title: '市区县', dataIndex: 'region', key: 'region', width: 110 },
   { title: '设施ID', dataIndex: 'facilityId', key: 'facilityId', width: 80 },
   { title: '设施名称', dataIndex: 'facilityName', key: 'facilityName', width: 120 },
   { title: '设备ID', dataIndex: 'deviceId', key: 'deviceId', width: 90 },
@@ -196,30 +207,47 @@ const columns = [
   { title: '设备类型', dataIndex: 'deviceType', key: 'deviceType', width: 80 },
   { title: '监测项', dataIndex: 'monitorItem', key: 'monitorItem', width: 100 },
   { title: '点位名称', dataIndex: 'pointName', key: 'pointName', width: 200 },
-  { title: '市区县', dataIndex: 'region', key: 'region', width: 110 },
   { title: '是否在线', dataIndex: 'online', key: 'online', width: 90 },
   { title: '点位值最新时间', dataIndex: 'latestTime', key: 'latestTime', width: 160 },
   { title: '点位最新值', dataIndex: 'latestValue', key: 'latestValue', width: 100 },
   { title: '操作', key: 'action', width: 160, fixed: 'right' as const },
 ]
 
+const today = dayjs().format('YYYY-M-D')
+const d3 = dayjs().subtract(3, 'day').format('YYYY-M-D')
+const d5 = dayjs().subtract(5, 'day').format('YYYY-M-D')
+const d7 = dayjs().subtract(7, 'day').format('YYYY-M-D')
+
 const deviceData = ref<DeviceRow[]>([
-  { id: 1, facilityId: '001', facilityName: '沪漕立交桥', deviceId: '000001', deviceName: '沪漕立交桥应变设备', deviceType: '应变计', monitorItem: '结构应变', pointName: '25-北副应变;第3号拱肋截面1/2等分点', region: '绍兴市越城区', online: '在线', latestTime: '2026-5-9 10:40:00', latestValue: '-1.07' },
-  { id: 2, facilityId: '002', facilityName: '甬江大桥', deviceId: '000002', deviceName: '甬江大桥倾斜设备', deviceType: '倾斜仪', monitorItem: '结构倾斜', pointName: '主塔顶部倾斜监测点', region: '宁波市鄞州区', online: '在线', latestTime: '2026-6-1 14:22:00', latestValue: '0.03' },
-  { id: 3, facilityId: '003', facilityName: '苕溪桥', deviceId: '000003', deviceName: '苕溪桥振动设备', deviceType: '加速度计', monitorItem: '结构振动', pointName: '跨中位置竖向加速度监测点', region: '湖州市吴兴区', online: '离线', latestTime: '2026-5-28 09:15:00', latestValue: '0.0012' },
-  { id: 4, facilityId: '004', facilityName: '西安门大桥', deviceId: '000004', deviceName: '西安门大桥位移设备', deviceType: '位移计', monitorItem: '结构位移', pointName: '第2跨跨中挠度监测点', region: '衢州市柯城区', online: '在线', latestTime: '2026-6-3 16:50:00', latestValue: '2.15' },
+  { id: 1, facilityId: '001', facilityName: '沪漕立交桥', deviceId: '000001', deviceName: '沪漕立交桥应变设备', deviceType: '应变计', monitorItem: '结构应变', pointName: '25-北副应变;第3号拱肋截面1/2等分点', region: '绍兴市越城区', online: '在线', latestTime: `${today} 10:40:00`, latestValue: '-1.07' },
+  { id: 2, facilityId: '002', facilityName: '甬江大桥', deviceId: '000002', deviceName: '甬江大桥倾斜设备', deviceType: '倾斜仪', monitorItem: '结构倾斜', pointName: '主塔顶部倾斜监测点', region: '宁波市鄞州区', online: '在线', latestTime: `${today} 14:22:00`, latestValue: '0.03' },
+  { id: 3, facilityId: '003', facilityName: '苕溪桥', deviceId: '000003', deviceName: '苕溪桥振动设备', deviceType: '加速度计', monitorItem: '结构振动', pointName: '跨中位置竖向加速度监测点', region: '湖州市吴兴区', online: '离线', latestTime: `${d3} 09:15:00`, latestValue: '0.0012' },
+  { id: 4, facilityId: '004', facilityName: '西安门大桥', deviceId: '000004', deviceName: '西安门大桥位移设备', deviceType: '位移计', monitorItem: '结构位移', pointName: '第2跨跨中挠度监测点', region: '衢州市柯城区', online: '在线', latestTime: `${d5} 16:50:00`, latestValue: '2.15' },
 ])
 
-const filters = ref({ facilityId: '', facilityName: '', deviceId: '', deviceName: '', online: undefined as string | undefined })
+const cascaderOptions = Object.keys(cityDistrictMap).map(city => ({
+  value: city,
+  label: city,
+  children: cityDistrictMap[city].map(d => ({ value: d, label: d })),
+}))
+
+function onRegionChange(val: string[] | undefined) {
+  filters.value.regionValue = val || undefined
+}
+
+const filters = ref({ regionValue: undefined as string[] | undefined, facilityId: '', facilityName: '', deviceId: '', deviceName: '', online: undefined as string | undefined })
 
 function resetFilters() {
-  filters.value = { facilityId: '', facilityName: '', deviceId: '', deviceName: '', online: undefined }
+  filters.value = { regionValue: undefined, facilityId: '', facilityName: '', deviceId: '', deviceName: '', online: undefined }
 }
 
 function handleSearch() {}
 
 const filteredData = computed(() => {
   return deviceData.value.filter(row => {
+    const rv = filters.value.regionValue
+    if (rv && rv[0] && !row.region.startsWith(rv[0])) return false
+    if (rv && rv[1] && !row.region.includes(rv[1])) return false
     if (filters.value.facilityId && !row.facilityId.includes(filters.value.facilityId)) return false
     if (filters.value.facilityName && !row.facilityName.includes(filters.value.facilityName)) return false
     if (filters.value.deviceId && !row.deviceId.includes(filters.value.deviceId)) return false
@@ -233,10 +261,73 @@ const filteredData = computed(() => {
 const showAddModal = ref(false)
 const editingId = ref<number | null>(null)
 const isViewMode = ref(false)
+const chartRef = ref<HTMLElement | null>(null)
+let chartInstance: echarts.ECharts | null = null
+
 const form = ref({
   facilityId: '', facilityName: '', deviceId: '', deviceName: '', deviceType: '',
   monitorItem: '', pointName: '', city: undefined as string | undefined, district: undefined as string | undefined,
   threshold1: '', threshold2: '', threshold3: '',
+})
+
+// 生成近7天mock数据
+function genWeekData() {
+  const today = new Date()
+  const dates: string[] = []
+  const maxArr: number[] = []
+  const minArr: number[] = []
+  const avgArr: number[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today)
+    d.setDate(today.getDate() - i)
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    dates.push(`${m}/${day}`)
+    const base = 2 + Math.random() * 2
+    maxArr.push(+(base + Math.random() * 1.5).toFixed(2))
+    minArr.push(+(base - 1 - Math.random() * 1.5).toFixed(2))
+    avgArr.push(+(base - 0.2 + Math.random() * 0.8).toFixed(2))
+  }
+  return { dates, maxArr, minArr, avgArr }
+}
+
+// 查看模式下弹窗打开后初始化图表
+watch(showAddModal, (val) => {
+  if (val && isViewMode.value) {
+    nextTick(() => {
+      if (!chartRef.value) return
+      if (chartInstance) chartInstance.dispose()
+      chartInstance = echarts.init(chartRef.value)
+      const { dates, maxArr, minArr, avgArr } = genWeekData()
+      chartInstance.setOption({
+        tooltip: {
+          trigger: 'axis',
+          formatter: (params: any) => {
+            const date = params[0]?.axisValue || ''
+            let tip = `${date}<br/>`
+            params.forEach((p: any) => {
+              tip += `${p.marker} ${p.seriesName}：<b>${p.value}</b><br/>`
+            })
+            return tip
+          },
+        },
+        legend: { data: ['最大值', '最小值', '平均值'], top: 0 },
+        grid: { left: 50, right: 20, top: 40, bottom: 30 },
+        xAxis: { type: 'category', data: dates, boundaryGap: false },
+        yAxis: { type: 'value' },
+        series: [
+          { name: '最大值', type: 'line', data: maxArr, smooth: true, lineStyle: { color: '#f5222d' }, itemStyle: { color: '#f5222d' } },
+          { name: '最小值', type: 'line', data: minArr, smooth: true, lineStyle: { color: '#1890ff' }, itemStyle: { color: '#1890ff' } },
+          { name: '平均值', type: 'line', data: avgArr, smooth: true, lineStyle: { color: '#52c41a' }, itemStyle: { color: '#52c41a' } },
+        ],
+      })
+    })
+  } else {
+    if (chartInstance) {
+      chartInstance.dispose()
+      chartInstance = null
+    }
+  }
 })
 
 function resetFormFields() {
@@ -332,5 +423,21 @@ function saveDevice() {
   margin-top: 16px;
   padding-top: 12px;
   border-top: 1px solid #f0f0f0;
+}
+
+.chart-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  .chart-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    margin-bottom: 12px;
+  }
+  .chart-container {
+    width: 100%;
+    height: 280px;
+  }
 }
 </style>
