@@ -177,13 +177,14 @@ const routes = [
         component: () => import('@/views/HazardInvestigation.vue'),
         meta: { title: '隐患排查' },
       },
-      {
-        path: 'cockpit',
-        name: 'Cockpit',
-        component: () => import('@/views/Cockpit.vue'),
-        meta: { title: '驾驶舱' },
-      },
     ],
+  },
+  // 驾驶舱独立路由（不使用 BaseLayout）
+  {
+    path: '/cockpit',
+    name: 'Cockpit',
+    component: () => import('@/views/Cockpit.vue'),
+    meta: { title: '驾驶舱' },
   },
 ]
 

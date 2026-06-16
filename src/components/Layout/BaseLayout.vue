@@ -312,7 +312,9 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
   } else if (info.key === '4') {
     router.push('/org-personnel')
   } else if (info.key === '6') {
-    router.push('/cockpit')
+    // 驾驶舱在新标签页打开
+    const routeUrl = router.resolve({ path: '/cockpit' })
+    window.open(routeUrl.href, '_blank')
   }
   console.log('menu click', info)
 }

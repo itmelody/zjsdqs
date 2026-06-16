@@ -794,7 +794,7 @@ watch(activeLayer, () => {
 
 <style scoped lang="scss">
 .cockpit-page {
-  min-height: calc(100vh - 64px);
+  min-height: 100vh;
   background: #0a1628;
   display: flex;
   flex-direction: column;
