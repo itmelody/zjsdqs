@@ -95,6 +95,8 @@ const router = useRouter()
 const route = useRoute()
 
 const showSider = computed(() => {
+  const path = route.path
+  if (path.includes('cockpit')) return false
   return true
 })
 
@@ -133,10 +135,14 @@ watch(
       selectedKeys.value = ['dashboard']
     } else if (path.includes('bridge-info') || path.includes('tunnel-info') || path.includes('road-info')) {
       selectedKeys.value = ['1']
+    } else if (path.includes('hazard-investigation')) {
+      selectedKeys.value = ['5']
     } else if (path.includes('monitor-') || path.includes('weigh-monitor')) {
       selectedKeys.value = ['3']
     } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
       selectedKeys.value = ['4']
+    } else if (path.includes('cockpit')) {
+      selectedKeys.value = ['6']
     }
 
     // 侧边栏菜单
@@ -212,9 +218,11 @@ watch(
 const menuItems = ref<MenuProps['items']>([
   { key: 'dashboard', label: '工作台' },
   { key: '1', label: '档案管理' },
+  { key: '5', label: '隐患排查' },
   { key: '2', label: '检测管理' },
   { key: '3', label: '物联监管' },
   { key: '4', label: '机构人员管理' },
+  { key: '6', label: '驾驶舱' },
 ])
 
 // 左侧菜单
@@ -297,10 +305,14 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/dashboard')
   } else if (info.key === '1') {
     router.push('/bridge-info')
+  } else if (info.key === '5') {
+    router.push('/hazard-investigation')
   } else if (info.key === '3') {
     router.push('/monitor-device')
   } else if (info.key === '4') {
     router.push('/org-personnel')
+  } else if (info.key === '6') {
+    router.push('/cockpit')
   }
   console.log('menu click', info)
 }

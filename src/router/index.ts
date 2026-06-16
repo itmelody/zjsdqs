@@ -171,6 +171,18 @@ const routes = [
           title: '安全评估单位从业人员',
         },
       },
+      {
+        path: 'hazard-investigation',
+        name: 'HazardInvestigation',
+        component: () => import('@/views/HazardInvestigation.vue'),
+        meta: { title: '隐患排查' },
+      },
+      {
+        path: 'cockpit',
+        name: 'Cockpit',
+        component: () => import('@/views/Cockpit.vue'),
+        meta: { title: '驾驶舱' },
+      },
     ],
   },
 ]

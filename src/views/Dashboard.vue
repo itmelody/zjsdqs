@@ -606,7 +606,7 @@ const C = (k: string, w = 80) => ({ title: cityLabel, dataIndex: 'city', key: 'c
 const facilityColumns = {
   road: [C('city'), { title: '道路总长(km)', dataIndex: 'totalLength', key: 'totalLength' }, { title: '道路总面积(km²)', dataIndex: 'totalArea', key: 'totalArea' }, { title: '建成区面积(km²)', dataIndex: 'builtArea', key: 'builtArea' }, { title: '路网密度', dataIndex: 'density', key: 'density' }, { title: '道路面积率', dataIndex: 'areaRatio', key: 'areaRatio' }, { title: '快速路', children: [{ title: '道路长度(km)', dataIndex: 'expressway', key: 'expressway' }, { title: '路网密度', dataIndex: 'expresswayDensity', key: 'expresswayDensity' }] }, { title: '主干路', children: [{ title: '道路长度(km)', dataIndex: 'arterial', key: 'arterial' }, { title: '路网密度', dataIndex: 'arterialDensity', key: 'arterialDensity' }] }, { title: '次干路', children: [{ title: '道路长度(km)', dataIndex: 'collector', key: 'collector' }, { title: '路网密度', dataIndex: 'collectorDensity', key: 'collectorDensity' }] }, { title: '支路', children: [{ title: '道路长度(km)', dataIndex: 'local', key: 'local' }, { title: '路网密度', dataIndex: 'localDensity', key: 'localDensity' }] }],
   bridge: [C('city'), { title: '桥梁总数(座)', dataIndex: 'total', key: 'total' }, { title: '涉航桥梁总数', dataIndex: 'navigable', key: 'navigable' }, { title: '30年以上桥龄', dataIndex: 'oldBridge', key: 'oldBridge' }, { title: '特大桥', dataIndex: 'extraLarge', key: 'extraLarge' }, { title: '大桥', dataIndex: 'large', key: 'large' }, { title: '中桥', dataIndex: 'medium', key: 'medium' }, { title: '小桥', dataIndex: 'small', key: 'small' }],
-  tunnel: [C('city'), { title: '城市隧道总数(座)', dataIndex: 'total', key: 'total' }, { title: '城市道路隧道', dataIndex: 'roadTunnel', key: 'roadTunnel' }, { title: '人行地道', dataIndex: 'pedestrian', key: 'pedestrian' }, { title: '地下隧道', dataIndex: 'underground', key: 'underground' }],
+  tunnel: [C('city'), { title: '城市隧道总数(座)', dataIndex: 'total', key: 'total' }, { title: '城市道路隧道', dataIndex: 'roadTunnel', key: 'roadTunnel' }, { title: '人行地道', dataIndex: 'pedestrian', key: 'pedestrian' }, { title: '地下隧道', dataIndex: 'underground', key: 'underground' }, { title: '特长隧道', dataIndex: 'extraLong', key: 'extraLong' }, { title: '长隧道', dataIndex: 'longTunnel', key: 'longTunnel' }, { title: '中隧道', dataIndex: 'mediumTunnel', key: 'mediumTunnel' }, { title: '短隧道', dataIndex: 'shortTunnel', key: 'shortTunnel' }],
 }
 // 检测管理列（含可点击下钻）
 const clickLink = (field: string) => ({ customRender: ({ text, record }: any) => ({ children: h('a', { onClick: () => enterDetectionDrill(field, record.city) }, text) }) })
@@ -642,13 +642,13 @@ const facilityData = computed(() => {
     return {
       road: arr.map((c, i) => ({ key: i, city: c, totalLength: [1256,987,845,623,412,534,478,356,567,298,186][i], totalArea: [186.5,142.3,118.7,89.4,62.1,78.9,71.2,52.8,84.6,45.3,28.5][i], builtArea: [98.2,76.5,62.3,45.8,32.6,41.2,37.8,28.4,44.9,23.7,15.1][i], density: [8.5,7.2,6.8,6.1,5.4,5.9,5.6,4.8,6.2,4.5,3.8][i], areaRatio: [14.8,13.5,12.9,11.8,10.5,11.2,10.8,9.6,12.1,8.9,7.5][i]+'%', expressway: [156,124,98,78,52,68,62,45,72,38,24][i], expresswayDensity: [1.2,1.1,1.0,0.9,0.8,0.9,0.85,0.75,0.95,0.7,0.6][i], expresswayArea: [12.5,9.9,7.8,6.2,4.2,5.4,5.0,3.6,5.8,3.0,1.9][i], arterial: [423,334,286,212,142,182,164,123,194,102,64][i], arterialDensity: [3.2,2.8,2.6,2.3,2.0,2.2,2.1,1.8,2.4,1.7,1.4][i], arterialArea: [25.4,20.0,17.2,12.7,8.5,10.9,9.8,7.4,11.6,6.1,3.8][i], collector: [356,278,238,176,116,152,136,102,162,84,52][i], collectorDensity: [2.7,2.3,2.1,1.9,1.6,1.8,1.7,1.5,1.9,1.4,1.2][i], collectorArea: [17.8,13.9,11.9,8.8,5.8,7.6,6.8,5.1,8.1,4.2,2.6][i], local: [321,251,223,157,102,132,116,86,139,74,46][i], localDensity: [4.5,4.0,3.8,3.5,3.0,3.3,3.2,2.8,3.6,2.6,2.2][i], localArea: [12.8,10.0,8.9,6.3,4.1,5.3,4.6,3.4,5.6,3.0,1.8][i] })),
       bridge: arr.map((c, i) => ({ key: i, city: c, total: [567,423,389,256,178,234,198,145,267,123,87][i], navigable: [86,64,58,38,26,35,30,22,41,18,13][i], oldBridge: [124,92,85,56,38,52,44,32,58,27,19][i], extraLarge: [23,18,15,12,8,10,9,6,11,5,3][i], large: [89,67,58,42,28,38,32,24,45,19,14][i], medium: [234,178,156,112,78,98,82,62,118,54,38][i], small: [221,160,160,90,64,88,75,53,93,45,32][i] })),
-      tunnel: arr.map((c, i) => ({ key: i, city: c, total: [98,76,68,45,32,41,35,26,48,21,14][i], roadTunnel: [68,52,47,31,22,28,24,18,33,14,10][i], pedestrian: [18,14,12,8,6,7,6,4,9,4,2][i], underground: [45,34,31,21,15,19,16,12,22,10,7][i] })),
+      tunnel: arr.map((c, i) => ({ key: i, city: c, total: [98,76,68,45,32,41,35,26,48,21,14][i], roadTunnel: [68,52,47,31,22,28,24,18,33,14,10][i], pedestrian: [18,14,12,8,6,7,6,4,9,4,2][i], underground: [45,34,31,21,15,19,16,12,22,10,7][i], extraLong: [5,4,3,2,1,2,1,1,2,1,0][i], longTunnel: [18,14,12,8,6,7,6,4,9,4,2][i], mediumTunnel: [42,32,28,19,13,17,14,11,20,9,6][i], shortTunnel: [33,26,25,16,12,15,14,10,17,7,6][i] })),
     }
   }
   return {
     road: arr.map((c, i) => { const len = hR(c,1,20,200), ex=hR(c,6,5,40), ar=hR(c,7,20,100), co=hR(c,8,15,80), lo=hR(c,9,10,60); return { key:i, city:c, totalLength:len, totalArea:+(len*0.15+hR(c,2,5,30)*0.1).toFixed(1), builtArea:+(len*0.08+hR(c,3,2,15)*0.1).toFixed(1), density:+(hR(c,4,30,90)*0.1).toFixed(1), areaRatio:hPct(c,5,60,160), expressway:ex, expresswayDensity:+(ex>0?(ex/len).toFixed(2):'0'), expresswayArea:+(ex*0.08).toFixed(1), arterial:ar, arterialDensity:+(ar>0?(ar/len).toFixed(2):'0'), arterialArea:+(ar*0.06).toFixed(1), collector:co, collectorDensity:+(co>0?(co/len).toFixed(2):'0'), collectorArea:+(co*0.05).toFixed(1), local:lo, localDensity:+(lo>0?(lo/len).toFixed(2):'0'), localArea:+(lo*0.04).toFixed(1) } }),
     bridge: arr.map((c, i) => { const t = hR(c,10,20,200); return { key:i, city:c, total:t, navigable:hR(c,11,3,Math.max(4,t/8|0)), oldBridge:hR(c,12,5,Math.max(6,t/4|0)), extraLarge:hR(c,13,1,Math.max(2,t/20|0)), large:hR(c,14,5,Math.max(6,t/6|0)), medium:hR(c,15,10,Math.max(11,t/3|0)), small:hR(c,16,10,Math.max(11,t/3|0)) } }),
-    tunnel: arr.map((c, i) => { const t = hR(c,17,5,60); const rt = hR(c,18,3,Math.max(4,t*0.7|0)); return { key:i, city:c, total:t, roadTunnel:rt, pedestrian:hR(c,19,1,Math.max(2,t*0.3|0)), underground:hR(c,20,2,Math.max(3,rt*0.7|0)) } }),
+    tunnel: arr.map((c, i) => { const t = hR(c,17,5,60); const rt = hR(c,18,3,Math.max(4,t*0.7|0)); return { key:i, city:c, total:t, roadTunnel:rt, pedestrian:hR(c,19,1,Math.max(2,t*0.3|0)), underground:hR(c,20,2,Math.max(3,rt*0.7|0)), extraLong:hR(c,21,0,Math.max(1,t*0.05|0)), longTunnel:hR(c,22,1,Math.max(2,t*0.2|0)), mediumTunnel:hR(c,23,2,Math.max(3,t*0.4|0)), shortTunnel:hR(c,24,1,Math.max(2,t*0.35|0)) } }),
   }
 })
 // 检测管理数据
@@ -1450,9 +1450,10 @@ onMounted(async () => {
   
   // 隧道类型统计
   const tunnelData = [
-    { name: '城市道路隧道', value: 308 },
-    { name: '人行地道', value: 128 },
-    { name: '地下隧道', value: 256 },
+    { name: '特长隧道', value: 28 },
+    { name: '长隧道', value: 96 },
+    { name: '中隧道', value: 312 },
+    { name: '短隧道', value: 256 },
   ]
   
   initBarChart(roadChartRef.value, '道路统计', roadData, '#1677ff', true)
