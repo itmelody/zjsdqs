@@ -11,7 +11,7 @@
         <span class="nav-link">运维管理</span>
         <span class="nav-link">应急处置</span>
         <span class="nav-link">在建项目</span>
-        <span class="nav-link">工作台</span>
+        <span class="nav-link" @click="handleGoToDashboard">工作台</span>
       </div>
     </div>
 
@@ -564,9 +564,12 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Modal as AModal, Table as ATable } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import * as echarts from 'echarts'
+
+const router = useRouter()
 
 const statsChartRef = ref<HTMLElement | null>(null)
 const riskChartRef = ref<HTMLElement | null>(null)
@@ -928,6 +931,11 @@ onUnmounted(() => {
   statsChart?.dispose(); riskChart?.dispose()
   alarmTrendChart?.dispose(); timeFlowChart?.dispose()
 })
+
+// 返回工作台
+const handleGoToDashboard = () => {
+  router.push('/dashboard')
+}
 
 // 在线监测图表
 const alarmTrendChartRef = ref<HTMLElement | null>(null)

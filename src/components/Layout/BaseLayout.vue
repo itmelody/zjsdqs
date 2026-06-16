@@ -323,9 +323,8 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
 // 系统切换下拉菜单点击处理
 const handleSystemSwitch = (info: any) => {
   if (info.key === 'cockpit') {
-    // 驾驶舱在新标签页打开
-    const routeUrl = router.resolve({ path: '/cockpit' })
-    window.open(routeUrl.href, '_blank')
+    // 驾驶舱在当前页面打开
+    router.push('/cockpit')
   }
 }
 
