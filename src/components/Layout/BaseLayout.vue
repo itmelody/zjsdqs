@@ -18,10 +18,18 @@
         />
       </div>
       <div class="header-right">
-        <a-button type="link" class="header-btn">
-          <SettingOutlined />
-          <span>系统切换</span>
-        </a-button>
+        <a-dropdown>
+          <a-button type="link" class="header-btn">
+            <SettingOutlined />
+            <span>系统切换</span>
+            <DownOutlined style="margin-left: 4px" />
+          </a-button>
+          <template #overlay>
+            <a-menu @click="handleSystemSwitch">
+              <a-menu-item key="cockpit">驾驶舱</a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
         <a-button type="link" class="header-btn">
           <FullscreenOutlined />
         </a-button>
@@ -141,8 +149,6 @@ watch(
       selectedKeys.value = ['3']
     } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
       selectedKeys.value = ['4']
-    } else if (path.includes('cockpit')) {
-      selectedKeys.value = ['6']
     }
 
     // 侧边栏菜单
@@ -222,7 +228,6 @@ const menuItems = ref<MenuProps['items']>([
   { key: '2', label: '检测管理' },
   { key: '3', label: '物联监管' },
   { key: '4', label: '机构人员管理' },
-  { key: '6', label: '驾驶舱' },
 ])
 
 // 左侧菜单
@@ -311,12 +316,17 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/monitor-device')
   } else if (info.key === '4') {
     router.push('/org-personnel')
-  } else if (info.key === '6') {
+  }
+  console.log('menu click', info)
+}
+
+// 系统切换下拉菜单点击处理
+const handleSystemSwitch = (info: any) => {
+  if (info.key === 'cockpit') {
     // 驾驶舱在新标签页打开
     const routeUrl = router.resolve({ path: '/cockpit' })
     window.open(routeUrl.href, '_blank')
   }
-  console.log('menu click', info)
 }
 
 const handleSiderMenuClick: MenuProps['onClick'] = (info) => {

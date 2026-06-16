@@ -11,7 +11,7 @@
         <span class="nav-link">运维管理</span>
         <span class="nav-link">应急处置</span>
         <span class="nav-link">在建项目</span>
-        <span class="nav-link">首页</span>
+        <span class="nav-link">工作台</span>
       </div>
     </div>
 
