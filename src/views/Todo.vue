@@ -1,6 +1,39 @@
 <template>
   <div class="todo-page">
-    <!-- 左侧：风险闭环处置 -->
+    <!-- 上方：待办审批 -->
+    <div class="panel approval-panel">
+      <div class="panel-header">
+        <h3>待办审批</h3>
+        <a-button type="primary" size="small" @click="batchApprove">批量审核</a-button>
+      </div>
+      <a-table
+        :columns="approvalColumns"
+        :data-source="approvalData"
+        :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }"
+        size="small"
+        bordered
+        row-key="id"
+        :row-selection="{ selectedRowKeys: selectedApprovalKeys, onChange: (keys: any[]) => selectedApprovalKeys = keys }"
+      >
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'typeTime'">
+            <span class="type-tag">[{{ (record as ApprovalRow).type }}]</span>{{ (record as ApprovalRow).applyTime }}
+          </template>
+          <template v-else-if="column.key === 'hazardLevel'">
+            <a-tag :color="levelColor[(record as ApprovalRow).hazardLevel]">{{ (record as ApprovalRow).hazardLevel }}</a-tag>
+          </template>
+          <template v-else-if="column.key === 'approvalStatus'">
+            <a-tag :color="(record as ApprovalRow).approvalStatus === '已审批' ? 'success' : 'processing'">{{ (record as ApprovalRow).approvalStatus }}</a-tag>
+          </template>
+          <template v-else-if="column.key === 'action'">
+            <a-button type="link" size="small" @click="viewApprovalDetail(record as ApprovalRow)">详情</a-button>
+            <a-button v-if="(record as ApprovalRow).approvalStatus === '审核中'" type="link" size="small" @click="approveItem(record as ApprovalRow)">审核</a-button>
+          </template>
+        </template>
+      </a-table>
+    </div>
+
+    <!-- 下方：风险闭环处置 -->
     <div class="panel risk-panel">
       <div class="panel-header">
         <h3>风险闭环处置</h3>
@@ -113,39 +146,6 @@
           </a-table>
         </a-tab-pane>
       </a-tabs>
-    </div>
-
-    <!-- 右侧：待办审批 -->
-    <div class="panel approval-panel">
-      <div class="panel-header">
-        <h3>待办审批</h3>
-        <a-button type="primary" size="small" @click="batchApprove">批量审核</a-button>
-      </div>
-      <a-table
-        :columns="approvalColumns"
-        :data-source="approvalData"
-        :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }"
-        size="small"
-        bordered
-        row-key="id"
-        :row-selection="{ selectedRowKeys: selectedApprovalKeys, onChange: (keys: any[]) => selectedApprovalKeys = keys }"
-      >
-        <template #bodyCell="{ column, record }">
-          <template v-if="column.key === 'typeTime'">
-            <span class="type-tag">[{{ (record as ApprovalRow).type }}]</span>{{ (record as ApprovalRow).applyTime }}
-          </template>
-          <template v-else-if="column.key === 'hazardLevel'">
-            <a-tag :color="levelColor[(record as ApprovalRow).hazardLevel]">{{ (record as ApprovalRow).hazardLevel }}</a-tag>
-          </template>
-          <template v-else-if="column.key === 'approvalStatus'">
-            <a-tag :color="(record as ApprovalRow).approvalStatus === '已审批' ? 'success' : 'processing'">{{ (record as ApprovalRow).approvalStatus }}</a-tag>
-          </template>
-          <template v-else-if="column.key === 'action'">
-            <a-button type="link" size="small" @click="viewApprovalDetail(record as ApprovalRow)">详情</a-button>
-            <a-button v-if="(record as ApprovalRow).approvalStatus === '审核中'" type="link" size="small" @click="approveItem(record as ApprovalRow)">审核</a-button>
-          </template>
-        </template>
-      </a-table>
     </div>
 
     <!-- 上报/整改内容详情弹窗 -->
@@ -747,6 +747,7 @@ function batchApprove() {
 <style scoped lang="scss">
 .todo-page {
   display: flex;
+  flex-direction: column;
   gap: 16px;
   min-height: calc(100vh - 64px - 48px);
 }
@@ -760,11 +761,10 @@ function batchApprove() {
 
 .risk-panel {
   flex: 1;
-  min-width: 0;
+  min-height: 0;
 }
 
 .approval-panel {
-  width: 420px;
   flex-shrink: 0;
 }
 

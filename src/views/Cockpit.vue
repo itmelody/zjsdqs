@@ -114,30 +114,36 @@
           </template>
         </div>
 
-        <!-- 监测设备 -->
-        <div class="card dark-card">
-          <div class="card-title">{{ layerNameMap[activeLayer] }}监测设备</div>
-          <div class="device-metrics">
-            <div class="metric-card">
-              <div class="metric-num blue">340</div>
-              <div class="metric-label">设备总数</div>
+        <!-- 监测模块 -->
+        <div class="card dark-card monitor-module-card">
+          <div class="card-title">{{ layerNameMap[activeLayer] }}监测</div>
+          <div class="monitor-ring-row">
+            <!-- 左侧：在线率 -->
+            <div class="ring-group">
+              <div class="ring-title">在线率</div>
+              <div ref="onlineRingRef" class="ring-chart-lg"></div>
+              <div class="ring-group-labels">
+                <div class="ring-stat"><span class="rs-val blue">{{ monitorData.total }}</span><span class="rs-lbl">设备总数</span></div>
+                <div class="ring-stat"><span class="rs-val green">{{ monitorData.online }}</span><span class="rs-lbl">在线数</span></div>
+              </div>
             </div>
-            <div class="metric-card">
-              <div class="metric-num green">326</div>
-              <div class="metric-label">在线数</div>
+            <!-- 右侧：接入率 -->
+            <div class="ring-group">
+              <div class="ring-title">接入率</div>
+              <div ref="accessRingRef" class="ring-chart-lg"></div>
+              <div class="ring-group-labels">
+                <div class="ring-stat"><span class="rs-val orange">{{ monitorData.accessCount }}</span><span class="rs-lbl">接入{{ layerNameMap[activeLayer] }}数</span></div>
+              </div>
             </div>
-            <div class="metric-card">
-              <div class="metric-num cyan">95.9%</div>
-              <div class="metric-label">在线率</div>
+          </div>
+          <!-- 子设备柱状图区 -->
+          <div class="device-sub-area">
+            <div v-if="bridgeDeviceDrillDown" class="drill-down-header">
+              <span class="drill-back-btn" @click="bridgeDeviceDrillDown = false">← 返回</span>
+              <span class="drill-down-title">桥梁结构监测设备详情</span>
             </div>
-            <div class="metric-card">
-              <div class="metric-num orange">168</div>
-              <div class="metric-label">接入{{ layerNameMap[activeLayer] }}数</div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-num cyan">49.4%</div>
-              <div class="metric-label">接入率</div>
-            </div>
+            <div v-show="!bridgeDeviceDrillDown" ref="deviceSubChartRef" class="device-sub-chart"></div>
+            <div v-show="bridgeDeviceDrillDown" ref="bridgeDrillChartRef" class="device-sub-chart"></div>
           </div>
         </div>
       </div>
@@ -146,6 +152,15 @@
       <div class="panel panel-center">
         <div class="card dark-card map-card">
           <div class="map-toolbar">
+            <div class="map-layer-tabs">
+              <span class="layer-tab" :class="{ active: activeLayer === 'road' }" @click="activeLayer = 'road'">道路</span>
+              <span class="layer-tab" :class="{ active: activeLayer === 'bridge' }" @click="activeLayer = 'bridge'">桥梁</span>
+              <span class="layer-tab" :class="{ active: activeLayer === 'tunnel' }" @click="activeLayer = 'tunnel'">隧道</span>
+            </div>
+            <div class="map-type-toggle" @click="toggleMapType">
+              <span :class="{ active: mapStyle === 'standard' }">标准地图</span>
+              <span :class="{ active: mapStyle === 'satellite' }">卫星地图</span>
+            </div>
             <div class="map-selector" @click="showCityDropdown = !showCityDropdown">
               <span class="selector-text">{{ currentCity }}</span>
               <span class="selector-arrow" :class="{ open: showCityDropdown }">&#9662;</span>
@@ -158,83 +173,7 @@
             </div>
           </div>
           <div class="map-area">
-            <img
-              src="https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/120.15,30.27,6,0,0/600x520?access_token=pk.placeholder"
-              alt="street map"
-              class="street-map-img"
-              @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
-            />
-            <svg viewBox="0 0 600 520" class="map-svg">
-              <defs>
-                <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" style="stop-color:#1a3a5c;stop-opacity:1" />
-                  <stop offset="100%" style="stop-color:#0d2137;stop-opacity:1" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="2" result="blur" />
-                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-              </defs>
-              <!-- 街道网格 -->
-              <g class="street-grid" opacity="0.35">
-                <line v-for="i in 12" :key="'h'+i" :x1="40" :y1="i*40" :x2="560" :y2="i*40" stroke="#2a5a8a" stroke-width="0.5"/>
-                <line v-for="i in 13" :key="'v'+i" :x1="i*40+20" :y1="20" :x2="i*40+20" :y2="500" stroke="#2a5a8a" stroke-width="0.5"/>
-              </g>
-              <!-- 主干路 -->
-              <line v-show="roadTypeChecked.main" x1="40" y1="200" x2="560" y2="200" stroke="#5b8ff9" stroke-width="2.5" opacity="0.6"/>
-              <path v-show="roadTypeChecked.main" d="M40,100 Q200,80 300,160 T560,120" stroke="#5b8ff9" stroke-width="1.8" fill="none" opacity="0.5"/>
-              <!-- 次干路 -->
-              <line v-show="roadTypeChecked.sub" x1="40" y1="360" x2="560" y2="360" stroke="#5ad8a6" stroke-width="2" opacity="0.5"/>
-              <path v-show="roadTypeChecked.sub" d="M40,420 Q150,380 300,400 T560,380" stroke="#5ad8a6" stroke-width="1.5" fill="none" opacity="0.4"/>
-              <!-- 支路 -->
-              <line v-show="roadTypeChecked.branch" x1="180" y1="20" x2="180" y2="500" stroke="#f6bd16" stroke-width="2" opacity="0.5"/>
-              <!-- 城市快速路 -->
-              <line v-show="roadTypeChecked.highway" x1="380" y1="20" x2="380" y2="500" stroke="#e86452" stroke-width="2.5" opacity="0.6"/>
-              <!-- 城市点位 -->
-              <g v-for="city in cities" :key="city.name">
-                <circle :cx="city.x" :cy="city.y" r="5" :fill="city.color" filter="url(#glow)" opacity="0.9"/>
-                <circle :cx="city.x" :cy="city.y" r="10" :fill="city.color" opacity="0.2"/>
-                <text :x="city.x + 12" :y="city.y + 4" fill="#8ab4f8" font-size="11">{{ city.name }}</text>
-              </g>
-              <!-- 信息弹窗 -->
-              <!-- 道路图层弹窗 -->
-              <g v-if="activeLayer === 'road'" transform="translate(260, 160)">
-                <rect x="0" y="0" width="210" height="100" rx="6" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-                <text x="12" y="22" fill="rgba(255,255,255,0.6)" font-size="11">归属地区：<tspan fill="#fff">杭州市市辖区</tspan></text>
-                <text x="12" y="42" fill="rgba(255,255,255,0.6)" font-size="11">道路名称：<tspan fill="#fff">石贯子巷（岳王路—中山中路）</tspan></text>
-                <text x="12" y="62" fill="rgba(255,255,255,0.6)" font-size="11">道路等级：<tspan fill="#5ad8a6">支路</tspan></text>
-                <text x="12" y="82" fill="rgba(255,255,255,0.6)" font-size="11">综合评价等级：<tspan fill="#5b8ff9" font-weight="700">B</tspan></text>
-                <polygon points="95,100 105,115 115,100" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-              </g>
-              <!-- 桥梁图层弹窗 -->
-              <g v-else-if="activeLayer === 'bridge'" transform="translate(350, 120)">
-                <rect x="0" y="0" width="190" height="100" rx="6" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-                <text x="12" y="22" fill="rgba(255,255,255,0.6)" font-size="11">归属地区：<tspan fill="#fff">杭州市市辖区</tspan></text>
-                <text x="12" y="42" fill="rgba(255,255,255,0.6)" font-size="11">桥梁名称：<tspan fill="#fff">古墩路跨线桥</tspan></text>
-                <text x="12" y="62" fill="rgba(255,255,255,0.6)" font-size="11">桥梁类型：<tspan fill="#5b8ff9">立交桥</tspan></text>
-                <text x="12" y="82" fill="rgba(255,255,255,0.6)" font-size="11">综合评价等级：<tspan fill="#5b8ff9" font-weight="700">B</tspan></text>
-                <polygon points="85,100 95,115 105,100" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-              </g>
-              <!-- 隧道图层弹窗1：人行地道（4字段） -->
-              <g v-else-if="activeLayer === 'tunnel'" transform="translate(120, 280)">
-                <rect x="0" y="0" width="190" height="100" rx="6" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-                <text x="12" y="22" fill="rgba(255,255,255,0.6)" font-size="11">归属地区：<tspan fill="#fff">杭州市市辖区</tspan></text>
-                <text x="12" y="42" fill="rgba(255,255,255,0.6)" font-size="11">隧道名称：<tspan fill="#fff">紫金港北路下穿道</tspan></text>
-                <text x="12" y="62" fill="rgba(255,255,255,0.6)" font-size="11">隧道类型：<tspan fill="#5ad8a6">人行地道</tspan></text>
-                <text x="12" y="82" fill="rgba(255,255,255,0.6)" font-size="11">综合评价等级：<tspan fill="#5b8ff9" font-weight="700">B</tspan></text>
-                <polygon points="85,100 95,115 105,100" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-              </g>
-              <!-- 隧道图层弹窗2：城市道路隧道（5字段） -->
-              <g v-if="activeLayer === 'tunnel'" transform="translate(360, 180)">
-                <rect x="0" y="0" width="190" height="118" rx="6" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-                <text x="12" y="22" fill="rgba(255,255,255,0.6)" font-size="11">归属地区：<tspan fill="#fff">杭州市市辖区</tspan></text>
-                <text x="12" y="42" fill="rgba(255,255,255,0.6)" font-size="11">隧道名称：<tspan fill="#fff">苏嘉路下穿道</tspan></text>
-                <text x="12" y="62" fill="rgba(255,255,255,0.6)" font-size="11">隧道类型：<tspan fill="#5b8ff9">城市道路隧道</tspan></text>
-                <text x="12" y="82" fill="rgba(255,255,255,0.6)" font-size="11">是否地下隧道：<tspan fill="#fff">否</tspan></text>
-                <text x="12" y="102" fill="rgba(255,255,255,0.6)" font-size="11">综合评价等级：<tspan fill="#e86452" font-weight="700">E</tspan></text>
-                <polygon points="85,118 95,133 105,118" fill="rgba(13,31,60,0.95)" stroke="rgba(91,143,249,0.4)" stroke-width="1"/>
-              </g>
-            </svg>
+            <div ref="overviewMapRef" class="amap-container"></div>
           </div>
           <!-- 底部图例控制面板 -->
           <div class="map-legend">
@@ -259,16 +198,11 @@
                 </label>
               </template>
             </div>
-            <!-- 右侧：子图层 + 图层 -->
+            <!-- 右侧：子图层 -->
             <div class="legend-control-panel">
               <div class="sub-layer-btns">
                 <span class="radio-item" :class="{ selected: subLayer === 'type' }" @click="subLayer = 'type'"><span class="radio-dot"></span>{{ layerNameMap[activeLayer] }}类型</span>
                 <span class="radio-item" :class="{ selected: subLayer === 'eval' }" @click="subLayer = 'eval'"><span class="radio-dot"></span>{{ layerNameMap[activeLayer] }}评价</span>
-              </div>
-              <div class="layer-btns">
-                <span class="layer-btn" :class="{ active: activeLayer === 'road' }" @click="activeLayer = 'road'">道路</span>
-                <span class="layer-btn" :class="{ active: activeLayer === 'bridge' }" @click="activeLayer = 'bridge'">桥梁</span>
-                <span class="layer-btn" :class="{ active: activeLayer === 'tunnel' }" @click="activeLayer = 'tunnel'">隧道</span>
               </div>
             </div>
           </div>
@@ -280,13 +214,47 @@
         <!-- 任务清单 -->
         <div class="card dark-card">
           <div class="card-title">{{ layerNameMap[activeLayer] }}任务清单</div>
-          <div class="task-list">
-            <div class="task-section" v-for="t in taskSections" :key="t.title">
-              <div class="task-section-title">{{ t.title }}</div>
-              <div class="task-section-items">
-                <div class="task-info-item" v-for="item in t.items" :key="item.label">
-                  <div class="task-info-val">{{ item.value }}</div>
-                  <div class="task-info-label">{{ item.label }}</div>
+          <div class="task-list-v2">
+            <!-- 隐患排查 -->
+            <div class="task-card">
+              <div class="task-card-title">隐患排查</div>
+              <div class="task-card-row">
+                <div class="task-mini-stats">
+                  <div class="tms-item"><span class="tms-val blue">999</span><span class="tms-lbl">排查总数</span></div>
+                  <div class="tms-item"><span class="tms-val green">200</span><span class="tms-lbl">排查已完成</span></div>
+                </div>
+                <div class="task-ring-wrap">
+                  <div class="task-ring-title">完成率</div>
+                  <div ref="hazardRateRef" class="task-ring"></div>
+                </div>
+              </div>
+            </div>
+            <!-- 检测任务 -->
+            <div class="task-card">
+              <div class="task-card-title">检测任务</div>
+              <div class="task-card-row">
+                <div class="task-mini-stats">
+                  <div class="tms-item"><span class="tms-val blue">200</span><span class="tms-lbl">应检{{ layerNameMap[activeLayer] }}</span></div>
+                  <div class="tms-item"><span class="tms-val green">40</span><span class="tms-lbl">已检{{ layerNameMap[activeLayer] }}</span></div>
+                </div>
+                <div class="task-ring-wrap">
+                  <div class="task-ring-title">完成率</div>
+                  <div ref="inspectRateRef" class="task-ring"></div>
+                </div>
+              </div>
+              <div ref="inspectBarRef" class="task-bar-chart"></div>
+            </div>
+            <!-- 安全评估 -->
+            <div class="task-card">
+              <div class="task-card-title">安全评估</div>
+              <div class="task-card-row">
+                <div class="task-mini-stats">
+                  <div class="tms-item"><span class="tms-val blue">999</span><span class="tms-lbl">评估总数</span></div>
+                  <div class="tms-item"><span class="tms-val green">200</span><span class="tms-lbl">评估已完成</span></div>
+                </div>
+                <div class="task-ring-wrap">
+                  <div class="task-ring-title">完成率</div>
+                  <div ref="assessRateRef" class="task-ring"></div>
                 </div>
               </div>
             </div>
@@ -294,29 +262,134 @@
         </div>
 
         <!-- 风险清单 -->
-        <div class="card dark-card">
-          <div class="card-title">{{ layerNameMap[activeLayer] }}风险清单</div>
-          <div class="risk-section">
-            <div ref="riskChartRef" class="chart-medium"></div>
-            <div class="risk-legend">
-              <span v-for="r in riskCategories" :key="r.name" class="legend-item">
-                <span class="legend-dot" :style="{ background: r.color }"></span>{{ r.name }}
-              </span>
+        <div class="card dark-card risk-card">
+          <div class="card-title-row">
+            <div class="card-title">{{ layerNameMap[activeLayer] }}风险清单</div>
+            <div class="risk-type-tabs">
+              <span v-for="rt in riskTypes" :key="rt.value"
+                class="risk-type-tab" :class="{ active: riskType === rt.value }"
+                @click="riskType = rt.value">{{ rt.label }}</span>
             </div>
           </div>
-          <div class="risk-metrics">
-            <div class="risk-item">
-              <div class="risk-num orange">168</div>
-              <div class="risk-label">风险总数</div>
+          <template v-if="riskType === 'device'">
+            <div class="risk-section">
+              <div ref="riskChartRef" class="chart-medium"></div>
+              <div class="risk-legend">
+                <span v-for="r in riskCategories" :key="r.name" class="legend-item">
+                  <span class="legend-dot" :style="{ background: r.color }"></span>{{ r.name }}
+                </span>
+              </div>
             </div>
-            <div class="risk-item">
-              <div class="risk-num green">124</div>
-              <div class="risk-label">已整改风险</div>
+            <div class="risk-metrics">
+              <div class="risk-item">
+                <div class="risk-num orange">168</div>
+                <div class="risk-label">风险总数</div>
+              </div>
+              <div class="risk-item">
+                <div class="risk-num green">124</div>
+                <div class="risk-label">已整改风险</div>
+              </div>
+              <div class="risk-item">
+                <div class="risk-num cyan">73.8%</div>
+                <div class="risk-label">整改率</div>
+              </div>
             </div>
-            <div class="risk-item">
-              <div class="risk-num cyan">73.8%</div>
-              <div class="risk-label">整改率</div>
+            <div class="risk-alert-list">
+              <div class="risk-alert-header">
+                <span class="ra-col-area">所属区域</span>
+                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
+                <span class="ra-col-point">点位名称</span>
+                <span class="ra-col-item">监测项</span>
+                <span class="ra-col-level">预警等级</span>
+                <span class="ra-col-status">处置状态</span>
+              </div>
+              <div class="risk-alert-body">
+                <div v-for="alert in alertList" :key="alert.id" class="risk-alert-row">
+                  <span class="ra-col-area">{{ alert.area }}</span>
+                  <span class="ra-col-name">{{ alert.road }}</span>
+                  <span class="ra-col-point">{{ alert.point }}</span>
+                  <span class="ra-col-item">{{ alert.item }}</span>
+                  <span class="ra-col-level">
+                    <span :class="'alert-tag-' + alert.level">{{ alertLevelText(alert.level) }}</span>
+                  </span>
+                  <span class="ra-col-status">
+                    <span :class="alert.done ? 'status-done' : 'status-undone'">{{ alert.done ? '已完成' : '未完成' }}</span>
+                  </span>
+                </div>
+              </div>
             </div>
+          </template>
+          <template v-else-if="riskType === 'hidden'">
+            <div class="risk-section">
+              <div ref="hiddenRiskChartRef" class="chart-medium"></div>
+              <div class="risk-legend">
+                <span v-for="r in hiddenRiskCategories" :key="r.name" class="legend-item">
+                  <span class="legend-dot" :style="{ background: r.color }"></span>{{ r.name }}
+                </span>
+              </div>
+            </div>
+            <div class="risk-metrics">
+              <div class="risk-item"><div class="risk-num orange">96</div><div class="risk-label">隐患总数</div></div>
+              <div class="risk-item"><div class="risk-num green">72</div><div class="risk-label">已整改</div></div>
+              <div class="risk-item"><div class="risk-num cyan">75.0%</div><div class="risk-label">整改率</div></div>
+            </div>
+            <div class="risk-alert-list">
+              <div class="risk-alert-header">
+                <span class="ra-col-area">所属区域</span>
+                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
+                <span class="ra-col-project">检查项目</span>
+                <span class="ra-col-content">上报内容</span>
+                <span class="ra-col-level">隐患等级</span>
+                <span class="ra-col-status">整改状态</span>
+              </div>
+              <div class="risk-alert-body">
+                <div v-for="item in hiddenDangerList" :key="item.id" class="risk-alert-row">
+                  <span class="ra-col-area">{{ item.area }}</span>
+                  <span class="ra-col-name">{{ item.road }}</span>
+                  <span class="ra-col-project">{{ item.project }}</span>
+                  <span class="ra-col-content">{{ item.content }}</span>
+                  <span class="ra-col-level">
+                    <span :class="'hidden-tag-' + item.level">{{ hiddenLevelText(item.level) }}</span>
+                  </span>
+                  <span class="ra-col-status">
+                    <span :class="item.fixed ? 'status-done' : 'status-undone'">{{ item.fixed ? '已整改' : '待整改' }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="riskType === 'inspect'">
+            <div class="risk-metrics" style="flex-wrap: wrap;">
+              <template v-for="m in inspectMetrics" :key="m.label" class="risk-item">
+                <div class="risk-item"><div :class="['risk-num', m.colorClass]">{{ m.value }}</div><div class="risk-label">{{ m.label }}</div></div>
+              </template>
+            </div>
+            <div class="risk-alert-list">
+              <div class="risk-alert-header">
+                <span class="ra-col-area">所属区域</span>
+                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
+                <span class="ra-col-grade">综合评价等级</span>
+                <span class="ra-col-status">整改状态</span>
+              </div>
+              <div class="risk-alert-body">
+                <div v-for="item in inspectList" :key="item.id" class="risk-alert-row">
+                  <span class="ra-col-area">{{ item.area }}</span>
+                  <span class="ra-col-name">{{ item.road }}</span>
+                  <span class="ra-col-grade">
+                    <span :class="'grade-tag-' + item.grade">{{ item.grade }}</span>
+                  </span>
+                  <span class="ra-col-status">
+                    <span :class="item.done ? 'status-done' : 'status-undone'">{{ item.done ? '已完成' : '未完成' }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else>
+            <!-- 安全评估：暂无数据 -->
+          </template>
+          <div class="risk-detail-btn-wrap">
+            <span class="risk-detail-btn" @click="() => {}">查看详情 &gt;</span>
           </div>
         </div>
       </div>
@@ -392,68 +465,29 @@
       <!-- 中部：地图 -->
       <div class="panel monitor-center">
         <div class="dark-card monitor-map-card">
-          <div class="map-filter-bar">
-            <select v-model="monitorCity" class="map-city-select">
-              <option value="浙江省">浙江省</option>
-              <option v-for="c in cityList" :key="c" :value="c">{{ c }}</option>
-            </select>
-          </div>
-          <div class="map-layer-panel">
-            <div class="layer-item" :class="{ active: monitorLayer === 'road' }" @click="monitorLayer = 'road'">
-              <span class="layer-radio"></span>道路
+          <div class="monitor-map-toolbar">
+            <div class="map-layer-tabs">
+              <span class="layer-tab" :class="{ active: monitorLayer === 'road' }" @click="monitorLayer = 'road'">道路</span>
+              <span class="layer-tab" :class="{ active: monitorLayer === 'bridge' }" @click="monitorLayer = 'bridge'">桥梁</span>
+              <span class="layer-tab" :class="{ active: monitorLayer === 'tunnel' }" @click="monitorLayer = 'tunnel'">隧道</span>
             </div>
-            <div class="layer-item" :class="{ active: monitorLayer === 'bridge' }" @click="monitorLayer = 'bridge'">
-              <span class="layer-radio"></span>桥梁
+            <div class="map-type-toggle" @click="toggleMapType">
+              <span :class="{ active: mapStyle === 'standard' }">标准地图</span>
+              <span :class="{ active: mapStyle === 'satellite' }">卫星地图</span>
             </div>
-            <div class="layer-item" :class="{ active: monitorLayer === 'tunnel' }" @click="monitorLayer = 'tunnel'">
-              <span class="layer-radio"></span>隧道
+            <div class="map-selector" @click="showMonitorCityDropdown = !showMonitorCityDropdown">
+              <span class="selector-text">{{ monitorCity }}</span>
+              <span class="selector-arrow" :class="{ open: showMonitorCityDropdown }">&#9662;</span>
+              <div class="city-dropdown" v-show="showMonitorCityDropdown" @click.stop>
+                <div class="dropdown-item" :class="{ active: monitorCity === '浙江省' }" @click="monitorCity = '浙江省'; showMonitorCityDropdown = false">浙江省</div>
+                <div class="dropdown-item" v-for="city in cityList" :key="city" :class="{ active: monitorCity === city }" @click="monitorCity = city; showMonitorCityDropdown = false">
+                  {{ city }}
+                </div>
+              </div>
             </div>
           </div>
           <div class="map-placeholder">
-            <svg viewBox="0 0 600 300" class="monitor-svg">
-              <defs>
-                <radialGradient id="mapGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stop-color="rgba(91,143,249,0.15)"/>
-                  <stop offset="100%" stop-color="rgba(10,22,40,0)"/>
-                </radialGradient>
-              </defs>
-              <rect width="600" height="300" fill="#0a1628"/>
-              <circle cx="300" cy="150" r="140" fill="url(#mapGlow)"/>
-              <g opacity="0.3">
-                <line v-for="i in 8" :key="'mh'+i" x1="0" :y1="i*37" x2="600" :y2="i*37" stroke="#2a5a8a" stroke-width="0.5"/>
-                <line v-for="i in 16" :key="'mv'+i" :x1="i*37" y1="0" :x2="i*37" y2="300" stroke="#2a5a8a" stroke-width="0.5"/>
-              </g>
-              <!-- 道路图层点位：线段 -->
-              <g v-if="monitorLayer === 'road'">
-                <line x1="270" y1="120" x2="295" y2="120" stroke="#e86452" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="298" y="124" fill="#8ab4f8" font-size="10">石贯子巷</text>
-                <line x1="340" y1="100" x2="365" y2="100" stroke="#5b8ff9" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="368" y="104" fill="#8ab4f8" font-size="10">复兴大道</text>
-                <line x1="210" y1="170" x2="235" y2="170" stroke="#5ad8a6" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="238" y="174" fill="#8ab4f8" font-size="10">备塘河桥路</text>
-                <line x1="390" y1="180" x2="415" y2="180" stroke="#f6bd16" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="418" y="184" fill="#8ab4f8" font-size="10">环城西路</text>
-                <line x1="300" y1="200" x2="325" y2="200" stroke="#e86452" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="328" y="204" fill="#8ab4f8" font-size="10">乌桥路</text>
-                <line x1="170" y1="100" x2="195" y2="100" stroke="#5b8ff9" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="198" y="104" fill="#8ab4f8" font-size="10">拱墅路</text>
-              </g>
-              <!-- 桥梁图层点位：线段 -->
-              <g v-else-if="monitorLayer === 'bridge'">
-                <line x1="270" y1="120" x2="295" y2="120" stroke="#e86452" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="298" y="124" fill="#8ab4f8" font-size="10">武林桥</text>
-                <line x1="340" y1="100" x2="365" y2="100" stroke="#5b8ff9" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="368" y="104" fill="#8ab4f8" font-size="10">复兴大桥</text>
-                <line x1="210" y1="170" x2="235" y2="170" stroke="#5ad8a6" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="238" y="174" fill="#8ab4f8" font-size="10">备塘河桥</text>
-                <line x1="390" y1="180" x2="415" y2="180" stroke="#f6bd16" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="418" y="184" fill="#8ab4f8" font-size="10">康家桥</text>
-                <line x1="300" y1="200" x2="325" y2="200" stroke="#e86452" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="328" y="204" fill="#8ab4f8" font-size="10">乌桥</text>
-                <line x1="170" y1="100" x2="195" y2="100" stroke="#5b8ff9" stroke-width="3" stroke-linecap="round" opacity="0.9"/><text x="198" y="104" fill="#8ab4f8" font-size="10">半山桥</text>
-              </g>
-              <!-- 隧道图层点位：矩形 -->
-              <g v-else-if="monitorLayer === 'tunnel'">
-                <rect x="270" y="114" width="20" height="10" rx="2" fill="#e86452" opacity="0.9"/><text x="294" y="124" fill="#8ab4f8" font-size="10">紫金港北路下穿道</text>
-                <rect x="340" y="94" width="20" height="10" rx="2" fill="#5b8ff9" opacity="0.9"/><text x="364" y="104" fill="#8ab4f8" font-size="10">苏嘉路下穿道</text>
-                <rect x="210" y="164" width="20" height="10" rx="2" fill="#5ad8a6" opacity="0.9"/><text x="234" y="174" fill="#8ab4f8" font-size="10">复兴路隧道</text>
-                <rect x="390" y="174" width="20" height="10" rx="2" fill="#f6bd16" opacity="0.9"/><text x="414" y="184" fill="#8ab4f8" font-size="10">环城北路隧道</text>
-                <rect x="300" y="194" width="20" height="10" rx="2" fill="#e86452" opacity="0.9"/><text x="324" y="204" fill="#8ab4f8" font-size="10">半山隧道</text>
-                <rect x="170" y="94" width="20" height="10" rx="2" fill="#5b8ff9" opacity="0.9"/><text x="194" y="104" fill="#8ab4f8" font-size="10">乌桥路地道</text>
-              </g>
-              <text x="250" y="60" fill="rgba(255,255,255,0.3)" font-size="11">西溪</text>
-              <text x="370" y="140" fill="rgba(255,255,255,0.3)" font-size="11">江干</text>
-              <text x="150" y="220" fill="rgba(255,255,255,0.3)" font-size="11">拱墅</text>
-            </svg>
+            <div ref="monitorMapRef" class="amap-container"></div>
           </div>
         </div>
       </div>
@@ -576,9 +610,222 @@ const riskChartRef = ref<HTMLElement | null>(null)
 let statsChart: echarts.ECharts | null = null
 let riskChart: echarts.ECharts | null = null
 
+// 监测模块图表引用
+const onlineRingRef = ref<HTMLElement | null>(null)
+const accessRingRef = ref<HTMLElement | null>(null)
+const deviceSubChartRef = ref<HTMLElement | null>(null)
+const bridgeDrillChartRef = ref<HTMLElement | null>(null)
+let onlineRingChart: echarts.ECharts | null = null
+let accessRingChart: echarts.ECharts | null = null
+let deviceSubChart: echarts.ECharts | null = null
+let bridgeDrillChart: echarts.ECharts | null = null
+const bridgeDeviceDrillDown = ref(false)
+
+// 任务清单图表引用
+const hazardRateRef = ref<HTMLElement | null>(null)
+const inspectRateRef = ref<HTMLElement | null>(null)
+const assessRateRef = ref<HTMLElement | null>(null)
+const inspectBarRef = ref<HTMLElement | null>(null)
+let hazardRateChart: echarts.ECharts | null = null
+let inspectRateChart: echarts.ECharts | null = null
+let assessRateChart: echarts.ECharts | null = null
+let inspectBarChart: echarts.ECharts | null = null
+
 const activeLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const subLayer = ref<'type' | 'eval'>('type')
 const cockpitTab = ref<'overview' | 'monitor'>('overview')
+
+// 高德地图
+const overviewMapRef = ref<HTMLElement | null>(null)
+const monitorMapRef = ref<HTMLElement | null>(null)
+const mapStyle = ref<'standard' | 'satellite'>('standard')
+let overviewMap: any = null
+let monitorMap: any = null
+let monitorMapOverlays: any[] = []
+let monitorMapInfoWindow: any = null
+const zjCenter: [number, number] = [120.15, 30.27]
+const cityCoords: Record<string, [number, number]> = {
+  '浙江省': [120.15, 30.27], '杭州市': [120.15, 30.27], '宁波市': [121.55, 29.87],
+  '温州市': [120.70, 28.00], '绍兴市': [120.58, 30.00], '湖州市': [120.08, 30.87],
+  '嘉兴市': [120.76, 30.75], '金华市': [119.65, 29.08], '衢州市': [118.87, 28.94],
+  '台州市': [121.42, 28.66], '丽水市': [119.92, 28.47], '舟山市': [122.11, 30.02],
+}
+
+// 设施点位数据（高德地图坐标）
+interface FacilityPoint { name: string; path: [number, number][]; color: string; info: Record<string, string> }
+const roadFacilities: FacilityPoint[] = [
+  { name: '石贯子巷', path: [[120.147, 30.254], [120.152, 30.256], [120.157, 30.254], [120.162, 30.255]], color: '#f6bd16', info: { '归属地区': '杭州市上城区', '道路名称': '石贯子巷（岳王路—中山中路）', '道路等级': '支路', '综合评价等级': 'B' } },
+  { name: '复兴大道', path: [[120.185, 30.218], [120.192, 30.221], [120.200, 30.216], [120.210, 30.218]], color: '#5b8ff9', info: { '归属地区': '杭州市滨江区', '道路名称': '复兴大道（秋涛路—复兴路）', '道路等级': '主干路', '综合评价等级': 'A' } },
+  { name: '备塘河桥路', path: [[120.105, 30.298], [120.112, 30.300], [120.120, 30.296], [120.130, 30.298]], color: '#5ad8a6', info: { '归属地区': '杭州市上城区', '道路名称': '备塘河桥路（备塘路—艮山西路）', '道路等级': '次干路', '综合评价等级': 'B' } },
+  { name: '环城西路', path: [[120.158, 30.270], [120.156, 30.275], [120.159, 30.280], [120.158, 30.285]], color: '#e86452', info: { '归属地区': '杭州市西湖区', '道路名称': '环城西路（天目山路—体育场路）', '道路等级': '城市快速路', '综合评价等级': 'A' } },
+  { name: '乌桥路', path: [[120.192, 30.305], [120.197, 30.307], [120.202, 30.303], [120.207, 30.305]], color: '#f6bd16', info: { '归属地区': '杭州市上城区', '道路名称': '乌桥路（新风路—机场路）', '道路等级': '支路', '综合评价等级': 'C' } },
+  { name: '拱墅路', path: [[120.132, 30.320], [120.137, 30.322], [120.142, 30.318], [120.147, 30.320]], color: '#5b8ff9', info: { '归属地区': '杭州市拱墅区', '道路名称': '拱墅路（大关路—登云路）', '道路等级': '主干路', '综合评价等级': 'B' } },
+]
+const bridgeFacilities: FacilityPoint[] = [
+  { name: '武林桥', path: [[120.160, 30.265], [120.165, 30.267], [120.170, 30.263], [120.175, 30.265]], color: '#e86452', info: { '归属地区': '杭州市西湖区', '桥梁名称': '武林桥', '桥梁类型': '拱桥', '综合评价等级': 'B' } },
+  { name: '复兴大桥', path: [[120.175, 30.215], [120.180, 30.218], [120.185, 30.213], [120.190, 30.215]], color: '#5b8ff9', info: { '归属地区': '杭州市滨江区', '桥梁名称': '复兴大桥', '桥梁类型': '斜拉桥', '综合评价等级': 'A' } },
+  { name: '备塘河桥', path: [[120.110, 30.295], [120.115, 30.297], [120.120, 30.293], [120.125, 30.295]], color: '#5ad8a6', info: { '归属地区': '杭州市上城区', '桥梁名称': '备塘河桥', '桥梁类型': '梁桥', '综合评价等级': 'C' } },
+  { name: '康家桥', path: [[120.218, 30.282], [120.223, 30.284], [120.228, 30.280], [120.233, 30.282]], color: '#f6bd16', info: { '归属地区': '杭州市上城区', '桥梁名称': '康家桥', '桥梁类型': '立交桥', '综合评价等级': 'B' } },
+  { name: '乌桥', path: [[120.190, 30.308], [120.195, 30.310], [120.200, 30.306], [120.205, 30.308]], color: '#e86452', info: { '归属地区': '杭州市上城区', '桥梁名称': '乌桥', '桥梁类型': '拱桥', '综合评价等级': 'D' } },
+  { name: '半山桥', path: [[120.135, 30.325], [120.140, 30.327], [120.145, 30.323], [120.150, 30.325]], color: '#5b8ff9', info: { '归属地区': '杭州市拱墅区', '桥梁名称': '半山桥', '桥梁类型': '梁桥', '综合评价等级': 'A' } },
+]
+const tunnelFacilities: FacilityPoint[] = [
+  { name: '紫金港北路下穿道', path: [[120.088, 30.310], [120.093, 30.312], [120.098, 30.308], [120.103, 30.310]], color: '#e86452', info: { '归属地区': '杭州市西湖区', '隧道名称': '紫金港北路下穿道', '隧道类型': '人行地道', '综合评价等级': 'B' } },
+  { name: '苏嘉路下穿道', path: [[120.128, 30.318], [120.133, 30.320], [120.138, 30.316], [120.143, 30.318]], color: '#5b8ff9', info: { '归属地区': '杭州市上城区', '隧道名称': '苏嘉路下穿道', '隧道类型': '城市道路隧道', '是否地下隧道': '否', '综合评价等级': 'E' } },
+  { name: '复兴路隧道', path: [[120.172, 30.225], [120.177, 30.227], [120.182, 30.223], [120.187, 30.225]], color: '#5ad8a6', info: { '归属地区': '杭州市滨江区', '隧道名称': '复兴路隧道', '隧道类型': '人行地道', '综合评价等级': 'A' } },
+  { name: '环城北路隧道', path: [[120.155, 30.278], [120.160, 30.280], [120.165, 30.276], [120.170, 30.278]], color: '#f6bd16', info: { '归属地区': '杭州市下城区', '隧道名称': '环城北路隧道', '隧道类型': '城市道路隧道', '是否地下隧道': '是', '综合评价等级': 'B' } },
+  { name: '半山隧道', path: [[120.140, 30.330], [120.145, 30.332], [120.150, 30.328], [120.155, 30.330]], color: '#e86452', info: { '归属地区': '杭州市拱墅区', '隧道名称': '半山隧道', '隧道类型': '人行地道', '综合评价等级': 'C' } },
+  { name: '乌桥路地道', path: [[120.195, 30.300], [120.200, 30.302], [120.205, 30.298], [120.210, 30.300]], color: '#5b8ff9', info: { '归属地区': '杭州市上城区', '隧道名称': '乌桥路地道', '隧道类型': '城市道路隧道', '是否地下隧道': '是', '综合评价等级': 'B' } },
+]
+let mapOverlays: any[] = []
+let mapInfoWindow: any = null
+
+function initOverviewMap() {
+  const AMap = (window as any).AMap
+  if (!overviewMapRef.value || !AMap) return
+  if (overviewMap) overviewMap.destroy()
+  const layers: any[] = []
+  if (mapStyle.value === 'satellite') {
+    layers.push(new AMap.TileLayer.Satellite())
+    layers.push(new AMap.TileLayer.RoadNet())
+  }
+  overviewMap = new AMap.Map(overviewMapRef.value, {
+    zoom: 11, center: [120.15, 30.27], layers,
+    viewMode: '2D', dragEnable: true, zoomEnable: true,
+    mapStyle: 'amap://styles/dark',
+  })
+  addCityMarkers()
+  initMapOverlays()
+}
+
+function addCityMarkers() {
+  const AMap = (window as any).AMap
+  if (!overviewMap || !AMap) return
+  const cityList = [
+    { name: '杭州', pos: [120.15, 30.27], color: '#5b8ff9' },
+    { name: '宁波', pos: [121.55, 29.87], color: '#5ad8a6' },
+    { name: '温州', pos: [120.70, 28.00], color: '#f6bd16' },
+    { name: '绍兴', pos: [120.58, 30.00], color: '#e86452' },
+    { name: '湖州', pos: [120.08, 30.87], color: '#6dc8ec' },
+    { name: '嘉兴', pos: [120.76, 30.75], color: '#945fb9' },
+    { name: '金华', pos: [119.65, 29.08], color: '#5b8ff9' },
+    { name: '衢州', pos: [118.87, 28.94], color: '#5ad8a6' },
+    { name: '台州', pos: [121.42, 28.66], color: '#f6bd16' },
+    { name: '丽水', pos: [119.92, 28.47], color: '#e86452' },
+    { name: '舟山', pos: [122.11, 30.02], color: '#6dc8ec' },
+  ]
+  cityList.forEach(c => {
+    const marker = new AMap.Marker({
+      position: c.pos,
+      content: `<div style="display:flex;align-items:center;gap:4px;pointer-events:none">
+        <div style="width:10px;height:10px;border-radius:50%;background:${c.color};box-shadow:0 0 8px ${c.color}"></div>
+        <span style="color:#8ab4f8;font-size:12px;text-shadow:0 1px 3px rgba(0,0,0,0.8)">${c.name}</span>
+      </div>`,
+      offset: new AMap.Pixel(0, 0),
+    })
+    overviewMap.add(marker)
+  })
+}
+
+function initMapOverlays() {
+  const AMap = (window as any).AMap
+  if (!overviewMap || !AMap) return
+  mapOverlays.forEach(o => overviewMap.remove(o))
+  mapOverlays = []
+  if (mapInfoWindow) { mapInfoWindow.close(); mapInfoWindow = null }
+  const facilities = activeLayer.value === 'road' ? roadFacilities
+    : activeLayer.value === 'bridge' ? bridgeFacilities : tunnelFacilities
+  mapInfoWindow = new AMap.InfoWindow({ isCustom: true, autoMove: true, offset: new AMap.Pixel(0, -10) })
+  facilities.forEach((fac, idx) => {
+    const polyline = new AMap.Polyline({
+      path: fac.path.map((p: [number, number]) => new AMap.LngLat(p[0], p[1])),
+      strokeColor: fac.color, strokeWeight: 4, strokeOpacity: 0.9,
+      lineJoin: 'round', lineCap: 'round', cursor: 'pointer', extData: { fac, idx },
+    })
+    polyline.on('mouseover', () => polyline.setOptions({ strokeWeight: 7, strokeOpacity: 1 }))
+    polyline.on('mouseout', () => polyline.setOptions({ strokeWeight: 4, strokeOpacity: 0.9 }))
+    polyline.on('click', () => {
+      const mid = fac.path[Math.floor(fac.path.length / 2)]
+      const gradeColor = (g: string) => ({ A: '#5b8ff9', B: '#5ad8a6', C: '#f6bd16', D: '#e86452', E: '#e86452' }[g] || '#fff')
+      let html = `<div class="map-info-popup"><div class="popup-row"><span class="popup-label">归属地区</span><span class="popup-value">${fac.info['归属地区']}</span></div>`
+      for (const [k, v] of Object.entries(fac.info)) {
+        if (k === '归属地区') continue
+        if (k.includes('等级')) {
+          html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value grade" style="color:${gradeColor(v)}">${v}</span></div>`
+        } else {
+          html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value">${v}</span></div>`
+        }
+      }
+      html += '</div>'
+      mapInfoWindow.setContent(html)
+      mapInfoWindow.open(overviewMap, new AMap.LngLat(mid[0], mid[1]))
+    })
+    overviewMap.add(polyline)
+    mapOverlays.push(polyline)
+  })
+}
+
+function initMonitorMap() {
+  const AMap = (window as any).AMap
+  if (!monitorMapRef.value || !AMap) return
+  if (monitorMap) monitorMap.destroy()
+  const layers: any[] = []
+  if (mapStyle.value === 'satellite') {
+    layers.push(new AMap.TileLayer.Satellite())
+    layers.push(new AMap.TileLayer.RoadNet())
+  }
+  monitorMap = new AMap.Map(monitorMapRef.value, {
+    zoom: 10, center: [120.15, 30.27], layers,
+    viewMode: '2D', dragEnable: true, zoomEnable: true,
+    mapStyle: 'amap://styles/dark',
+  })
+  initMonitorMapOverlays()
+}
+
+function initMonitorMapOverlays() {
+  const AMap = (window as any).AMap
+  if (!monitorMap || !AMap) return
+  monitorMapOverlays.forEach(o => monitorMap.remove(o))
+  monitorMapOverlays = []
+  if (monitorMapInfoWindow) { monitorMapInfoWindow.close(); monitorMapInfoWindow = null }
+  const facilities = monitorLayer.value === 'road' ? roadFacilities
+    : monitorLayer.value === 'bridge' ? bridgeFacilities : tunnelFacilities
+  monitorMapInfoWindow = new AMap.InfoWindow({ isCustom: true, autoMove: true, offset: new AMap.Pixel(0, -10) })
+  facilities.forEach((fac: any, idx: number) => {
+    const polyline = new AMap.Polyline({
+      path: fac.path.map((p: [number, number]) => new AMap.LngLat(p[0], p[1])),
+      strokeColor: fac.color, strokeWeight: 4, strokeOpacity: 0.9,
+      lineJoin: 'round', lineCap: 'round', cursor: 'pointer', extData: { fac, idx },
+    })
+    polyline.on('mouseover', () => polyline.setOptions({ strokeWeight: 7, strokeOpacity: 1 }))
+    polyline.on('mouseout', () => polyline.setOptions({ strokeWeight: 4, strokeOpacity: 0.9 }))
+    polyline.on('click', () => {
+      const mid = fac.path[Math.floor(fac.path.length / 2)]
+      const gradeColor = (g: string) => ({ A: '#5b8ff9', B: '#5ad8a6', C: '#f6bd16', D: '#e86452', E: '#e86452' }[g] || '#fff')
+      let html = `<div class="map-info-popup"><div class="popup-row"><span class="popup-label">归属地区</span><span class="popup-value">${fac.info['归属地区']}</span></div>`
+      for (const [k, v] of Object.entries(fac.info)) {
+        if (k === '归属地区') continue
+        if (k.includes('等级')) {
+          html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value grade" style="color:${gradeColor(v as string)}">${v}</span></div>`
+        } else {
+          html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value">${v}</span></div>`
+        }
+      }
+      html += `<div class="popup-row" style="justify-content:flex-end;margin-top:6px;"><span class="popup-monitor-btn">查看点位监测 &gt;</span></div>`
+      html += '</div>'
+      monitorMapInfoWindow.setContent(html)
+      monitorMapInfoWindow.open(monitorMap, new AMap.LngLat(mid[0], mid[1]))
+    })
+    monitorMap.add(polyline)
+    monitorMapOverlays.push(polyline)
+  })
+}
+
+function toggleMapType() {
+  mapStyle.value = mapStyle.value === 'standard' ? 'satellite' : 'standard'
+  initOverviewMap()
+  if (cockpitTab.value === 'monitor') initMonitorMap()
+}
 
 // 道路图例复选框
 const roadTypeChecked = reactive({ main: true, sub: true, branch: true, highway: true })
@@ -595,11 +842,17 @@ const layerNameMap: Record<string, string> = { road: '道路', bridge: '桥梁',
 
 // 地市选择
 const showCityDropdown = ref(false)
+const showMonitorCityDropdown = ref(false)
 const currentCity = ref('浙江省')
 const cityList = ['杭州市', '宁波市', '温州市', '绍兴市', '湖州市', '嘉兴市', '金华市', '衢州市', '台州市', '丽水市', '舟山市']
 const selectCity = (city: string) => {
   currentCity.value = city
   showCityDropdown.value = false
+  if (overviewMap) {
+    const coord = cityCoords[city] || zjCenter
+    const zoom = city === '浙江省' ? 7 : 11
+    overviewMap.setZoomAndCenter(zoom, coord, false, 500)
+  }
 }
 
 // 市级数据弹窗
@@ -771,10 +1024,130 @@ const tunnelCategories = [
 const currentCategories = computed(() => activeLayer.value === 'bridge' ? bridgeCategories : activeLayer.value === 'tunnel' ? tunnelCategories : roadCategories)
 
 const riskCategories = [
-  { name: '一级风险', color: '#945fb9' },
-  { name: '二级风险', color: '#5b8ff9' },
-  { name: '三级风险', color: '#e86452' },
+  { name: '一级预警', color: '#945fb9' },
+  { name: '二级预警', color: '#5b8ff9' },
+  { name: '三级预警', color: '#e86452' },
 ]
+
+const riskType = ref<'hidden' | 'device' | 'inspect' | 'assess'>('device')
+const riskTypes = [
+  { label: '隐患排查', value: 'hidden' as const },
+  { label: '设备监测', value: 'device' as const },
+  { label: '设施检测', value: 'inspect' as const },
+  { label: '安全评估', value: 'assess' as const },
+]
+
+function alertLevelText(level: number) {
+  return level === 1 ? '一级预警' : level === 2 ? '二级预警' : '三级预警'
+}
+
+const monitorItemMap: Record<string, string> = { road: '变形', bridge: '应变', tunnel: '位移' }
+
+const roadAlertData = [
+  { id: 1, area: '上城区', road: '石贯子巷', point: 'K1+200', level: 1, done: false },
+  { id: 2, area: '上城区', road: '中山中路', point: 'K3+500', level: 2, done: true },
+  { id: 3, area: '拱墅区', road: '环城北路', point: 'K2+100', level: 1, done: false },
+  { id: 4, area: '西湖区', road: '文三路', point: 'K1+800', level: 3, done: true },
+  { id: 5, area: '滨江区', road: '江南大道', point: 'K4+200', level: 2, done: false },
+  { id: 6, area: '上城区', road: '解放路', point: 'K2+600', level: 1, done: true },
+  { id: 7, area: '拱墅区', road: '莫干山路', point: 'K5+100', level: 3, done: false },
+  { id: 8, area: '西湖区', road: '天目山路', point: 'K3+400', level: 2, done: true },
+  { id: 9, area: '滨江区', road: '时代大道', point: 'K2+900', level: 1, done: false },
+  { id: 10, area: '上城区', road: '延安路', point: 'K1+500', level: 3, done: true },
+]
+
+const alertList = computed(() => {
+  const item = monitorItemMap[activeLayer.value]
+  return roadAlertData.map(a => ({ ...a, item }))
+})
+
+// 隐患排查数据
+const hiddenRiskChartRef = ref<HTMLElement | null>(null)
+let hiddenRiskChart: echarts.ECharts | null = null
+const hiddenRiskCategories = [
+  { name: '一般隐患', color: '#5b8ff9' },
+  { name: '较大隐患', color: '#f6bd16' },
+  { name: '重大隐患', color: '#e86452' },
+]
+function hiddenLevelText(level: number) {
+  return level === 1 ? '一般隐患' : level === 2 ? '较大隐患' : '重大隐患'
+}
+const hiddenDangerList = [
+  { id: 1, area: '上城区', road: '石贯子巷', project: '路面平整度', content: '路面坑洼严重', level: 1, fixed: true },
+  { id: 2, area: '上城区', road: '中山中路', project: '排水设施', content: '排水管道堵塞', level: 2, fixed: false },
+  { id: 3, area: '拱墅区', road: '环城北路', project: '护栏完好性', content: '护栏损坏缺失', level: 3, fixed: false },
+  { id: 4, area: '西湖区', road: '文三路', project: '路基稳定性', content: '路基局部沉陷', level: 2, fixed: true },
+  { id: 5, area: '滨江区', road: '江南大道', project: '照明设施', content: '路灯不亮多处', level: 1, fixed: true },
+  { id: 6, area: '上城区', road: '解放路', project: '伸缩缝状态', content: '伸缩缝破损', level: 2, fixed: false },
+  { id: 7, area: '拱墅区', road: '莫干山路', project: '支座状态', content: '支座锈蚀严重', level: 3, fixed: true },
+  { id: 8, area: '西湖区', road: '天目山路', project: '墙体裂缝', content: '挡墙裂缝扩展', level: 1, fixed: false },
+  { id: 9, area: '滨江区', road: '时代大道', project: '地基沉降', content: '地基不均匀沉降', level: 2, fixed: true },
+  { id: 10, area: '上城区', road: '延安路', project: '防水层状态', content: '防水层老化破损', level: 3, fixed: false },
+]
+
+// 设施检测数据
+const inspectMetrics = computed(() => {
+  if (activeLayer.value === 'bridge') {
+    return [
+      { label: 'D、E级桥梁', value: '18', colorClass: 'orange' },
+      { label: '不合格桥梁', value: '12', colorClass: 'orange' },
+      { label: '已维修整治', value: '22', colorClass: 'green' },
+      { label: '已拆除或完全封控', value: '6', colorClass: 'cyan' },
+      { label: '整改率', value: '78.5%', colorClass: 'cyan' },
+    ]
+  } else if (activeLayer.value === 'tunnel') {
+    return [
+      { label: 'D、E级隧道', value: '9', colorClass: 'orange' },
+      { label: '已维修整治', value: '6', colorClass: 'green' },
+      { label: '已拆除或完全封控', value: '2', colorClass: 'cyan' },
+      { label: '整改率', value: '72.2%', colorClass: 'cyan' },
+    ]
+  }
+  return [
+    { label: 'D级道路', value: '26', colorClass: 'orange' },
+    { label: '已维修整治', value: '18', colorClass: 'green' },
+    { label: '已拆除或完全封控', value: '5', colorClass: 'cyan' },
+    { label: '整改率', value: '72.3%', colorClass: 'cyan' },
+  ]
+})
+
+const inspectList = computed(() => {
+  if (activeLayer.value === 'bridge') {
+    return [
+      { id: 1, area: '上城区', road: '梁山西路桥', grade: 'D', done: false },
+      { id: 2, area: '滨江区', road: '复兴大桥', grade: 'E', done: true },
+      { id: 3, area: '上城区', road: '备塘河桥', grade: 'D', done: true },
+      { id: 4, area: '西湖区', road: '圆球山立交桥', grade: '不合格', done: false },
+      { id: 5, area: '拱墅区', road: '半山桥', grade: 'E', done: true },
+      { id: 6, area: '上城区', road: '乌桥', grade: '不合格', done: false },
+      { id: 7, area: '萧山区', road: '青岛大桥', grade: 'D', done: true },
+      { id: 8, area: '余杭区', road: '三角岗桥', grade: 'E', done: false },
+    ]
+  } else if (activeLayer.value === 'tunnel') {
+    return [
+      { id: 1, area: '西湖区', road: '紫金港北路下穿道', grade: 'D', done: true },
+      { id: 2, area: '上城区', road: '苏嘉路下穿道', grade: 'E', done: false },
+      { id: 3, area: '滨江区', road: '复兴路隧道', grade: 'D', done: true },
+      { id: 4, area: '上城区', road: '环城北路隧道', grade: 'E', done: false },
+      { id: 5, area: '拱墅区', road: '半山隧道', grade: 'D', done: true },
+      { id: 6, area: '上城区', road: '乌桥路地道', grade: 'E', done: false },
+      { id: 7, area: '萧山区', road: '青岛路隧道', grade: 'D', done: true },
+      { id: 8, area: '余杭区', road: '三角岗路地道', grade: 'E', done: false },
+    ]
+  }
+  return [
+    { id: 1, area: '上城区', road: '石贯子巷', grade: 'D', done: false },
+    { id: 2, area: '上城区', road: '中山中路', grade: 'D', done: true },
+    { id: 3, area: '拱墅区', road: '环城北路', grade: 'D', done: true },
+    { id: 4, area: '西湖区', road: '文三路', grade: 'D', done: false },
+    { id: 5, area: '滨江区', road: '江南大道', grade: 'D', done: true },
+    { id: 6, area: '上城区', road: '解放路', grade: 'D', done: true },
+    { id: 7, area: '拱墅区', road: '莫干山路', grade: 'D', done: false },
+    { id: 8, area: '西湖区', road: '天目山路', grade: 'D', done: true },
+    { id: 9, area: '滨江区', road: '时代大道', grade: 'D', done: false },
+    { id: 10, area: '上城区', road: '延安路', grade: 'D', done: true },
+  ]
+})
 
 // 在线监测数据
 const monitorCity = ref('浙江省')
@@ -891,6 +1264,168 @@ const taskSections = computed(() => {
   ]
 })
 
+// 监测模块数据（按图层切换）
+const monitorDataMap: Record<string, { total: number; online: number; onlineRate: number; accessCount: number; accessRate: number }> = {
+  road: { total: 340, online: 326, onlineRate: 95.9, accessCount: 168, accessRate: 49.4 },
+  bridge: { total: 1235, online: 1131, onlineRate: 91.6, accessCount: 856, accessRate: 85.3 },
+  tunnel: { total: 567, online: 549, onlineRate: 96.8, accessCount: 412, accessRate: 92.1 },
+}
+const monitorData = computed(() => monitorDataMap[activeLayer.value])
+
+// 监测模块子设备柱状图配置
+const deviceSubConfig: Record<string, { categories: string[]; values: number[]; color: string }> = {
+  road: { categories: ['道路边坡\n监测设备'], values: [486], color: '#5b8ff9' },
+  bridge: { categories: ['桥梁环境\n监测设备', '桥梁作业\n监测设备', '桥梁结构\n监测设备'], values: [386, 452, 397], color: '#5ad8a6' },
+  tunnel: { categories: ['隧道环境\n监测设备', '隧道机电\n监测设备', '隧道结构\n监测设备'], values: [198, 215, 154], color: '#6dc8ec' },
+}
+
+// 初始化环形图
+function initRingChart(container: HTMLElement, rate: number, color: string) {
+  const chart = echarts.init(container)
+  chart.setOption({
+    series: [{
+      type: 'pie', radius: ['62%', '82%'], center: ['50%', '45%'],
+      label: { show: true, position: 'center', formatter: rate.toFixed(1) + '%', fontSize: 13, fontWeight: 700, color },
+      labelLine: { show: false },
+      data: [
+        { value: rate, itemStyle: { color } },
+        { value: 100 - rate, itemStyle: { color: 'rgba(255,255,255,0.06)' } },
+      ],
+    }],
+  })
+  return chart
+}
+
+// 初始化子设备柱状图
+function initDeviceSubChart() {
+  const container = deviceSubChartRef.value
+  if (!container) return
+  if (deviceSubChart) deviceSubChart.dispose()
+  deviceSubChart = echarts.init(container)
+  const cfg = deviceSubConfig[activeLayer.value]
+  deviceSubChart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: '4%', right: '8%', bottom: '18%', top: '12%', containLabel: true },
+    xAxis: {
+      type: 'category', data: cfg.categories,
+      axisLabel: { fontSize: 10, interval: 0, color: 'rgba(255,255,255,0.5)' },
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: 'rgba(100,160,255,0.2)' } },
+    },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)' } }, axisLabel: { color: 'rgba(255,255,255,0.4)' } },
+    series: [{
+      type: 'bar', data: cfg.values, barMaxWidth: 32,
+      itemStyle: { color: cfg.color, borderRadius: [4, 4, 0, 0] },
+      label: { show: true, position: 'top', fontSize: 11, fontWeight: 'bold', color: 'rgba(255,255,255,0.8)', formatter: '{c}' },
+    }],
+  })
+  // 桥梁图层：点击“桥梁结构”进入下钻
+  if (activeLayer.value === 'bridge') {
+    deviceSubChart.on('click', (params: any) => {
+      if (params.name && params.name.includes('桥梁结构')) {
+        bridgeDeviceDrillDown.value = true
+        nextTick(() => initBridgeDrillChart())
+      }
+    })
+  }
+}
+
+// 桥梁结构监测设备下钻子图表
+function initBridgeDrillChart() {
+  const container = bridgeDrillChartRef.value
+  if (!container) return
+  if (bridgeDrillChart) bridgeDrillChart.dispose()
+  bridgeDrillChart = echarts.init(container)
+  bridgeDrillChart.setOption({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: '4%', right: '8%', bottom: '15%', top: '12%', containLabel: true },
+    xAxis: {
+      type: 'category', data: ['吊杆索力\n振动', '位移', '挠度', '应变', '振动'],
+      axisLabel: { fontSize: 11, interval: 0, color: 'rgba(255,255,255,0.5)' },
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: 'rgba(100,160,255,0.2)' } },
+    },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)' } }, axisLabel: { color: 'rgba(255,255,255,0.4)' } },
+    series: [{
+      type: 'bar', data: [86, 124, 98, 156, 132], barMaxWidth: 36,
+      itemStyle: { color: '#5ad8a6', borderRadius: [4, 4, 0, 0] },
+      label: { show: true, position: 'top', fontSize: 11, fontWeight: 'bold', color: 'rgba(255,255,255,0.8)', formatter: '{c}' },
+    }],
+  })
+}
+
+// 初始化监测模块图表
+function initMonitorModuleCharts() {
+  const data = monitorData.value
+  if (onlineRingRef.value) {
+    if (onlineRingChart) onlineRingChart.dispose()
+    onlineRingChart = initRingChart(onlineRingRef.value, data.onlineRate, '#5ad8a6')
+  }
+  if (accessRingRef.value) {
+    if (accessRingChart) accessRingChart.dispose()
+    accessRingChart = initRingChart(accessRingRef.value, data.accessRate, '#6dc8ec')
+  }
+  nextTick(() => initDeviceSubChart())
+}
+
+// 任务清单图表初始化
+function initTaskRing(container: HTMLElement, rate: number, color: string) {
+  const chart = echarts.init(container)
+  chart.setOption({
+    series: [{
+      type: 'pie', radius: ['58%', '80%'], center: ['50%', '50%'],
+      label: { show: true, position: 'center', formatter: rate + '%', fontSize: 12, fontWeight: 700, color },
+      labelLine: { show: false },
+      data: [
+        { value: rate, itemStyle: { color } },
+        { value: 100 - rate, itemStyle: { color: 'rgba(255,255,255,0.06)' } },
+      ],
+    }],
+  })
+  return chart
+}
+function initTaskCharts() {
+  if (hazardRateRef.value) {
+    if (hazardRateChart) hazardRateChart.dispose()
+    hazardRateChart = initTaskRing(hazardRateRef.value, 19.99, '#5ad8a6')
+  }
+  if (inspectRateRef.value) {
+    if (inspectRateChart) inspectRateChart.dispose()
+    inspectRateChart = initTaskRing(inspectRateRef.value, 19.9, '#5b8ff9')
+  }
+  if (assessRateRef.value) {
+    if (assessRateChart) assessRateChart.dispose()
+    assessRateChart = initTaskRing(assessRateRef.value, 19.9, '#6dc8ec')
+  }
+  if (inspectBarRef.value) {
+    if (inspectBarChart) inspectBarChart.dispose()
+    inspectBarChart = echarts.init(inspectBarRef.value)
+    inspectBarChart.setOption({
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: '2%', right: '12%', top: '10%', bottom: '8%', containLabel: true },
+      xAxis: {
+        type: 'value',
+        axisLabel: { fontSize: 10, color: 'rgba(255,255,255,0.4)' },
+        splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)', type: 'dashed' } },
+      },
+      yAxis: {
+        type: 'category', data: ['检测已逾期', '检测即将超期'],
+        axisLabel: { fontSize: 10, color: 'rgba(255,255,255,0.5)', interval: 0 },
+        axisTick: { show: false },
+        axisLine: { show: false },
+      },
+      series: [{
+        type: 'bar', data: [
+          { value: 10, itemStyle: { color: '#e86452' } },
+          { value: 30, itemStyle: { color: '#f6bd16' } },
+        ],
+        barWidth: '45%', itemStyle: { borderRadius: [0, 3, 3, 0] },
+        label: { show: true, position: 'right', fontSize: 11, fontWeight: 'bold', color: 'rgba(255,255,255,0.8)' },
+      }],
+    })
+  }
+}
+
 function initCharts() {
   if (statsChartRef.value) {
     statsChart = echarts.init(statsChartRef.value)
@@ -902,11 +1437,14 @@ function initCharts() {
       tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
       series: [{
         type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
-        label: { show: false },
+        label: {
+          show: true, position: 'inside', fontSize: 11, fontWeight: 700, color: '#fff',
+          formatter: '{c}',
+        },
         data: [
-          { name: '一级风险', value: 68, itemStyle: { color: '#945fb9' } },
-          { name: '二级风险', value: 58, itemStyle: { color: '#5b8ff9' } },
-          { name: '三级风险', value: 42, itemStyle: { color: '#e86452' } },
+          { name: '一级预警', value: 68, itemStyle: { color: '#945fb9' } },
+          { name: '二级预警', value: 58, itemStyle: { color: '#5b8ff9' } },
+          { name: '三级预警', value: 42, itemStyle: { color: '#e86452' } },
         ],
       }],
     })
@@ -926,10 +1464,21 @@ function updateStatsChart() {
   })
 }
 
-onMounted(() => { setTimeout(initCharts, 100) })
+onMounted(() => {
+  setTimeout(() => { initCharts(); initMonitorModuleCharts(); initTaskCharts() }, 100)
+  // 初始化高德地图
+  if ((window as any).AMap) {
+    setTimeout(() => { initOverviewMap() }, 200)
+  }
+})
 onUnmounted(() => {
   statsChart?.dispose(); riskChart?.dispose()
   alarmTrendChart?.dispose(); timeFlowChart?.dispose()
+  onlineRingChart?.dispose(); accessRingChart?.dispose()
+  deviceSubChart?.dispose(); bridgeDrillChart?.dispose()
+  hazardRateChart?.dispose(); inspectRateChart?.dispose()
+  assessRateChart?.dispose(); inspectBarChart?.dispose()
+  overviewMap?.destroy(); monitorMap?.destroy()
 })
 
 // 返回工作台
@@ -984,38 +1533,110 @@ function initMonitorCharts() {
 
 watch(cockpitTab, (val) => {
   if (val === 'monitor') {
-    nextTick(() => { setTimeout(initMonitorCharts, 50) })
+    nextTick(() => {
+      setTimeout(initMonitorCharts, 50)
+      setTimeout(initMonitorMap, 200)
+    })
   }
 })
 watch(monitorLayer, (val) => {
   if (val === 'bridge' && cockpitTab.value === 'monitor') {
     nextTick(() => { setTimeout(initMonitorCharts, 50) })
   }
+  initMonitorMapOverlays()
 })
 watch(activeLayer, () => {
+  bridgeDeviceDrillDown.value = false
   nextTick(() => {
     if (statsChart) { statsChart.dispose(); statsChart = null }
     if (statsChartRef.value) {
       statsChart = echarts.init(statsChartRef.value)
       updateStatsChart()
     }
+    initMonitorModuleCharts()
+    initTaskCharts()
+    initMapOverlays()
+    if (riskType.value === 'device' && riskChartRef.value) {
+      if (riskChart) riskChart.dispose()
+      riskChart = echarts.init(riskChartRef.value)
+      riskChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        series: [{
+          type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
+          label: { show: true, position: 'inside', fontSize: 11, fontWeight: 700, color: '#fff', formatter: '{c}' },
+          data: [
+            { name: '一级预警', value: 68, itemStyle: { color: '#945fb9' } },
+            { name: '二级预警', value: 58, itemStyle: { color: '#5b8ff9' } },
+            { name: '三级预警', value: 42, itemStyle: { color: '#e86452' } },
+          ],
+        }],
+      })
+    }
+    if (riskType.value === 'hidden') initHiddenRiskChart()
   })
+})
+
+function initHiddenRiskChart() {
+  nextTick(() => {
+    if (hiddenRiskChartRef.value) {
+      if (hiddenRiskChart) hiddenRiskChart.dispose()
+      hiddenRiskChart = echarts.init(hiddenRiskChartRef.value)
+      hiddenRiskChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        series: [{
+          type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
+          label: { show: true, position: 'inside', fontSize: 11, fontWeight: 700, color: '#fff', formatter: '{c}' },
+          data: [
+            { name: '一般隐患', value: 52, itemStyle: { color: '#5b8ff9' } },
+            { name: '较大隐患', value: 32, itemStyle: { color: '#f6bd16' } },
+            { name: '重大隐患', value: 12, itemStyle: { color: '#e86452' } },
+          ],
+        }],
+      })
+    }
+  })
+}
+
+watch(riskType, (val) => {
+  if (val === 'device') {
+    nextTick(() => {
+      if (riskChartRef.value) {
+        if (riskChart) riskChart.dispose()
+        riskChart = echarts.init(riskChartRef.value)
+        riskChart.setOption({
+          tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+          series: [{
+            type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
+            label: { show: true, position: 'inside', fontSize: 11, fontWeight: 700, color: '#fff', formatter: '{c}' },
+            data: [
+              { name: '一级预警', value: 68, itemStyle: { color: '#945fb9' } },
+              { name: '二级预警', value: 58, itemStyle: { color: '#5b8ff9' } },
+              { name: '三级预警', value: 42, itemStyle: { color: '#e86452' } },
+            ],
+          }],
+        })
+      }
+    })
+  } else if (val === 'hidden') {
+    initHiddenRiskChart()
+  }
 })
 </script>
 
 <style scoped lang="scss">
 .cockpit-page {
-  min-height: 100vh;
+  width: 1920px; height: 1080px;
   background: #0a1628;
   display: flex;
   flex-direction: column;
   color: #e0e8f0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden;
 }
 
 .cockpit-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px; height: 48px;
+  padding: 0 16px; height: 40px;
   background: linear-gradient(90deg, #0d1f3c, #152d50, #0d1f3c);
   border-bottom: 1px solid rgba(100, 160, 255, 0.15); flex-shrink: 0;
 }
@@ -1027,7 +1648,7 @@ watch(activeLayer, () => {
   &:hover:not(.active) { color: rgba(255,255,255,0.8); }
 }
 .cockpit-title {
-  font-size: 20px; font-weight: 600; letter-spacing: 2px;
+  font-size: 18px; font-weight: 600; letter-spacing: 2px;
   background: linear-gradient(90deg, #5b8ff9, #5ad8a6);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
@@ -1036,28 +1657,28 @@ watch(activeLayer, () => {
 }
 
 .cockpit-body {
-  flex: 1; display: grid; grid-template-columns: 380px 1fr 380px;
-  gap: 12px; padding: 12px; min-height: 0;
+  flex: 1; display: grid; grid-template-columns: 440px 1fr 440px;
+  gap: 8px; padding: 8px; min-height: 0;
 }
-.panel { display: flex; flex-direction: column; gap: 12px; }
-.panel-left, .panel-right { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
+.panel { display: flex; flex-direction: column; gap: 8px; }
+.panel-left, .panel-right { display: grid; grid-template-rows: 1fr 1fr; gap: 8px; }
 
 .dark-card {
   background: linear-gradient(180deg, rgba(13,31,60,0.95), rgba(10,22,40,0.98));
-  border: 1px solid rgba(100,160,255,0.12); border-radius: 8px; padding: 16px;
+  border: 1px solid rgba(100,160,255,0.12); border-radius: 8px; padding: 10px;
 }
 .card-title {
   font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9);
-  margin-bottom: 14px; padding-left: 10px; border-left: 3px solid #5b8ff9;
+  margin-bottom: 6px; padding-left: 10px; border-left: 3px solid #5b8ff9;
 }
 .card-title-row {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
   .card-title { margin-bottom: 0; }
 }
 
 /* 道路统计 */
-.road-stats { margin-bottom: 14px; }
-.stat-grid { display: flex; gap: 16px; margin-bottom: 10px; }
+.road-stats { margin-bottom: 12px; }
+.stat-grid { display: flex; gap: 14px; margin-bottom: 10px; }
 .stat-block { flex: 1; }
 .stat-block.sub { margin-top: 4px; }
 .stat-label { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 4px; }
@@ -1083,21 +1704,31 @@ watch(activeLayer, () => {
   .cat-val { color: rgba(255,255,255,0.85); font-weight: 500; font-variant-numeric: tabular-nums; font-size: 11px; }
 }
 
-/* 监测设备 */
-.device-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; &:has(> :nth-child(5)) { grid-template-columns: 1fr 1fr 1fr; } }
-.metric-card {
-  background: rgba(255,255,255,0.03); border: 1px solid rgba(100,160,255,0.08);
-  border-radius: 6px; padding: 10px; text-align: center;
+/* 监测模块 */
+.monitor-module-card { overflow: hidden; }
+.monitor-ring-row { display: flex; gap: 16px; }
+.ring-group { flex: 1; display: flex; flex-direction: column; align-items: center; }
+.ring-title { font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 4px; }
+.ring-chart-lg { width: 100px; height: 80px; }
+.ring-group-labels { display: flex; gap: 14px; margin-top: 6px; }
+.ring-stat { display: flex; flex-direction: column; align-items: center; }
+.rs-val { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums;
+  &.blue { color: #5b8ff9; } &.green { color: #5ad8a6; } &.orange { color: #e8965a; }
 }
-.metric-num {
-  font-size: 22px; font-weight: 700; margin-bottom: 2px; font-variant-numeric: tabular-nums;
-  &.green { color: #5ad8a6; } &.red { color: #e86452; } &.blue { color: #5b8ff9; } &.cyan { color: #6dc8ec; }
+.rs-lbl { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+.device-sub-area { margin-top: 14px; height: 130px; position: relative; }
+.device-sub-chart { width: 100%; height: 100%; }
+.drill-down-header {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  .drill-back-btn { font-size: 11px; color: #5b8ff9; cursor: pointer; }
+  .drill-down-title { font-size: 12px; color: rgba(255,255,255,0.7); }
 }
-.metric-label { font-size: 11px; color: rgba(255,255,255,0.5); }
 
 /* 地图区 */
 .map-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.map-toolbar { display: flex; justify-content: flex-end; gap: 8px; margin-bottom: 8px; }
+.map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; }
+.monitor-map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; }
 .map-btn {
   padding: 4px 14px; border-radius: 4px; font-size: 12px; cursor: pointer;
   color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04);
@@ -1129,9 +1760,22 @@ watch(activeLayer, () => {
   background: radial-gradient(ellipse at center, rgba(26,58,92,0.4), transparent 70%);
   border-radius: 6px; min-height: 300px; position: relative; overflow: hidden;
 }
-.street-map-img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
-  opacity: 0.6; border-radius: 6px; pointer-events: none;
+.amap-container {
+  position: absolute; inset: 0; z-index: 0; border-radius: 6px;
+  &.amap-container { background: #0a1628 !important; }
+}
+.map-type-toggle {
+  display: flex; background: rgba(10,22,40,0.85); border: 1px solid rgba(100,160,255,0.2);
+  border-radius: 4px; overflow: hidden; cursor: pointer;
+  span {
+    padding: 3px 10px; font-size: 11px; color: rgba(255,255,255,0.5);
+    transition: all 0.2s;
+    &:hover { color: rgba(255,255,255,0.8); }
+    &.active { background: rgba(91,143,249,0.25); color: #5b8ff9; }
+  }
+}
+.monitor-map-toggle {
+  position: absolute; top: 8px; right: 8px; z-index: 10;
 }
 
 .layer-btns .layer-btn {
@@ -1141,15 +1785,15 @@ watch(activeLayer, () => {
   &:hover { color: rgba(255,255,255,0.8); }
   &.active { background: rgba(91,143,249,0.25); color: #5b8ff9; border-color: rgba(91,143,249,0.4); }
 }
-.map-svg { width: 100%; max-width: 560px; height: auto; }
+.map-svg { width: 100%; max-width: 560px; height: auto; position: relative; z-index: 2; }
 
 .map-legend {
   display: flex; justify-content: space-between; align-items: flex-start;
-  padding: 10px 14px; margin-top: 8px;
+  padding: 8px 10px; margin-top: 4px;
   background: rgba(10,22,40,0.9); border: 1px solid rgba(100,160,255,0.1); border-radius: 6px;
 }
 .legend-checkbox-panel {
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: column; gap: 4px;
 }
 .checkbox-item {
   display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;
@@ -1168,10 +1812,22 @@ watch(activeLayer, () => {
   font-size: 12px; color: rgba(255,255,255,0.7);
 }
 .legend-control-panel {
-  display: flex; flex-direction: row; align-items: flex-start; gap: 16px;
+  display: flex; flex-direction: row; align-items: flex-start; gap: 10px;
 }
 .layer-btns {
   display: flex; flex-direction: column; gap: 6px;
+}
+.map-layer-tabs {
+  margin-right: auto;
+  display: flex; gap: 4px;
+  background: rgba(13,31,60,0.85); border: 1px solid rgba(100,160,255,0.25); border-radius: 6px;
+  padding: 4px 6px;
+  .layer-tab {
+    padding: 4px 16px; border-radius: 4px; font-size: 13px; cursor: pointer;
+    color: rgba(255,255,255,0.55); background: transparent; transition: all 0.2s;
+    &:hover { color: rgba(255,255,255,0.85); }
+    &.active { background: rgba(91,143,249,0.3); color: #5b8ff9; font-weight: 500; }
+  }
 }
 .sub-layer-btns {
   display: flex; flex-direction: column; gap: 6px;
@@ -1193,39 +1849,127 @@ watch(activeLayer, () => {
 }
 
 /* 任务清单 */
-.task-list { display: flex; flex-direction: column; gap: 12px; }
-.task-section {
-  background: rgba(255,255,255,0.02); border-radius: 6px; padding: 10px 12px;
+.task-list-v2 { display: flex; flex-direction: column; gap: 10px; }
+.task-card {
+  background: rgba(255,255,255,0.02); border-radius: 8px; padding: 10px 12px;
+  border: 1px solid rgba(100,160,255,0.06);
 }
-.task-section-title {
-  font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.7);
+.task-card-title {
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.75);
   margin-bottom: 8px; padding-left: 8px; border-left: 2px solid #5b8ff9;
 }
-.task-section-items { display: flex; gap: 4px; flex-wrap: wrap; }
-.task-info-item {
-  flex: 1; min-width: 60px; text-align: center;
-  padding: 4px; background: rgba(91,143,249,0.06); border-radius: 4px;
+.task-card-row { display: flex; align-items: center; gap: 8px; }
+.task-mini-stats { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.tms-item { display: flex; align-items: baseline; gap: 4px; }
+.tms-val { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums;
+  &.blue { color: #5b8ff9; } &.green { color: #5ad8a6; }
 }
-.task-info-val { font-size: 16px; font-weight: 700; color: #5b8ff9; }
-.task-info-label { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+.tms-lbl { font-size: 10px; color: rgba(255,255,255,0.45); }
+.task-ring-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.task-ring-title { font-size: 10px; color: rgba(255,255,255,0.5); margin-bottom: 1px; }
+.task-ring { width: 80px; height: 64px; }
+.task-bar-chart { width: 100%; height: 72px; margin-top: 6px; }
 
 /* 风险清单 */
-.risk-section { margin-bottom: 12px; text-align: center; }
+.risk-card {
+  display: flex; flex-direction: column; overflow: hidden; flex: 1;
+}
+.risk-type-tabs {
+  display: flex; gap: 4px;
+  .risk-type-tab {
+    font-size: 11px; padding: 2px 8px; border-radius: 3px; cursor: pointer;
+    color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12);
+    transition: all 0.2s;
+    &:hover { color: rgba(255,255,255,0.8); }
+    &.active { background: rgba(91,143,249,0.25); color: #5b8ff9; border-color: rgba(91,143,249,0.4); }
+  }
+}
+.risk-section { margin-bottom: 6px; text-align: center; }
 .risk-legend {
-  display: flex; gap: 10px; margin-top: 8px; justify-content: center;
+  display: flex; gap: 8px; margin-top: 4px; justify-content: center;
   .legend-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: rgba(255,255,255,0.6); }
   .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
 }
-.risk-metrics { display: flex; gap: 8px;
-  .risk-item { flex: 1; text-align: center; background: rgba(255,255,255,0.03); border-radius: 6px; padding: 10px 6px; }
-  .risk-num { font-size: 22px; font-weight: 700; margin-bottom: 2px;
+.risk-metrics { display: flex; gap: 6px;
+  .risk-item { flex: 1; text-align: center; background: rgba(255,255,255,0.03); border-radius: 6px; padding: 6px 4px; }
+  .risk-num { font-size: 20px; font-weight: 700; margin-bottom: 2px;
     &.orange { color: #f6a816; } &.green { color: #5ad8a6; } &.cyan { color: #6dc8ec; }
   }
   .risk-label { font-size: 11px; color: rgba(255,255,255,0.5); }
 }
+.risk-placeholder { padding: 8px 0; }
+.risk-alert-list {
+  margin-top: 6px; flex: 1; min-height: 0; display: flex; flex-direction: column;
+  .risk-alert-header {
+    display: flex; align-items: center; padding: 4px 6px; font-size: 11px; gap: 4px;
+    color: rgba(255,255,255,0.5); background: rgba(91,143,249,0.08);
+    border-radius: 4px 4px 0 0; flex-shrink: 0;
+  }
+  .risk-alert-body {
+    flex: 1; overflow-y: auto; min-height: 0;
+    &::-webkit-scrollbar { width: 3px; }
+    &::-webkit-scrollbar-thumb { background: rgba(91,143,249,0.3); border-radius: 2px; }
+  }
+  .risk-alert-row {
+    display: flex; align-items: center; padding: 4px 6px; font-size: 11px; gap: 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    &:hover { background: rgba(91,143,249,0.06); }
+  }
+  .ra-col-area { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-point { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-item { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-project { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-content { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-level { flex: 1; }
+  .ra-col-grade { flex: 1; }
+  .ra-col-status { flex: 1; }
+}
+.alert-tag-1 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(148,95,185,0.2); color: #945fb9; }
+.alert-tag-2 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(91,143,249,0.2); color: #5b8ff9; }
+.alert-tag-3 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(232,100,82,0.2); color: #e86452; }
+.hidden-tag-1 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(91,143,249,0.2); color: #5b8ff9; }
+.hidden-tag-2 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(246,189,22,0.2); color: #f6bd16; }
+.hidden-tag-3 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(232,100,82,0.2); color: #e86452; }
+.grade-tag-A { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(90,216,166,0.2); color: #5ad8a6; }
+.grade-tag-B { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(91,143,249,0.2); color: #5b8ff9; }
+.grade-tag-C { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(246,189,22,0.2); color: #f6bd16; }
+.grade-tag-D { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(232,100,82,0.2); color: #e86452; }
+.grade-tag-E { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(148,95,185,0.2); color: #945fb9; }
+.status-done { font-size: 10px; color: #5ad8a6; }
+.status-undone { font-size: 10px; color: #e86452; }
+.risk-detail-btn-wrap {
+  margin-top: auto; text-align: right; flex-shrink: 0;
+}
+.risk-detail-btn {
+  font-size: 12px; color: #5b8ff9; cursor: pointer; padding: 4px 10px;
+  border: 1px solid rgba(91,143,249,0.3); border-radius: 4px;
+  transition: all 0.2s;
+  &:hover { background: rgba(91,143,249,0.15); color: #7da8fb; }
+}
+.grade-tag-不合格 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(232,100,82,0.2); color: #e86452; }
 </style>
 
 <style lang="scss">
+.map-info-popup {
+  background: rgba(13, 31, 60, 0.96); border: 1px solid rgba(91, 143, 249, 0.4);
+  border-radius: 6px; padding: 10px 14px; min-width: 200px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  .popup-row {
+    display: flex; align-items: baseline; gap: 6px; padding: 3px 0;
+    font-size: 12px;
+  }
+  .popup-label { color: rgba(255, 255, 255, 0.55); white-space: nowrap; &::after { content: '：'; } }
+  .popup-value { color: #fff; font-weight: 500;
+    &.grade { font-weight: 700; }
+  }
+  .popup-monitor-btn {
+    font-size: 12px; color: #5b8ff9; cursor: pointer;
+    padding: 3px 10px; border: 1px solid rgba(91,143,249,0.3); border-radius: 3px;
+    &:hover { background: rgba(91,143,249,0.15); color: #7da8fb; }
+  }
+}
+
 .facility-modal {
   .ant-modal-content {
     background: linear-gradient(180deg, #0d1f3c, #0a1628);
@@ -1313,13 +2057,13 @@ watch(activeLayer, () => {
 
 // 在线监测页面样式
 .monitor-body {
-  grid-template-columns: 380px 1fr 400px !important;
+  grid-template-columns: 440px 1fr 460px !important;
 }
-.monitor-left { display: flex; flex-direction: column; gap: 12px; }
-.monitor-center { display: flex; flex-direction: column; gap: 12px; }
-.monitor-right { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+.monitor-left { display: flex; flex-direction: column; gap: 8px; }
+.monitor-center { display: flex; flex-direction: column; gap: 8px; }
+.monitor-right { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
 
-.monitor-device-card { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.monitor-device-card { flex: 0 1 auto; display: flex; flex-direction: column; overflow: hidden; }
 .device-list {
   flex: 1; overflow-y: auto; margin-top: 8px;
   &::-webkit-scrollbar { width: 6px; }
@@ -1359,10 +2103,10 @@ watch(activeLayer, () => {
 .weight-cell { color: #f6a816; font-weight: 600; }
 
 .monitor-map-card { flex: 1; min-height: 200px; display: flex; flex-direction: column; position: relative; }
-.map-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; }
-.monitor-svg { width: 100%; height: 100%; }
+.map-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.monitor-svg { width: 100%; height: 100%; position: relative; z-index: 2; }
 
-.alarm-stats-card { flex-shrink: 0; }
+.alarm-stats-card { flex: 1; min-height: 0; overflow: hidden; }
 .alarm-cards {
   display: flex; gap: 12px; margin: 8px 0;
 }
@@ -1411,22 +2155,7 @@ watch(activeLayer, () => {
   }
 }
 .map-layer-panel {
-  position: absolute; bottom: 12px; right: 12px; z-index: 10;
-  background: rgba(13,31,60,0.9); border: 1px solid rgba(100,160,255,0.3); border-radius: 6px;
-  padding: 8px 12px; display: flex; flex-direction: column; gap: 6px;
-  .layer-item {
-    display: flex; align-items: center; gap: 6px; cursor: pointer;
-    font-size: 13px; color: rgba(255,255,255,0.6); white-space: nowrap;
-    .layer-radio {
-      display: inline-block; width: 12px; height: 12px; border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.4); flex-shrink: 0;
-    }
-    &.active {
-      color: rgba(255,255,255,0.9);
-      .layer-radio { border-color: #5b8ff9; background: #5b8ff9; }
-    }
-    &:hover { color: rgba(255,255,255,0.8); }
-  }
+  display: none; /* replaced by horizontal tabs */
 }
 .link-btn { font-size: 12px; color: #5b8ff9; cursor: pointer; text-decoration: none; &:hover { text-decoration: underline; } }
 

@@ -108,6 +108,18 @@ const routes = [
         meta: { title: '隧道监测预警' },
       },
       {
+        path: 'flood-monitor-device',
+        name: 'FloodMonitorDevice',
+        component: () => import('@/views/FloodMonitorDevice.vue'),
+        meta: { title: '积水监测设备' },
+      },
+      {
+        path: 'camera-device',
+        name: 'CameraDevice',
+        component: () => import('@/views/CameraDevice.vue'),
+        meta: { title: '摄像头' },
+      },
+      {
         path: 'org-personnel',
         name: 'OrgPersonnel',
         component: () => import('@/views/OrganizationPersonnel.vue'),

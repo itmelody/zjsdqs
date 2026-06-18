@@ -120,7 +120,7 @@ const currentSiderMenuItems = computed(() => {
   if (path === '/dashboard' || path === '/todo') {
     return workspaceMenuItems.value
   }
-  if (path.includes('monitor-') || path.includes('weigh-monitor')) {
+  if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
     return iotMenuItems.value
   }
   if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
@@ -145,7 +145,7 @@ watch(
       selectedKeys.value = ['1']
     } else if (path.includes('hazard-investigation')) {
       selectedKeys.value = ['5']
-    } else if (path.includes('monitor-') || path.includes('weigh-monitor')) {
+    } else if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
       selectedKeys.value = ['3']
     } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
       selectedKeys.value = ['4']
@@ -162,6 +162,12 @@ watch(
       siderSelectedKeys.value = ['tunnel-info']
     } else if (path.includes('road-info')) {
       siderSelectedKeys.value = ['road-info']
+    } else if (path.includes('flood-monitor-device')) {
+      siderSelectedKeys.value = ['flood-monitor-device']
+      openKeys.value = ['iot-flood-device']
+    } else if (path.includes('camera-device')) {
+      siderSelectedKeys.value = ['camera-device']
+      openKeys.value = ['iot-flood-device']
     } else if (path.includes('road-monitor-device')) {
       siderSelectedKeys.value = ['road-monitor-device']
       openKeys.value = ['iot-device']
@@ -273,6 +279,14 @@ const iotMenuItems = ref<MenuProps['items']>([
       { key: 'tunnel-monitor-alert', label: '隧道监测预警' },
     ],
   },
+  {
+    key: 'iot-flood-device',
+    label: '内涝物联设备信息',
+    children: [
+      { key: 'flood-monitor-device', label: '积水监测设备' },
+      { key: 'camera-device', label: '摄像头' },
+    ],
+  },
 ])
 
 // 机构人员管理侧边栏菜单
@@ -359,6 +373,10 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/monitor-alert')
   } else if (info.key === 'tunnel-monitor-alert') {
     router.push('/tunnel-monitor-alert')
+  } else if (info.key === 'flood-monitor-device') {
+    router.push('/flood-monitor-device')
+  } else if (info.key === 'camera-device') {
+    router.push('/camera-device')
   } else if (info.key === 'org-personnel') {
     router.push('/org-personnel')
   } else if (info.key === 'org-enterprise') {
