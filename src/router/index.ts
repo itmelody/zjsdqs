@@ -198,6 +198,12 @@ const routes = [
     component: () => import('@/views/Cockpit.vue'),
     meta: { title: '驾驶舱' },
   },
+  {
+    path: '/bridge-point-monitor',
+    name: 'BridgePointMonitor',
+    component: () => import('@/views/BridgePointMonitor.vue'),
+    meta: { title: '点位监测' },
+  },
 ]
 
 const router = createRouter({

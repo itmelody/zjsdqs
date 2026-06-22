@@ -369,6 +369,7 @@
                 <span class="ra-col-area">所属区域</span>
                 <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
                 <span class="ra-col-grade">综合评价等级</span>
+                <span class="ra-col-rectype">整改类型</span>
                 <span class="ra-col-status">整改状态</span>
               </div>
               <div class="risk-alert-body">
@@ -378,6 +379,7 @@
                   <span class="ra-col-grade">
                     <span :class="'grade-tag-' + item.grade">{{ item.grade }}</span>
                   </span>
+                  <span class="ra-col-rectype">{{ item.rectype }}</span>
                   <span class="ra-col-status">
                     <span :class="item.done ? 'status-done' : 'status-undone'">{{ item.done ? '已完成' : '未完成' }}</span>
                   </span>
@@ -385,11 +387,47 @@
               </div>
             </div>
           </template>
-          <template v-else>
-            <!-- 安全评估：暂无数据 -->
+          <template v-else-if="riskType === 'assess'">
+            <div class="risk-section">
+              <div ref="assessChartRef" class="chart-medium"></div>
+              <div class="risk-legend">
+                <span v-for="r in assessCategories" :key="r.name" class="legend-item">
+                  <span class="legend-dot" :style="{ background: r.color }"></span>{{ r.name }}
+                </span>
+              </div>
+            </div>
+            <div class="risk-metrics">
+              <div class="risk-item"><div class="risk-num orange">86</div><div class="risk-label">隐患总数</div></div>
+              <div class="risk-item"><div class="risk-num green">64</div><div class="risk-label">已整改</div></div>
+              <div class="risk-item"><div class="risk-num cyan">74.4%</div><div class="risk-label">整改率</div></div>
+            </div>
+            <div class="risk-alert-list">
+              <div class="risk-alert-header">
+                <span class="ra-col-area">所属区域</span>
+                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
+                <span class="ra-col-project">评估项目</span>
+                <span class="ra-col-entity">评估主体</span>
+                <span class="ra-col-level">隐患等级</span>
+                <span class="ra-col-status">整改状态</span>
+              </div>
+              <div class="risk-alert-body">
+                <div v-for="item in assessList" :key="item.id" class="risk-alert-row">
+                  <span class="ra-col-area">{{ item.area }}</span>
+                  <span class="ra-col-name">{{ item.road }}</span>
+                  <span class="ra-col-project">{{ item.project }}</span>
+                  <span class="ra-col-entity">{{ item.entity }}</span>
+                  <span class="ra-col-level">
+                    <span :class="'hidden-tag-' + item.level">{{ assessLevelText(item.level) }}</span>
+                  </span>
+                  <span class="ra-col-status">
+                    <span :class="item.fixed ? 'status-done' : 'status-undone'">{{ item.fixed ? '已整改' : '待整改' }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
           </template>
           <div class="risk-detail-btn-wrap">
-            <span class="risk-detail-btn" @click="() => {}">查看详情 &gt;</span>
+            <span class="risk-detail-btn" @click="openRiskDetailModal">查看详情 &gt;</span>
           </div>
         </div>
       </div>
@@ -489,6 +527,35 @@
           <div class="map-placeholder">
             <div ref="monitorMapRef" class="amap-container"></div>
           </div>
+          <!-- 底部图例控制面板 -->
+          <div class="map-legend">
+            <div class="legend-checkbox-panel">
+              <template v-if="monitorSubLayer === 'type'">
+                <label class="checkbox-item" v-for="rt in monitorTypeLegend" :key="rt.key">
+                  <span class="custom-checkbox" :class="{ checked: (monitorTypeChecked as any)[rt.key] }" @click="(monitorTypeChecked as any)[rt.key] = !(monitorTypeChecked as any)[rt.key]">
+                    <svg v-if="(monitorTypeChecked as any)[rt.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
+                  </span>
+                  <span class="legend-line" :style="{ background: rt.color }"></span>
+                  <span class="checkbox-label">{{ rt.name }}</span>
+                </label>
+              </template>
+              <template v-else>
+                <label class="checkbox-item" v-for="re in monitorEvalLegend" :key="re.key">
+                  <span class="custom-checkbox" :class="{ checked: (monitorEvalChecked as any)[re.key] }" @click="(monitorEvalChecked as any)[re.key] = !(monitorEvalChecked as any)[re.key]">
+                    <svg v-if="(monitorEvalChecked as any)[re.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
+                  </span>
+                  <span class="legend-line" :style="{ background: re.color }"></span>
+                  <span class="checkbox-label">{{ re.name }}</span>
+                </label>
+              </template>
+            </div>
+            <div class="legend-control-panel">
+              <div class="sub-layer-btns">
+                <span class="radio-item" :class="{ selected: monitorSubLayer === 'type' }" @click="monitorSubLayer = 'type'"><span class="radio-dot"></span>{{ layerNameMap[monitorLayer] }}类型</span>
+                <span class="radio-item" :class="{ selected: monitorSubLayer === 'eval' }" @click="monitorSubLayer = 'eval'"><span class="radio-dot"></span>{{ layerNameMap[monitorLayer] }}评价</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -559,7 +626,25 @@
       <a-table :columns="facilityColumns[activeLayer]" :data-source="facilityData[activeLayer]" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
     </a-modal>
 
-    <!-- 设备详情弹窗 -->
+    <!-- 风险清单-隐患排查详情弹窗 -->
+    <a-modal v-model:open="riskDetail.hidden" :title="'隐患排查详情'" width="1100px" :footer="null" class="risk-detail-modal">
+      <a-table :columns="riskDetailColumns.hidden" :data-source="riskDetailPageData.hidden" :pagination="{ current: riskDetailPage.hidden, pageSize: 10, total: riskDetailData.hidden.length, showTotal: (t: number) => `共${t}条`, onChange: (p: number) => { riskDetailPage.hidden = p } }" size="small" bordered />
+    </a-modal>
+
+    <!-- 风险清单-设备监测详情弹窗 -->
+    <a-modal v-model:open="riskDetail.device" :title="'设备监测详情'" width="1200px" :footer="null" class="risk-detail-modal">
+      <a-table :columns="riskDetailColumns.device" :data-source="riskDetailPageData.device" :pagination="{ current: riskDetailPage.device, pageSize: 10, total: riskDetailData.device.length, showTotal: (t: number) => `共${t}条`, onChange: (p: number) => { riskDetailPage.device = p } }" size="small" bordered />
+    </a-modal>
+
+    <!-- 风险清单-设施检测详情弹窗 -->
+    <a-modal v-model:open="riskDetail.inspect" :title="'设施检测详情'" width="1200px" :footer="null" class="risk-detail-modal">
+      <a-table :columns="riskDetailColumns.inspect" :data-source="riskDetailPageData.inspect" :pagination="{ current: riskDetailPage.inspect, pageSize: 10, total: riskDetailData.inspect.length, showTotal: (t: number) => `共${t}条`, onChange: (p: number) => { riskDetailPage.inspect = p } }" size="small" bordered />
+    </a-modal>
+
+    <!-- 风险清单-安全评估详情弹窗 -->
+    <a-modal v-model:open="riskDetail.assess" :title="'安全评估详情'" width="1200px" :footer="null" class="risk-detail-modal">
+      <a-table :columns="riskDetailColumns.assess" :data-source="riskDetailPageData.assess" :pagination="{ current: riskDetailPage.assess, pageSize: 10, total: riskDetailData.assess.length, showTotal: (t: number) => `共${t}条`, onChange: (p: number) => { riskDetailPage.assess = p } }" size="small" bordered />
+    </a-modal>
     <a-modal v-model:open="showDeviceDetailModal" title="设备列表" width="1200px" :footer="null" class="device-detail-modal">
       <div class="modal-filter-bar">
         <div class="filter-item">
@@ -598,12 +683,13 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { Modal as AModal, Table as ATable } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import * as echarts from 'echarts'
 
 const router = useRouter()
+const route = useRoute()
 
 const statsChartRef = ref<HTMLElement | null>(null)
 const riskChartRef = ref<HTMLElement | null>(null)
@@ -811,7 +897,12 @@ function initMonitorMapOverlays() {
           html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value">${v}</span></div>`
         }
       }
-      html += `<div class="popup-row" style="justify-content:flex-end;margin-top:6px;"><span class="popup-monitor-btn">查看点位监测 &gt;</span></div>`
+      if (monitorLayer.value === 'bridge') {
+        const bridgeName = (fac.info as any)['桥梁名称'] || ''
+        html += `<div class="popup-row" style="justify-content:flex-end;margin-top:6px;"><span class="popup-monitor-btn" onclick="window.__goBridgePointMonitor && window.__goBridgePointMonitor('${bridgeName}')">查看点位监测 &gt;</span></div>`
+      } else {
+        html += `<div class="popup-row" style="justify-content:flex-end;margin-top:6px;"><span class="popup-monitor-btn" style="opacity:0.5;cursor:default;">查看点位监测 &gt;</span></div>`
+      }
       html += '</div>'
       monitorMapInfoWindow.setContent(html)
       monitorMapInfoWindow.open(monitorMap, new AMap.LngLat(mid[0], mid[1]))
@@ -1001,6 +1092,13 @@ const currentEvalLegend = computed(() => activeLayer.value === 'bridge' ? bridge
 const currentTypeChecked = computed(() => activeLayer.value === 'bridge' ? bridgeTypeChecked : activeLayer.value === 'tunnel' ? tunnelTypeChecked : roadTypeChecked)
 const currentEvalChecked = computed(() => activeLayer.value === 'bridge' ? bridgeEvalChecked : activeLayer.value === 'tunnel' ? tunnelEvalChecked : roadEvalChecked)
 
+// 在线监测图例联动
+const monitorSubLayer = ref<'type' | 'eval'>('type')
+const monitorTypeLegend = computed(() => monitorLayer.value === 'bridge' ? bridgeTypeLegend : monitorLayer.value === 'tunnel' ? tunnelTypeLegend : roadTypeLegend)
+const monitorEvalLegend = computed(() => monitorLayer.value === 'bridge' ? bridgeEvalLegend : monitorLayer.value === 'tunnel' ? tunnelEvalLegend : roadEvalLegend)
+const monitorTypeChecked = computed(() => monitorLayer.value === 'bridge' ? bridgeTypeChecked : monitorLayer.value === 'tunnel' ? tunnelTypeChecked : roadTypeChecked)
+const monitorEvalChecked = computed(() => monitorLayer.value === 'bridge' ? bridgeEvalChecked : monitorLayer.value === 'tunnel' ? tunnelEvalChecked : roadEvalChecked)
+
 const roadCategories = [
   { name: '快速路', value: '153,975 km', num: 153975, color: '#e86452' },
   { name: '主干路', value: '6,133.11 km', num: 6133.11, color: '#5b8ff9' },
@@ -1062,6 +1160,12 @@ const alertList = computed(() => {
 })
 
 // 隐患排查数据
+const inspectProjectMap: Record<string, string[]> = {
+  road: ['道路设施', '道路照明设施'],
+  bridge: ['桥梁设施', '人行天桥设施', '照明设施'],
+  tunnel: ['隧道设施', '下穿通道设施', '人行地道设施'],
+}
+
 const hiddenRiskChartRef = ref<HTMLElement | null>(null)
 let hiddenRiskChart: echarts.ECharts | null = null
 const hiddenRiskCategories = [
@@ -1072,18 +1176,62 @@ const hiddenRiskCategories = [
 function hiddenLevelText(level: number) {
   return level === 1 ? '一般隐患' : level === 2 ? '较大隐患' : '重大隐患'
 }
-const hiddenDangerList = [
-  { id: 1, area: '上城区', road: '石贯子巷', project: '路面平整度', content: '路面坑洼严重', level: 1, fixed: true },
-  { id: 2, area: '上城区', road: '中山中路', project: '排水设施', content: '排水管道堵塞', level: 2, fixed: false },
-  { id: 3, area: '拱墅区', road: '环城北路', project: '护栏完好性', content: '护栏损坏缺失', level: 3, fixed: false },
-  { id: 4, area: '西湖区', road: '文三路', project: '路基稳定性', content: '路基局部沉陷', level: 2, fixed: true },
-  { id: 5, area: '滨江区', road: '江南大道', project: '照明设施', content: '路灯不亮多处', level: 1, fixed: true },
-  { id: 6, area: '上城区', road: '解放路', project: '伸缩缝状态', content: '伸缩缝破损', level: 2, fixed: false },
-  { id: 7, area: '拱墅区', road: '莫干山路', project: '支座状态', content: '支座锈蚀严重', level: 3, fixed: true },
-  { id: 8, area: '西湖区', road: '天目山路', project: '墙体裂缝', content: '挡墙裂缝扩展', level: 1, fixed: false },
-  { id: 9, area: '滨江区', road: '时代大道', project: '地基沉降', content: '地基不均匀沉降', level: 2, fixed: true },
-  { id: 10, area: '上城区', road: '延安路', project: '防水层状态', content: '防水层老化破损', level: 3, fixed: false },
+const hiddenDangerBaseData = [
+  { id: 1, area: '上城区', road: '石贯子巷', level: 1, fixed: true },
+  { id: 2, area: '上城区', road: '中山中路', level: 2, fixed: false },
+  { id: 3, area: '拱墅区', road: '环城北路', level: 3, fixed: false },
+  { id: 4, area: '西湖区', road: '文三路', level: 2, fixed: true },
+  { id: 5, area: '滨江区', road: '江南大道', level: 1, fixed: true },
+  { id: 6, area: '上城区', road: '解放路', level: 2, fixed: false },
+  { id: 7, area: '拱墅区', road: '莫干山路', level: 3, fixed: true },
+  { id: 8, area: '西湖区', road: '天目山路', level: 1, fixed: false },
+  { id: 9, area: '滨江区', road: '时代大道', level: 2, fixed: true },
+  { id: 10, area: '上城区', road: '延安路', level: 3, fixed: false },
 ]
+const hiddenDangerList = computed(() => {
+  const projects = inspectProjectMap[activeLayer.value] || inspectProjectMap.road
+  const contentMap: Record<string, string> = {
+    '道路设施': '路面破损严重', '道路照明设施': '路灯不亮多处',
+    '桥梁设施': '支座锈蚀严重', '人行天桥设施': '栏杆损坏', '照明设施': '灯具缺失',
+    '隧道设施': '通风设备故障', '下穿通道设施': '排水不畅', '人行地道设施': '照明损坏',
+  }
+  return hiddenDangerBaseData.map((d, i) => ({
+    ...d,
+    project: projects[i % projects.length],
+    content: contentMap[projects[i % projects.length]] || '设施损坏',
+  }))
+})
+
+// 安全评估数据
+const assessChartRef = ref<HTMLElement | null>(null)
+let assessChart: echarts.ECharts | null = null
+const assessCategories = [
+  { name: '一般隐患', color: '#5b8ff9' },
+  { name: '较大隐患', color: '#f6bd16' },
+  { name: '重大隐患', color: '#e86452' },
+]
+function assessLevelText(level: number) {
+  return level === 1 ? '一般隐患' : level === 2 ? '较大隐患' : '重大隐患'
+}
+const assessBaseData = [
+  { id: 1, area: '上城区', road: '石贯子巷', entity: '浙江安盛检测有限公司', level: 1, fixed: true },
+  { id: 2, area: '上城区', road: '中山中路', entity: '杭州市政工程检测中心', level: 2, fixed: false },
+  { id: 3, area: '拱墅区', road: '环城北路', entity: '浙江中检工程技术有限公司', level: 3, fixed: false },
+  { id: 4, area: '西湖区', road: '文三路', entity: '杭州道桥检测有限公司', level: 2, fixed: true },
+  { id: 5, area: '滨江区', road: '江南大道', entity: '浙江省建设工程质量检测站', level: 1, fixed: true },
+  { id: 6, area: '上城区', road: '解放路', entity: '浙江安盛检测有限公司', level: 2, fixed: false },
+  { id: 7, area: '拱墅区', road: '莫干山路', entity: '杭州市政工程检测中心', level: 3, fixed: true },
+  { id: 8, area: '西湖区', road: '天目山路', entity: '浙江中检工程技术有限公司', level: 1, fixed: false },
+  { id: 9, area: '滨江区', road: '时代大道', entity: '杭州道桥检测有限公司', level: 2, fixed: true },
+  { id: 10, area: '上城区', road: '延安路', entity: '浙江省建设工程质量检测站', level: 3, fixed: false },
+]
+const assessList = computed(() => {
+  const projects = inspectProjectMap[activeLayer.value] || inspectProjectMap.road
+  return assessBaseData.map((d, i) => ({
+    ...d,
+    project: projects[i % projects.length],
+  }))
+})
 
 // 设施检测数据
 const inspectMetrics = computed(() => {
@@ -1114,40 +1262,181 @@ const inspectMetrics = computed(() => {
 const inspectList = computed(() => {
   if (activeLayer.value === 'bridge') {
     return [
-      { id: 1, area: '上城区', road: '梁山西路桥', grade: 'D', done: false },
-      { id: 2, area: '滨江区', road: '复兴大桥', grade: 'E', done: true },
-      { id: 3, area: '上城区', road: '备塘河桥', grade: 'D', done: true },
-      { id: 4, area: '西湖区', road: '圆球山立交桥', grade: '不合格', done: false },
-      { id: 5, area: '拱墅区', road: '半山桥', grade: 'E', done: true },
-      { id: 6, area: '上城区', road: '乌桥', grade: '不合格', done: false },
-      { id: 7, area: '萧山区', road: '青岛大桥', grade: 'D', done: true },
-      { id: 8, area: '余杭区', road: '三角岗桥', grade: 'E', done: false },
+      { id: 1, area: '上城区', road: '梁山西路桥', grade: 'D', done: false, rectype: '维修整治' },
+      { id: 2, area: '滨江区', road: '复兴大桥', grade: 'E', done: true, rectype: '拆除或完全封控' },
+      { id: 3, area: '上城区', road: '备塘河桥', grade: 'D', done: true, rectype: '维修整治' },
+      { id: 4, area: '西湖区', road: '圆球山立交桥', grade: '不合格', done: false, rectype: '拆除或完全封控' },
+      { id: 5, area: '拱墅区', road: '半山桥', grade: 'E', done: true, rectype: '拆除或完全封控' },
+      { id: 6, area: '上城区', road: '乌桥', grade: '不合格', done: false, rectype: '维修整治' },
+      { id: 7, area: '萧山区', road: '青岛大桥', grade: 'D', done: true, rectype: '维修整治' },
+      { id: 8, area: '余杭区', road: '三角岗桥', grade: 'E', done: false, rectype: '拆除或完全封控' },
     ]
   } else if (activeLayer.value === 'tunnel') {
     return [
-      { id: 1, area: '西湖区', road: '紫金港北路下穿道', grade: 'D', done: true },
-      { id: 2, area: '上城区', road: '苏嘉路下穿道', grade: 'E', done: false },
-      { id: 3, area: '滨江区', road: '复兴路隧道', grade: 'D', done: true },
-      { id: 4, area: '上城区', road: '环城北路隧道', grade: 'E', done: false },
-      { id: 5, area: '拱墅区', road: '半山隧道', grade: 'D', done: true },
-      { id: 6, area: '上城区', road: '乌桥路地道', grade: 'E', done: false },
-      { id: 7, area: '萧山区', road: '青岛路隧道', grade: 'D', done: true },
-      { id: 8, area: '余杭区', road: '三角岗路地道', grade: 'E', done: false },
+      { id: 1, area: '西湖区', road: '紫金港北路下穿道', grade: 'D', done: true, rectype: '维修整治' },
+      { id: 2, area: '上城区', road: '苏嘉路下穿道', grade: 'E', done: false, rectype: '拆除或完全封控' },
+      { id: 3, area: '滨江区', road: '复兴路隧道', grade: 'D', done: true, rectype: '维修整治' },
+      { id: 4, area: '上城区', road: '环城北路隧道', grade: 'E', done: false, rectype: '拆除或完全封控' },
+      { id: 5, area: '拱墅区', road: '半山隧道', grade: 'D', done: true, rectype: '维修整治' },
+      { id: 6, area: '上城区', road: '乌桥路地道', grade: 'E', done: false, rectype: '拆除或完全封控' },
+      { id: 7, area: '萧山区', road: '青岛路隧道', grade: 'D', done: true, rectype: '维修整治' },
+      { id: 8, area: '余杭区', road: '三角岗路地道', grade: 'E', done: false, rectype: '维修整治' },
     ]
   }
   return [
-    { id: 1, area: '上城区', road: '石贯子巷', grade: 'D', done: false },
-    { id: 2, area: '上城区', road: '中山中路', grade: 'D', done: true },
-    { id: 3, area: '拱墅区', road: '环城北路', grade: 'D', done: true },
-    { id: 4, area: '西湖区', road: '文三路', grade: 'D', done: false },
-    { id: 5, area: '滨江区', road: '江南大道', grade: 'D', done: true },
-    { id: 6, area: '上城区', road: '解放路', grade: 'D', done: true },
-    { id: 7, area: '拱墅区', road: '莫干山路', grade: 'D', done: false },
-    { id: 8, area: '西湖区', road: '天目山路', grade: 'D', done: true },
-    { id: 9, area: '滨江区', road: '时代大道', grade: 'D', done: false },
-    { id: 10, area: '上城区', road: '延安路', grade: 'D', done: true },
+    { id: 1, area: '上城区', road: '石贯子巷', grade: 'D', done: false, rectype: '维修整治' },
+    { id: 2, area: '上城区', road: '中山中路', grade: 'D', done: true, rectype: '维修整治' },
+    { id: 3, area: '拱墅区', road: '环城北路', grade: 'D', done: true, rectype: '拆除或完全封控' },
+    { id: 4, area: '西湖区', road: '文三路', grade: 'D', done: false, rectype: '维修整治' },
+    { id: 5, area: '滨江区', road: '江南大道', grade: 'D', done: true, rectype: '拆除或完全封控' },
+    { id: 6, area: '上城区', road: '解放路', grade: 'D', done: true, rectype: '维修整治' },
+    { id: 7, area: '拱墅区', road: '莫干山路', grade: 'D', done: false, rectype: '拆除或完全封控' },
+    { id: 8, area: '西湖区', road: '天目山路', grade: 'D', done: true, rectype: '维修整治' },
+    { id: 9, area: '滨江区', road: '时代大道', grade: 'D', done: false, rectype: '维修整治' },
+    { id: 10, area: '上城区', road: '延安路', grade: 'D', done: true, rectype: '拆除或完全封控' },
   ]
 })
+
+// 风险清单详情弹窗
+const riskDetail = reactive({ hidden: false, device: false, inspect: false, assess: false })
+const riskDetailPage = reactive({ hidden: 1, device: 1, inspect: 1, assess: 1 })
+
+function openRiskDetailModal() {
+  const type = riskType.value
+  riskDetailPage[type] = 1
+  riskDetail[type] = true
+}
+
+const riskDetailColumns = {
+  hidden: [
+    { title: '所属区域', dataIndex: 'area', width: 100 },
+    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
+    { title: '检查项目', dataIndex: 'project', width: 130 },
+    { title: '上报内容', dataIndex: 'content', width: 150 },
+    { title: '隐患等级', dataIndex: 'levelText', width: 100 },
+    { title: '整改状态', dataIndex: 'status', width: 100 },
+    { title: '整改完成时间', dataIndex: 'doneTime', width: 150 },
+    { title: '整改人', dataIndex: 'handler', width: 100 },
+  ],
+  device: [
+    { title: '所属区域', dataIndex: 'area', width: 100 },
+    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
+    { title: '点位名称', dataIndex: 'point', width: 120 },
+    { title: '监测项', dataIndex: 'item', width: 100 },
+    { title: '预警等级', dataIndex: 'levelText', width: 100 },
+    { title: '处置状态', dataIndex: 'status', width: 100 },
+    { title: '处置完成时间', dataIndex: 'doneTime', width: 150 },
+    { title: '处置人', dataIndex: 'handler', width: 100 },
+  ],
+  inspect: [
+    { title: '所属区域', dataIndex: 'area', width: 100 },
+    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
+    { title: '综合评价等级', dataIndex: 'grade', width: 120 },
+    { title: '整改类型', dataIndex: 'rectype', width: 130 },
+    { title: '整改完成状态', dataIndex: 'status', width: 110 },
+    { title: '整改销号日期', dataIndex: 'doneTime', width: 150 },
+    {
+      title: '整改后评级', dataIndex: 'afterGrade', width: 120,
+      customRender: ({ text, record }: any) => {
+        if (record.rectype === '拆除或完全封控') return '-'
+        return text || '-'
+      }
+    },
+  ],
+  assess: [
+    { title: '所属区域', dataIndex: 'area', width: 100 },
+    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
+    { title: '评估项目', dataIndex: 'project', width: 130 },
+    { title: '评估主体', dataIndex: 'entity', width: 200 },
+    { title: '隐患等级', dataIndex: 'levelText', width: 100 },
+    { title: '整改状态', dataIndex: 'status', width: 100 },
+    { title: '整改完成时间', dataIndex: 'doneTime', width: 150 },
+    { title: '整改人', dataIndex: 'handler', width: 100 },
+  ],
+}
+
+const hiddenDetailBase = [
+  { area: '上城区', road: '石贯子巷', project: '道路设施', content: '路面破损严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
+  { area: '上城区', road: '中山中路', project: '道路照明设施', content: '路灯不亮多处', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '环城北路', project: '道路设施', content: '路面沉降严重', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '文三路', project: '道路照明设施', content: '灯杆倾斜危险', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-02', handler: '李明' },
+  { area: '滨江区', road: '江南大道', project: '道路设施', content: '路面裂缝扩展', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-20', handler: '王芳' },
+  { area: '上城区', road: '解放路', project: '道路照明设施', content: '线路老化故障', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '莫干山路', project: '道路设施', content: '路基塌陷风险', levelText: '重大隐患', status: '已整改', doneTime: '2026-05-10', handler: '陈强' },
+  { area: '西湖区', road: '天目山路', project: '道路照明设施', content: '灯具缺失严重', levelText: '一般隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '滨江区', road: '时代大道', project: '道路设施', content: '人行道砖松动', levelText: '较大隐患', status: '已整改', doneTime: '2026-01-25', handler: '赵军' },
+  { area: '上城区', road: '延安路', project: '道路照明设施', content: '配电箱损坏', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '萧山区', road: '市心路', project: '道路设施', content: '路面坑洼严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-08', handler: '刘洋' },
+  { area: '余杭区', road: '文一西路', project: '道路照明设施', content: '电缆破损漏电', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-15', handler: '周伟' },
+  { area: '上城区', road: '清泰路', project: '道路设施', content: '井盖缺失破损', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-18', handler: '吴静' },
+  { area: '拱墅区', road: '大关路', project: '道路照明设施', content: '灯臂锈蚀断裂', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '古翠路', project: '道路设施', content: '路面沥青剥落', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-22', handler: '孙磊' },
+]
+const deviceDetailBase = [
+  { area: '上城区', road: '石贯子巷', point: 'K1+200', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '上城区', road: '中山中路', point: 'K3+500', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-04-10', handler: '张伟' },
+  { area: '拱墅区', road: '环城北路', point: 'K2+100', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '文三路', point: 'K1+800', item: '变形', levelText: '三级预警', status: '已完成', doneTime: '2026-03-20', handler: '李明' },
+  { area: '滨江区', road: '江南大道', point: 'K4+200', item: '变形', levelText: '二级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '上城区', road: '解放路', point: 'K2+600', item: '变形', levelText: '一级预警', status: '已完成', doneTime: '2026-05-05', handler: '王芳' },
+  { area: '拱墅区', road: '莫干山路', point: 'K5+100', item: '变形', levelText: '三级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '天目山路', point: 'K3+400', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-04-25', handler: '陈强' },
+  { area: '滨江区', road: '时代大道', point: 'K2+900', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '上城区', road: '延安路', point: 'K1+500', item: '变形', levelText: '三级预警', status: '已完成', doneTime: '2026-05-18', handler: '赵军' },
+  { area: '萧山区', road: '市心路', point: 'K3+200', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '余杭区', road: '文一西路', point: 'K4+800', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-03-12', handler: '刘洋' },
+  { area: '上城区', road: '清泰路', point: 'K1+100', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-04-08', handler: '周伟' },
+  { area: '拱墅区', road: '大关路', point: 'K2+300', item: '变形', levelText: '三级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '古翠路', point: 'K1+600', item: '变形', levelText: '一级预警', status: '已完成', doneTime: '2026-05-30', handler: '吴静' },
+]
+const inspectDetailBase = [
+  { area: '上城区', road: '石贯子巷', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-03-20', afterGrade: 'C' },
+  { area: '上城区', road: '中山中路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-15', afterGrade: 'C' },
+  { area: '拱墅区', road: '环城北路', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-02-10', afterGrade: '-' },
+  { area: '西湖区', road: '文三路', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '滨江区', road: '江南大道', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-01-25', afterGrade: '-' },
+  { area: '上城区', road: '解放路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-05-08', afterGrade: 'C' },
+  { area: '拱墅区', road: '莫干山路', grade: 'D', rectype: '拆除或完全封控', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '西湖区', road: '天目山路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-02', afterGrade: 'B' },
+  { area: '滨江区', road: '时代大道', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '上城区', road: '延安路', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-03-30', afterGrade: '-' },
+  { area: '萧山区', road: '市心路', grade: 'E', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-02-18', afterGrade: '-' },
+  { area: '余杭区', road: '文一西路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-05-15', afterGrade: 'C' },
+  { area: '上城区', road: '清泰路', grade: 'E', rectype: '拆除或完全封控', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '拱墅区', road: '大关路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-22', afterGrade: 'C' },
+  { area: '西湖区', road: '古翠路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-03-10', afterGrade: 'B' },
+]
+const assessDetailBase = [
+  { area: '上城区', road: '石贯子巷', project: '道路设施', entity: '浙江安盛检测有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
+  { area: '上城区', road: '中山中路', project: '道路照明设施', entity: '杭州市政工程检测中心', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '环城北路', project: '道路设施', entity: '浙江中检工程技术有限公司', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '文三路', project: '道路照明设施', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-10', handler: '李明' },
+  { area: '滨江区', road: '江南大道', project: '道路设施', entity: '浙江省建设工程质量检测站', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-25', handler: '王芳' },
+  { area: '上城区', road: '解放路', project: '道路照明设施', entity: '浙江安盛检测有限公司', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '莫干山路', project: '道路设施', entity: '杭州市政工程检测中心', levelText: '重大隐患', status: '已整改', doneTime: '2026-05-12', handler: '陈强' },
+  { area: '西湖区', road: '天目山路', project: '道路照明设施', entity: '浙江中检工程技术有限公司', levelText: '一般隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '滨江区', road: '时代大道', project: '道路设施', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '已整改', doneTime: '2026-01-28', handler: '赵军' },
+  { area: '上城区', road: '延安路', project: '道路照明设施', entity: '浙江省建设工程质量检测站', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '萧山区', road: '市心路', project: '道路设施', entity: '浙江安盛检测有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-22', handler: '刘洋' },
+  { area: '余杭区', road: '文一西路', project: '道路照明设施', entity: '杭州市政工程检测中心', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-18', handler: '周伟' },
+  { area: '上城区', road: '清泰路', project: '道路设施', entity: '浙江中检工程技术有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-15', handler: '吴静' },
+  { area: '拱墅区', road: '大关路', project: '道路照明设施', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '古翠路', project: '道路设施', entity: '浙江省建设工程质量检测站', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-28', handler: '孙磊' },
+]
+
+const riskDetailData = {
+  hidden: hiddenDetailBase.map((d, i) => ({ ...d, key: i + 1 })),
+  device: deviceDetailBase.map((d, i) => ({ ...d, key: i + 1 })),
+  inspect: inspectDetailBase.map((d, i) => ({ ...d, key: i + 1 })),
+  assess: assessDetailBase.map((d, i) => ({ ...d, key: i + 1 })),
+}
+
+const riskDetailPageData = computed(() => ({
+  hidden: riskDetailData.hidden.slice((riskDetailPage.hidden - 1) * 10, riskDetailPage.hidden * 10),
+  device: riskDetailData.device.slice((riskDetailPage.device - 1) * 10, riskDetailPage.device * 10),
+  inspect: riskDetailData.inspect.slice((riskDetailPage.inspect - 1) * 10, riskDetailPage.inspect * 10),
+  assess: riskDetailData.assess.slice((riskDetailPage.assess - 1) * 10, riskDetailPage.assess * 10),
+}))
 
 // 在线监测数据
 const monitorCity = ref('浙江省')
@@ -1465,11 +1754,18 @@ function updateStatsChart() {
 }
 
 onMounted(() => {
+  // 处理从点位监测页返回时的query参数
+  if (route.query.tab === 'monitor') {
+    cockpitTab.value = 'monitor'
+    if (route.query.layer === 'bridge') monitorLayer.value = 'bridge'
+  }
   setTimeout(() => { initCharts(); initMonitorModuleCharts(); initTaskCharts() }, 100)
   // 初始化高德地图
   if ((window as any).AMap) {
     setTimeout(() => { initOverviewMap() }, 200)
   }
+  // 点位监测弹窗跳转
+  (window as any).__goBridgePointMonitor = (name?: string) => router.push({ path: '/bridge-point-monitor', query: { name: name || '' } })
 })
 onUnmounted(() => {
   statsChart?.dispose(); riskChart?.dispose()
@@ -1479,6 +1775,7 @@ onUnmounted(() => {
   hazardRateChart?.dispose(); inspectRateChart?.dispose()
   assessRateChart?.dispose(); inspectBarChart?.dispose()
   overviewMap?.destroy(); monitorMap?.destroy()
+  delete (window as any).__goBridgePointMonitor
 })
 
 // 返回工作台
@@ -1573,6 +1870,7 @@ watch(activeLayer, () => {
       })
     }
     if (riskType.value === 'hidden') initHiddenRiskChart()
+    if (riskType.value === 'assess') initAssessChart()
   })
 })
 
@@ -1590,6 +1888,27 @@ function initHiddenRiskChart() {
             { name: '一般隐患', value: 52, itemStyle: { color: '#5b8ff9' } },
             { name: '较大隐患', value: 32, itemStyle: { color: '#f6bd16' } },
             { name: '重大隐患', value: 12, itemStyle: { color: '#e86452' } },
+          ],
+        }],
+      })
+    }
+  })
+}
+
+function initAssessChart() {
+  nextTick(() => {
+    if (assessChartRef.value) {
+      if (assessChart) assessChart.dispose()
+      assessChart = echarts.init(assessChartRef.value)
+      assessChart.setOption({
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        series: [{
+          type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
+          label: { show: true, position: 'inside', fontSize: 11, fontWeight: 700, color: '#fff', formatter: '{c}' },
+          data: [
+            { name: '一般隐患', value: 48, itemStyle: { color: '#5b8ff9' } },
+            { name: '较大隐患', value: 28, itemStyle: { color: '#f6bd16' } },
+            { name: '重大隐患', value: 10, itemStyle: { color: '#e86452' } },
           ],
         }],
       })
@@ -1619,6 +1938,8 @@ watch(riskType, (val) => {
     })
   } else if (val === 'hidden') {
     initHiddenRiskChart()
+  } else if (val === 'assess') {
+    initAssessChart()
   }
 })
 </script>
@@ -1727,8 +2048,8 @@ watch(riskType, (val) => {
 
 /* 地图区 */
 .map-card { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-.map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; }
-.monitor-map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; }
+.map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; position: relative; }
+.monitor-map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; position: relative; }
 .map-btn {
   padding: 4px 14px; border-radius: 4px; font-size: 12px; cursor: pointer;
   color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04);
@@ -1818,7 +2139,7 @@ watch(riskType, (val) => {
   display: flex; flex-direction: column; gap: 6px;
 }
 .map-layer-tabs {
-  margin-right: auto;
+  position: absolute; left: 50%; transform: translateX(-50%);
   display: flex; gap: 4px;
   background: rgba(13,31,60,0.85); border: 1px solid rgba(100,160,255,0.25); border-radius: 6px;
   padding: 4px 6px;
@@ -1920,9 +2241,11 @@ watch(riskType, (val) => {
   .ra-col-point { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ra-col-item { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ra-col-project { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ra-col-entity { flex: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ra-col-content { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ra-col-level { flex: 1; }
   .ra-col-grade { flex: 1; }
+  .ra-col-rectype { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .ra-col-status { flex: 1; }
 }
 .alert-tag-1 { font-size: 10px; padding: 1px 4px; border-radius: 2px; background: rgba(148,95,185,0.2); color: #945fb9; }
@@ -2180,7 +2503,7 @@ watch(riskType, (val) => {
   }
 }
 
-.device-detail-modal, .alarm-detail-modal {
+.device-detail-modal, .alarm-detail-modal, .risk-detail-modal {
   .ant-modal-content {
     background: linear-gradient(180deg, #0d1f3c, #0a1628);
     border: 1px solid rgba(100,160,255,0.15); border-radius: 10px;
@@ -2214,11 +2537,15 @@ watch(riskType, (val) => {
     }
     .ant-table-tbody > tr:hover > td { background: rgba(91,143,249,0.06) !important; }
     .ant-pagination { margin-top: 12px;
+      .ant-pagination-total-text { color: rgba(255,255,255,0.7); }
       .ant-pagination-item { background: transparent; border-color: rgba(100,160,255,0.2);
-        a { color: rgba(255,255,255,0.6); }
+        a { color: rgba(255,255,255,0.7); }
       }
       .ant-pagination-item-active { border-color: #5b8ff9; background: rgba(91,143,249,0.15);
         a { color: #5b8ff9; }
+      }
+      .ant-pagination-prev, .ant-pagination-next {
+        .ant-pagination-item-link { background: transparent; border-color: rgba(100,160,255,0.2); color: rgba(255,255,255,0.7); }
       }
     }
   }
