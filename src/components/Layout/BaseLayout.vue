@@ -123,6 +123,9 @@ const currentSiderMenuItems = computed(() => {
   if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
     return iotMenuItems.value
   }
+  if (path.includes('hazard-')) {
+    return hazardMenuItems.value
+  }
   if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
     return orgPersonnelMenuItems.value
   }
@@ -143,7 +146,7 @@ watch(
       selectedKeys.value = ['dashboard']
     } else if (path.includes('bridge-info') || path.includes('tunnel-info') || path.includes('road-info')) {
       selectedKeys.value = ['1']
-    } else if (path.includes('hazard-investigation')) {
+    } else if (path.includes('hazard-')) {
       selectedKeys.value = ['5']
     } else if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
       selectedKeys.value = ['3']
@@ -156,6 +159,24 @@ watch(
       siderSelectedKeys.value = ['dashboard']
     } else if (path === '/todo') {
       siderSelectedKeys.value = ['todo']
+    } else if (path.includes('hazard-checklist-config')) {
+      siderSelectedKeys.value = ['hazard-checklist-config']
+      openKeys.value = ['hazard-basic']
+    } else if (path.includes('hazard-task-management')) {
+      siderSelectedKeys.value = ['hazard-task-management']
+      openKeys.value = ['hazard-basic']
+    } else if (path.includes('hazard-tool-tips')) {
+      siderSelectedKeys.value = ['hazard-tool-tips']
+      openKeys.value = ['hazard-basic']
+    } else if (path.includes('hazard-check-records')) {
+      siderSelectedKeys.value = ['hazard-check-records']
+      openKeys.value = ['hazard-result']
+    } else if (path.includes('hazard-problem-list')) {
+      siderSelectedKeys.value = ['hazard-problem-list']
+      openKeys.value = ['hazard-result']
+    } else if (path.includes('hazard-statistics')) {
+      siderSelectedKeys.value = ['hazard-statistics']
+      openKeys.value = ['hazard-result']
     } else if (path.includes('bridge-info')) {
       siderSelectedKeys.value = ['bridge-info']
     } else if (path.includes('tunnel-info')) {
@@ -289,6 +310,28 @@ const iotMenuItems = ref<MenuProps['items']>([
   },
 ])
 
+// 隐患排查侧边栏菜单
+const hazardMenuItems = ref<MenuProps['items']>([
+  {
+    key: 'hazard-basic',
+    label: '基础信息配置',
+    children: [
+      { key: 'hazard-checklist-config', label: '检查表配置' },
+      { key: 'hazard-task-management', label: '任务管理及发布' },
+      { key: 'hazard-tool-tips', label: '检查工具提示信息配置' },
+    ],
+  },
+  {
+    key: 'hazard-result',
+    label: '检查结果管理',
+    children: [
+      { key: 'hazard-check-records', label: '检查记录' },
+      { key: 'hazard-problem-list', label: '问题清单管理' },
+      { key: 'hazard-statistics', label: '统计分析' },
+    ],
+  },
+])
+
 // 机构人员管理侧边栏菜单
 const orgPersonnelMenuItems = ref<MenuProps['items']>([
   {
@@ -325,7 +368,7 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
   } else if (info.key === '1') {
     router.push('/bridge-info')
   } else if (info.key === '5') {
-    router.push('/hazard-investigation')
+    router.push('/hazard-checklist-config')
   } else if (info.key === '3') {
     router.push('/monitor-device')
   } else if (info.key === '4') {
@@ -393,6 +436,18 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/cert-inspection')
   } else if (info.key === 'org-cert-assessment') {
     router.push('/cert-assessment')
+  } else if (info.key === 'hazard-checklist-config') {
+    router.push('/hazard-checklist-config')
+  } else if (info.key === 'hazard-task-management') {
+    router.push('/hazard-task-management')
+  } else if (info.key === 'hazard-tool-tips') {
+    router.push('/hazard-tool-tips')
+  } else if (info.key === 'hazard-check-records') {
+    router.push('/hazard-check-records')
+  } else if (info.key === 'hazard-problem-list') {
+    router.push('/hazard-problem-list')
+  } else if (info.key === 'hazard-statistics') {
+    router.push('/hazard-statistics')
   }
 }
 </script>

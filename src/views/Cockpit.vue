@@ -505,8 +505,8 @@
         <div class="dark-card monitor-map-card">
           <div class="monitor-map-toolbar">
             <div class="map-layer-tabs">
-              <span class="layer-tab" :class="{ active: monitorLayer === 'road' }" @click="monitorLayer = 'road'">道路</span>
               <span class="layer-tab" :class="{ active: monitorLayer === 'bridge' }" @click="monitorLayer = 'bridge'">桥梁</span>
+              <span class="layer-tab" :class="{ active: monitorLayer === 'road' }" @click="monitorLayer = 'road'">道路</span>
               <span class="layer-tab" :class="{ active: monitorLayer === 'tunnel' }" @click="monitorLayer = 'tunnel'">隧道</span>
             </div>
             <div class="map-type-toggle" @click="toggleMapType">
@@ -598,7 +598,7 @@
           <table class="dark-table">
             <thead>
               <tr>
-                <th>道路名称</th>
+                <th>设施名称</th>
                 <th>车牌号</th>
                 <th>过车总重(吨)</th>
               </tr>
