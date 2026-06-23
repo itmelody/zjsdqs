@@ -1538,8 +1538,8 @@ const taskSections = computed(() => {
         { value: '200', label: `应检${name}` },
         { value: '40', label: `已检${name}` },
         { value: '19.9%', label: '完成率' },
-        { value: '30', label: '检测即将超期' },
-        { value: '10', label: '检测已逾期' },
+        { value: '30', label: '即将超期（不足30天）' },
+        { value: '10', label: '超期未检' },
       ],
     },
     {
@@ -1698,7 +1698,7 @@ function initTaskCharts() {
         splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)', type: 'dashed' } },
       },
       yAxis: {
-        type: 'category', data: ['检测已逾期', '检测即将超期'],
+        type: 'category', data: ['超期未检', '即将超期（不足30天）'],
         axisLabel: { fontSize: 10, color: 'rgba(255,255,255,0.5)', interval: 0 },
         axisTick: { show: false },
         axisLine: { show: false },
