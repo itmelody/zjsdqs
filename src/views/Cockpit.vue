@@ -30,17 +30,27 @@
             <div class="road-stats">
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">路网密度</div>
-                  <div class="stat-value cyan">8.35<span class="stat-unit"> km/km²</span></div>
+                  <div class="stat-label">道路总长</div>
+                  <div class="stat-value blue">1,256.8<span class="stat-unit"> km</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">道路总长</div>
-                  <div class="stat-value blue">17,669.381<span class="stat-unit"> km</span></div>
+                  <div class="stat-label">道路总面积</div>
+                  <div class="stat-value cyan">856.3<span class="stat-unit"> km²</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">建成区面积</div>
+                  <div class="stat-value green">412.5<span class="stat-unit"> km²</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">路网密度</div>
+                  <div class="stat-value yellow">1.52<span class="stat-unit"> km/km²</span></div>
                 </div>
               </div>
               <div class="stat-block sub">
-                <div class="stat-label">本年度新建道路里程</div>
-                <div class="stat-value orange">390.34<span class="stat-unit"> km</span></div>
+                <div class="stat-label">道路面积率</div>
+                <div class="stat-value orange">18.5<span class="stat-unit"> %</span></div>
               </div>
             </div>
             <div class="road-detail">
@@ -60,12 +70,16 @@
               <div class="stat-grid">
                 <div class="stat-block">
                   <div class="stat-label">城市桥梁总数</div>
-                  <div class="stat-value blue">14,713<span class="stat-unit"> 座</span></div>
+                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">30年以上桥龄</div>
-                  <div class="stat-value cyan">1,039<span class="stat-unit"> 座</span></div>
+                  <div class="stat-label">涉航桥梁总数</div>
+                  <div class="stat-value cyan">1,024<span class="stat-unit"> 座</span></div>
                 </div>
+              </div>
+              <div class="stat-block sub">
+                <div class="stat-label">30年以上桥龄</div>
+                <div class="stat-value green">256<span class="stat-unit"> 座</span></div>
               </div>
             </div>
             <div class="road-detail">
@@ -1100,18 +1114,18 @@ const monitorTypeChecked = computed(() => monitorLayer.value === 'bridge' ? brid
 const monitorEvalChecked = computed(() => monitorLayer.value === 'bridge' ? bridgeEvalChecked : monitorLayer.value === 'tunnel' ? tunnelEvalChecked : roadEvalChecked)
 
 const roadCategories = [
-  { name: '快速路', value: '153,975 km', num: 153975, color: '#e86452' },
-  { name: '主干路', value: '6,133.11 km', num: 6133.11, color: '#5b8ff9' },
-  { name: '次干路', value: '4,445.226 km', num: 4445.226, color: '#5ad8a6' },
-  { name: '支路', value: '3,920.524 km', num: 3920.524, color: '#f6bd16' },
+  { name: '快速路', value: '42.7 km', num: 42.7, color: '#e86452', density: 0.35, recommendRange: [0.3, 0.4] },
+  { name: '主干路', value: '63.2 km', num: 63.2, color: '#5b8ff9', density: 0.97, recommendRange: [1.0, 1.2] },
+  { name: '次干路', value: '46.4 km', num: 46.4, color: '#5ad8a6', density: 0.71, recommendRange: [1.2, 1.4] },
+  { name: '支路', value: '112.4 km', num: 112.4, color: '#f6bd16', density: 1.73, recommendRange: [3.0, 4.0] },
 ]
 const bridgeCategories = [
-  { name: '特大桥', value: '129 座', num: 129, color: '#e86452' },
-  { name: '大桥', value: '913 座', num: 913, color: '#5b8ff9' },
-  { name: '中小桥', value: '8,084 座', num: 8084, color: '#6dc8ec' },
-  { name: '立交桥', value: '134 座', num: 134, color: '#5ad8a6' },
-  { name: '高架桥', value: '76 座', num: 76, color: '#f6bd16' },
-  { name: '人行天桥', value: '129 座', num: 129, color: '#945fb9' },
+  { name: '特大型桥梁', value: '45 座', num: 45, color: '#e86452' },
+  { name: '大型桥梁', value: '156 座', num: 156, color: '#5b8ff9' },
+  { name: '中小桥', value: '2,356 座', num: 2356, color: '#6dc8ec' },
+  { name: '立交桥', value: '289 座', num: 289, color: '#5ad8a6' },
+  { name: '高架桥', value: '567 座', num: 567, color: '#f6bd16' },
+  { name: '人行天桥', value: '495 座', num: 495, color: '#945fb9' },
 ]
 const tunnelCategories = [
   { name: '特长隧道', value: '28 座', num: 28, color: '#e86452' },
@@ -1743,8 +1757,47 @@ function updateStatsChart() {
   if (!statsChart) return
   const cats = currentCategories.value
   const isRoad = activeLayer.value === 'road'
+  
+  let tooltipConfig: any
+  if (isRoad) {
+    tooltipConfig = {
+      trigger: 'item',
+      confine: true,
+      position: function(point: any, params: any, dom: any, rect: any, size: any) {
+        // 确保 tooltip 不超出容器
+        const x = Math.min(point[0], size.viewSize[0] - size.contentSize[0] - 10)
+        const y = Math.max(point[1] - size.contentSize[1] - 10, 10)
+        return [Math.max(x, 10), y]
+      },
+      formatter: (params: any) => {
+        const item = cats.find((c: any) => c.name === params.name)
+        if (!item) return `${params.name}: ${params.value} km (${params.percent}%)`
+        const isInRange = item.density >= item.recommendRange[0] && item.density <= item.recommendRange[1]
+        const statusColor = isInRange ? '#52c41a' : '#ff4d4f'
+        const statusText = isInRange ? '达标' : '不达标'
+        return `<div style="padding: 4px 0">
+          <div style="font-weight: bold; margin-bottom: 8px; font-size: 13px">${item.name}</div>
+          <div style="margin-bottom: 4px">
+            <span style="display:inline-block;width:8px;height:8px;background:${item.color};border-radius:2px;margin-right:6px"></span>
+            道路长度：<b>${item.num}</b> km
+          </div>
+          <div style="margin-bottom: 4px">
+            <span style="display:inline-block;width:8px;height:8px;background:${statusColor};border-radius:50%;margin-right:6px"></span>
+            路网密度：<b>${item.density}</b> km/km²
+            <span style="color:${statusColor};margin-left:4px">(${statusText})</span>
+          </div>
+          <div style="color:#fa8c16">
+            规范推荐值：<b>[${item.recommendRange[0]}, ${item.recommendRange[1]}]</b> km/km²
+          </div>
+        </div>`
+      },
+    }
+  } else {
+    tooltipConfig = { trigger: 'item', confine: true, formatter: '{b}: {c}座 ({d}%)' }
+  }
+  
   statsChart.setOption({
-    tooltip: { trigger: 'item', formatter: isRoad ? '{b}: {c}km ({d}%)' : '{b}: {c}座 ({d}%)' },
+    tooltip: tooltipConfig,
     series: [{
       type: 'pie', radius: ['50%', '75%'], center: ['50%', '50%'],
       label: { show: false },

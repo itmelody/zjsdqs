@@ -126,7 +126,7 @@ const currentSiderMenuItems = computed(() => {
   if (path.includes('hazard-')) {
     return hazardMenuItems.value
   }
-  if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
+  if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-') || path.includes('police-liaison')) {
     return orgPersonnelMenuItems.value
   }
   return siderMenuItems.value
@@ -150,7 +150,7 @@ watch(
       selectedKeys.value = ['5']
     } else if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
       selectedKeys.value = ['3']
-    } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-')) {
+    } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-') || path.includes('police-liaison')) {
       selectedKeys.value = ['4']
     }
 
@@ -221,6 +221,9 @@ watch(
       openKeys.value = ['iot-alert']
     } else if (path.includes('org-personnel')) {
       siderSelectedKeys.value = ['org-personnel']
+      openKeys.value = ['org-auth-config']
+    } else if (path.includes('police-liaison')) {
+      siderSelectedKeys.value = ['police-liaison']
       openKeys.value = ['org-auth-config']
     } else if (path.includes('org-enterprise')) {
       siderSelectedKeys.value = ['org-enterprise']
@@ -339,6 +342,7 @@ const orgPersonnelMenuItems = ref<MenuProps['items']>([
     label: '主管部门授权配置',
     children: [
       { key: 'org-personnel', label: '人员权限配置' },
+      { key: 'police-liaison', label: '公安交警联动' },
     ],
   },
   { key: 'org-enterprise', label: '企业基本信息' },
@@ -422,6 +426,8 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/camera-device')
   } else if (info.key === 'org-personnel') {
     router.push('/org-personnel')
+  } else if (info.key === 'police-liaison') {
+    router.push('/police-liaison')
   } else if (info.key === 'org-enterprise') {
     router.push('/org-enterprise')
   } else if (info.key === 'org-tp-maintenance') {

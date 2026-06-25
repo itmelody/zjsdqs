@@ -153,22 +153,41 @@
             <label>隐患等级</label>
             <a-select v-model:value="questionForm.level" placeholder="请选择" style="width: 260px">
               <a-select-option value="一般隐患">一般隐患</a-select-option>
+              <a-select-option value="较大隐患">较大隐患</a-select-option>
               <a-select-option value="重大隐患">重大隐患</a-select-option>
             </a-select>
-          </div>
-          <div class="form-item">
-            <label>整改要求</label>
-            <a-input v-model:value="questionForm.rectifyReq" placeholder="请输入" style="width: 260px" />
           </div>
         </div>
         <div class="form-row">
           <div class="form-item required">
             <label>是否必查</label>
             <a-select v-model:value="questionForm.mustCheck" placeholder="请选择" style="width: 260px">
+              <a-select-option value="选查">选查</a-select-option>
               <a-select-option value="必查">必查</a-select-option>
-              <a-select-option value="非必查">非必查</a-select-option>
             </a-select>
           </div>
+          <div class="form-item">
+            <label>整改要求</label>
+            <a-select v-model:value="questionForm.rectifyReq" placeholder="请选择" style="width: 260px" @change="handleRectifyReqChange">
+              <a-select-option value="立即整改">立即整改</a-select-option>
+              <a-select-option value="限期整改">限期整改</a-select-option>
+              <a-select-option value="制定计划按期整改">制定计划按期整改</a-select-option>
+            </a-select>
+          </div>
+        </div>
+        <div class="form-row" v-if="questionForm.rectifyReq === '立即整改' || questionForm.rectifyReq === '限期整改'">
+          <div class="form-item required">
+            <label>整改时间</label>
+            <a-input 
+              v-model:value="questionForm.rectifyDays" 
+              :disabled="questionForm.rectifyReq === '立即整改'"
+              placeholder="请输入天数" 
+              style="width: 260px" />
+            <span v-if="questionForm.rectifyReq === '立即整改'" style="margin-left: 8px; color: #999; font-size: 12px;">（固定3天）</span>
+            <span v-else style="margin-left: 8px; color: #999; font-size: 12px;">天</span>
+          </div>
+        </div>
+        <div class="form-row">
           <div class="form-item required">
             <label>整改后是否审核</label>
             <a-select v-model:value="questionForm.needAudit" placeholder="请选择" style="width: 260px">
@@ -269,6 +288,61 @@
         <a-button @click="bankVisible = false">取消</a-button>
       </div>
     </a-modal>
+    
+    <!-- 新增类别弹窗 -->
+    <a-modal v-model:open="categoryModalVisible" title="编辑类别" :footer="null" width="500px">
+      <div class="category-form">
+        <div class="form-item required">
+          <label>分项名称：</label>
+          <a-input v-model:value="newCategoryName" placeholder="请输入分项名称" />
+        </div>
+        <div class="form-item">
+          <label>备注：</label>
+          <a-input v-model:value="newCategoryRemark" placeholder="请输入备注" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a-button type="primary" @click="handleSaveCategory">保存</a-button>
+        <a-button @click="categoryModalVisible = false">取消</a-button>
+      </div>
+    </a-modal>
+    
+    <!-- 类别管理弹窗 -->
+    <a-modal v-model:open="categoryManageModalVisible" title="类别管理" :footer="null" width="900px">
+      <div class="category-manage-tip">
+        <span class="tip-icon">⚠️</span>
+        <span>提示：分项名称必填</span>
+      </div>
+      <a-table 
+        :columns="categoryManageColumns" 
+        :data-source="categoryListWithStatus"
+        :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }"
+        size="small" 
+        row-key="id" 
+        class="checklist-table">
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'index'">{{ record.id }}</template>
+          <template v-else-if="column.key === 'name'">
+            <a-input v-model:value="record.name" placeholder="请输入分项名称" />
+          </template>
+          <template v-else-if="column.key === 'remark'">
+            <a-input v-model:value="record.remark" placeholder="请输入备注" />
+          </template>
+          <template v-else-if="column.key === 'action'">
+            <a-button 
+              type="link" 
+              size="small" 
+              :style="{ color: record.status === '启用' ? '#faad14' : '#52c41a' }"
+              @click="toggleCategoryStatus(record)">
+              {{ record.status === '启用' ? '停用' : '启用' }}
+            </a-button>
+          </template>
+        </template>
+      </a-table>
+      <div class="modal-footer">
+        <a-button @click="categoryManageModalVisible = false">关闭</a-button>
+      </div>
+    </a-modal>
 
     <!-- 新建填报表弹窗 -->
     <a-modal v-model:open="createFormVisible" title="新建填报表" :footer="null" width="520px" class="create-form-modal">
@@ -316,10 +390,7 @@
         <div class="create-field required">
           <label>检查项目</label>
           <a-select v-model:value="createForm.project" placeholder="请选择" style="width: 100%">
-            <a-select-option value="桥梁设施">桥梁设施</a-select-option>
-            <a-select-option value="照明设施">照明设施</a-select-option>
-            <a-select-option value="人行天桥设施">人行天桥设施</a-select-option>
-            <a-select-option value="抗雪防冻">抗雪防冻</a-select-option>
+            <a-select-option v-for="item in availableProjects" :key="item" :value="item">{{ item }}</a-select-option>
           </a-select>
         </div>
       </div>
@@ -333,7 +404,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, watch } from 'vue'
 import { Modal, message } from 'ant-design-vue'
 
 /* ========== 主列表 ========== */
@@ -361,7 +432,6 @@ const tableData = ref([
   { id: 7, name: '测试', area: '浙江省', type: '日常检查', specialCategory: '', scene: '桥梁检查', project: '桥梁设施', region: '浙江省 / 杭州市 / 上城区', updateTime: '2026-04-22 14:13:27' },
   { id: 6, name: '照明', area: '浙江省', type: '日常检查', specialCategory: '', scene: '桥梁检查', project: '照明设施', region: '浙江省 / 杭州市 / 上城区', updateTime: '2026-04-16 09:00:09' },
   { id: 5, name: '人行', area: '浙江省', type: '日常检查', specialCategory: '', scene: '桥梁检查', project: '人行天桥设施', region: '浙江省 / 杭州市 / 上城区', updateTime: '2026-04-16 08:59:44' },
-  { id: 3, name: 'rqqq', area: '浙江省', type: '综合安全隐患排查', specialCategory: '季节性隐患排查', scene: '桥梁检查', project: '抗雪防冻', region: '浙江省 / 杭州市 / 上城区', updateTime: '2026-04-14 09:00:30' },
 ])
 
 const filteredData = computed(() => tableData.value.filter(row => {
@@ -388,18 +458,19 @@ const detailColumns = [
   { title: '隐患等级', dataIndex: 'level', key: 'level', width: 100, align: 'center' as const },
   { title: '是否必查', dataIndex: 'mustCheck', key: 'mustCheck', width: 90, align: 'center' as const },
   { title: '整改要求', dataIndex: 'rectifyReq', key: 'rectifyReq', width: 120 },
+  { title: '整改时间(天)', dataIndex: 'rectifyDays', key: 'rectifyDays', width: 100, align: 'center' as const },
   { title: '整改后是否审核', dataIndex: 'needAudit', key: 'needAudit', width: 120, align: 'center' as const },
   { title: '操作', key: 'action', width: 280, align: 'center' as const },
 ]
 
 const detailTableData = ref<any[]>([
-  { id: 1, category: 'AAA', desc: '1', level: '一般隐患', mustCheck: '必查', rectifyReq: '', needAudit: '否' },
+  { id: 1, category: 'AAA', desc: '1', level: '一般隐患', mustCheck: '必查', rectifyReq: '', rectifyDays: '', needAudit: '否' },
 ])
 
 function openDetail(record: any, edit: boolean) {
   currentRecord.value = { ...record }
   isEditMode.value = edit
-  detailTableData.value = [{ id: 1, category: 'AAA', desc: '1', level: '一般隐患', mustCheck: '必查', rectifyReq: '', needAudit: '否' }]
+  detailTableData.value = [{ id: 1, category: 'AAA', desc: '1', level: '一般隐患', mustCheck: '必查', rectifyReq: '', rectifyDays: '', needAudit: '否' }]
   detailVisible.value = true
 }
 
@@ -432,11 +503,22 @@ const questionVisible = ref(false)
 const editingQuestionIdx = ref(-1)
 const categoryList = ref(['AAA', 'BBB', '结构检查', '设施检查'])
 
+// 新增类别弹窗状态
+const categoryModalVisible = ref(false)
+const newCategoryName = ref('')
+const newCategoryRemark = ref('')
+const editingCategoryId = ref<number | null>(null)
+
+// 类别管理弹窗状态
+const categoryManageModalVisible = ref(false)
+const categoryListWithStatus = ref<any[]>([])
+
 const questionForm = reactive({
   category: undefined as string | undefined,
   desc: '',
   level: undefined as string | undefined,
   rectifyReq: '',
+  rectifyDays: '' as string | undefined,
   mustCheck: undefined as string | undefined,
   needAudit: undefined as string | undefined,
   checkNote: '',
@@ -452,12 +534,21 @@ const quickColumns = [
   { title: '操作', key: 'action', width: 80, align: 'center' as const },
 ]
 
+// 类别管理表格列定义
+const categoryManageColumns = [
+  { title: '序号', key: 'index', width: 60, align: 'center' as const },
+  { title: '分项名称', key: 'name', width: 300 },
+  { title: '备注', key: 'remark' },
+  { title: '操作', key: 'action', width: 100, align: 'center' as const },
+]
+
 function openNewQuestion(insertIdx?: number, isEdit?: boolean) {
   editingQuestionIdx.value = (isEdit && insertIdx !== undefined) ? insertIdx : -1
   questionForm.category = undefined
   questionForm.desc = ''
   questionForm.level = undefined
-  questionForm.rectifyReq = ''
+  questionForm.rectifyReq = undefined
+  questionForm.rectifyDays = undefined
   questionForm.mustCheck = undefined
   questionForm.needAudit = undefined
   questionForm.checkNote = ''
@@ -470,6 +561,7 @@ function openNewQuestion(insertIdx?: number, isEdit?: boolean) {
     questionForm.desc = row.desc
     questionForm.level = row.level
     questionForm.rectifyReq = row.rectifyReq
+    questionForm.rectifyDays = row.rectifyDays || ''
     questionForm.mustCheck = row.mustCheck
     questionForm.needAudit = row.needAudit
     questionForm.checkNote = (row as any).checkNote || ''
@@ -486,10 +578,55 @@ function removeQuickRow(index: number) {
 }
 
 function handleAddCategory() {
-  Modal.confirm({ title: '新增类别', content: '请输入新类别名称', okText: '确定', cancelText: '取消' })
+  editingCategoryId.value = null
+  newCategoryName.value = ''
+  newCategoryRemark.value = ''
+  categoryModalVisible.value = true
 }
+
+function handleSaveCategory() {
+  if (!newCategoryName.value.trim()) {
+    message.warning('请输入分项名称')
+    return
+  }
+  // 添加到 categoryList
+  categoryList.value.push(newCategoryName.value.trim())
+  message.success('添加成功')
+  categoryModalVisible.value = false
+}
+
+function handleRectifyReqChange(value: string) {
+  if (value === '立即整改') {
+    questionForm.rectifyDays = '3'
+  } else if (value === '限期整改') {
+    questionForm.rectifyDays = ''
+  } else {
+    questionForm.rectifyDays = undefined
+  }
+}
+
 function handleManageCategory() {
-  Modal.info({ title: '类别管理', content: '类别管理功能开发中', okText: '确定' })
+  // 将 categoryList 转换为带状态的列表
+  categoryListWithStatus.value = categoryList.value.map((name, index) => ({
+    id: index + 1,
+    name,
+    remark: '',
+    status: '启用'
+  }))
+  categoryManageModalVisible.value = true
+}
+
+function toggleCategoryStatus(record: any) {
+  Modal.confirm({
+    title: '确认操作',
+    content: `确定要${record.status === '启用' ? '停用' : '启用'}「${record.name}」吗？`,
+    okText: '确定',
+    cancelText: '取消',
+    onOk: () => {
+      record.status = record.status === '启用' ? '停用' : '启用'
+      message.success('操作成功')
+    }
+  })
 }
 
 function handleSaveQuestion() {
@@ -505,6 +642,7 @@ function handleSaveQuestion() {
     level: questionForm.level || '一般隐患',
     mustCheck: questionForm.mustCheck,
     rectifyReq: questionForm.rectifyReq || '',
+    rectifyDays: questionForm.rectifyDays || '',
     needAudit: questionForm.needAudit,
   }
 
@@ -583,6 +721,61 @@ const createForm = reactive({
   specialCategory: undefined as string | undefined,
   scene: undefined as string | undefined,
   project: undefined as string | undefined,
+})
+
+// 根据检查表类型、专项类别和检查场景动态生成检查项目选项
+const availableProjects = computed(() => {
+  const type = createForm.type
+  const specialCategory = createForm.specialCategory
+  const scene = createForm.scene
+  
+  if (!type || !scene) return []
+  
+  // 日常检查
+  if (type === '日常检查') {
+    if (scene === '桥梁检查') {
+      return ['桥梁设施', '人行天桥设施', '照明设施', '作业安全', '实施管理']
+    } else if (scene === '道路检查') {
+      return ['道路设施', '照明设施', '作业安全', '实施管理']
+    } else if (scene === '隧道检查') {
+      return ['隧道设施', '下穿通道设施', '人行地道设施', '作业安全', '实施管理']
+    }
+  }
+  
+  // 专项检查
+  if (type === '专项检查') {
+    if (specialCategory === '专业隐患排查') {
+      if (scene === '桥梁检查') {
+        return ['桥梁设施', '照明设施']
+      } else if (scene === '道路检查') {
+        return ['道路设施', '照明设施']
+      } else if (scene === '隧道检查') {
+        return ['隧道设施', '照明设施']
+      }
+    } else if (specialCategory === '季节性隐患排查') {
+      return ['防汛抗台', '抗雪防冻', '抗高温']
+    } else if (specialCategory === '重大活动/重大节日保障隐患排查') {
+      return ['重大活动/重大节日保障隐患排查']
+    }
+  }
+  
+  // 综合安全隐患排查
+  if (type === '综合安全隐患排查') {
+    if (scene === '桥梁检查') {
+      return ['桥梁管理', '桥梁设施']
+    } else if (scene === '道路检查') {
+      return ['道路管理', '道路设施']
+    } else if (scene === '隧道检查') {
+      return ['隧道管理', '隧道设施']
+    }
+  }
+  
+  return []
+})
+
+// 监听检查表类型、专项类别、检查场景变化，清空已选择的检查项目
+watch([() => createForm.type, () => createForm.specialCategory, () => createForm.scene], () => {
+  createForm.project = undefined
 })
 
 function openCreateForm() {
@@ -738,5 +931,22 @@ function handleCreateSaveAndEdit() {
 .create-footer {
   display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px;
   padding-top: 16px; border-top: 1px solid #f0f0f0;
+}
+
+/* 新增类别弹窗 */
+.category-form { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+.category-form .form-item {
+  display: flex; align-items: center; gap: 12px;
+  label { font-size: 13px; color: #333; width: 80px; text-align: right; flex-shrink: 0; }
+  &.required label::before { content: '* '; color: #ff4d4f; }
+  :deep(.ant-input) { flex: 1; }
+}
+
+/* 类别管理弹窗 */
+.category-manage-tip {
+  background: #fffbe6; border: 1px solid #ffe58f; border-radius: 6px;
+  padding: 8px 12px; margin-bottom: 16px; display: flex; align-items: center; gap: 6px;
+  font-size: 13px; color: #333;
+  .tip-icon { color: #faad14; }
 }
 </style>

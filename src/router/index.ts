@@ -128,6 +128,14 @@ const routes = [
         },
       },
       {
+        path: 'police-liaison',
+        name: 'PoliceLiaison',
+        component: () => import('@/views/PoliceLiaison.vue'),
+        meta: {
+          title: '公安交警联动',
+        },
+      },
+      {
         path: 'org-enterprise',
         name: 'OrgEnterprise',
         component: () => import('@/views/EnterpriseInfo.vue'),
