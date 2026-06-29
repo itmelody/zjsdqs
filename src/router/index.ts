@@ -227,6 +227,43 @@ const routes = [
         component: () => import('@/views/HazardStatistics.vue'),
         meta: { title: '统计分析' },
       },
+      // 检测管理路由
+      {
+        path: 'road-inspection-eval',
+        name: 'RoadInspectionEval',
+        component: () => import('@/views/RoadInspectionEval.vue'),
+        meta: { title: '道路检测评价' },
+      },
+      {
+        path: 'bridge-inspection-eval',
+        name: 'BridgeInspectionEval',
+        component: () => import('@/views/BridgeInspectionEval.vue'),
+        meta: { title: '桥梁检测评价' },
+      },
+      {
+        path: 'tunnel-inspection-eval',
+        name: 'TunnelInspectionEval',
+        component: () => import('@/views/TunnelInspectionEval.vue'),
+        meta: { title: '隧道检测评价' },
+      },
+      {
+        path: 'road-risk-rectify',
+        name: 'RoadRiskRectify',
+        component: () => import('@/views/RoadRiskRectify.vue'),
+        meta: { title: '道路风险整改' },
+      },
+      {
+        path: 'bridge-risk-rectify',
+        name: 'BridgeRiskRectify',
+        component: () => import('@/views/BridgeRiskRectify.vue'),
+        meta: { title: '桥梁风险整改' },
+      },
+      {
+        path: 'tunnel-risk-rectify',
+        name: 'TunnelRiskRectify',
+        component: () => import('@/views/TunnelRiskRectify.vue'),
+        meta: { title: '隧道风险整改' },
+      },
     ],
   },
   // 驾驶舱独立路由（不使用 BaseLayout）

@@ -126,6 +126,9 @@ const currentSiderMenuItems = computed(() => {
   if (path.includes('hazard-')) {
     return hazardMenuItems.value
   }
+  if (path.includes('inspection-eval') || path.includes('risk-rectify')) {
+    return detectionMenuItems.value
+  }
   if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-') || path.includes('police-liaison')) {
     return orgPersonnelMenuItems.value
   }
@@ -148,6 +151,8 @@ watch(
       selectedKeys.value = ['1']
     } else if (path.includes('hazard-')) {
       selectedKeys.value = ['5']
+    } else if (path.includes('inspection-eval') || path.includes('risk-rectify')) {
+      selectedKeys.value = ['2']
     } else if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
       selectedKeys.value = ['3']
     } else if (path.includes('org-personnel') || path.includes('org-enterprise') || path.includes('tp-') || path.includes('cert-') || path.includes('police-liaison')) {
@@ -245,6 +250,24 @@ watch(
     } else if (path.includes('cert-assessment')) {
       siderSelectedKeys.value = ['org-cert-assessment']
       openKeys.value = ['org-certification']
+    } else if (path.includes('road-inspection-eval')) {
+      siderSelectedKeys.value = ['road-inspection-eval']
+      openKeys.value = ['detection-eval']
+    } else if (path.includes('bridge-inspection-eval')) {
+      siderSelectedKeys.value = ['bridge-inspection-eval']
+      openKeys.value = ['detection-eval']
+    } else if (path.includes('tunnel-inspection-eval')) {
+      siderSelectedKeys.value = ['tunnel-inspection-eval']
+      openKeys.value = ['detection-eval']
+    } else if (path.includes('road-risk-rectify')) {
+      siderSelectedKeys.value = ['road-risk-rectify']
+      openKeys.value = ['detection-risk']
+    } else if (path.includes('bridge-risk-rectify')) {
+      siderSelectedKeys.value = ['bridge-risk-rectify']
+      openKeys.value = ['detection-risk']
+    } else if (path.includes('tunnel-risk-rectify')) {
+      siderSelectedKeys.value = ['tunnel-risk-rectify']
+      openKeys.value = ['detection-risk']
     }
   },
   { immediate: true }
@@ -335,6 +358,28 @@ const hazardMenuItems = ref<MenuProps['items']>([
   },
 ])
 
+// 检测管理侧边栏菜单
+const detectionMenuItems = ref<MenuProps['items']>([
+  {
+    key: 'detection-eval',
+    label: '检测评价管理',
+    children: [
+      { key: 'road-inspection-eval', label: '道路检测评价' },
+      { key: 'bridge-inspection-eval', label: '桥梁检测评价' },
+      { key: 'tunnel-inspection-eval', label: '隧道检测评价' },
+    ],
+  },
+  {
+    key: 'detection-risk',
+    label: '检测风险整改',
+    children: [
+      { key: 'road-risk-rectify', label: '道路风险整改' },
+      { key: 'bridge-risk-rectify', label: '桥梁风险整改' },
+      { key: 'tunnel-risk-rectify', label: '隧道风险整改' },
+    ],
+  },
+])
+
 // 机构人员管理侧边栏菜单
 const orgPersonnelMenuItems = ref<MenuProps['items']>([
   {
@@ -373,6 +418,8 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/bridge-info')
   } else if (info.key === '5') {
     router.push('/hazard-checklist-config')
+  } else if (info.key === '2') {
+    router.push('/bridge-inspection-eval')
   } else if (info.key === '3') {
     router.push('/monitor-device')
   } else if (info.key === '4') {
@@ -454,6 +501,18 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/hazard-problem-list')
   } else if (info.key === 'hazard-statistics') {
     router.push('/hazard-statistics')
+  } else if (info.key === 'road-inspection-eval') {
+    router.push('/road-inspection-eval')
+  } else if (info.key === 'bridge-inspection-eval') {
+    router.push('/bridge-inspection-eval')
+  } else if (info.key === 'tunnel-inspection-eval') {
+    router.push('/tunnel-inspection-eval')
+  } else if (info.key === 'road-risk-rectify') {
+    router.push('/road-risk-rectify')
+  } else if (info.key === 'bridge-risk-rectify') {
+    router.push('/bridge-risk-rectify')
+  } else if (info.key === 'tunnel-risk-rectify') {
+    router.push('/tunnel-risk-rectify')
   }
 }
 </script>
