@@ -63,16 +63,9 @@
             <a-form-item label="点位名称"><a-input v-model:value="form.pointName" placeholder="请输入" :disabled="isViewMode" /></a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="市级">
-              <a-select v-model:value="form.city" placeholder="请选择市级" allow-clear :disabled="isViewMode" @change="onCityChange">
-                <a-select-option v-for="c in Object.keys(cityDistrictMap)" :key="c" :value="c">{{ c }}</a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="区县">
-              <a-select v-model:value="form.district" placeholder="请先选择市级" allow-clear :disabled="isViewMode || !form.city">
-                <a-select-option v-for="d in districtOptions" :key="d" :value="d">{{ d }}</a-select-option>
+            <a-form-item label="市区县">
+              <a-select v-model:value="form.regionValue" placeholder="请选择" allow-clear show-search :filter-option="filterRegionOption" :disabled="isViewMode">
+                <a-select-option v-for="opt in flatRegionOptions" :key="opt" :value="opt">{{ opt }}</a-select-option>
               </a-select>
             </a-form-item>
           </a-col>
@@ -130,8 +123,8 @@ const cityDistrictMap: Record<string, string[]> = {
 const cascaderOptions = Object.keys(cityDistrictMap).map(city => ({ value: city, label: city, children: cityDistrictMap[city].map(d => ({ value: d, label: d })) }))
 function onRegionChange(val: string[] | undefined) { filters.value.regionValue = val || undefined }
 
-const districtOptions = computed(() => form.value.city ? cityDistrictMap[form.value.city] || [] : [])
-function onCityChange() { form.value.district = undefined }
+const flatRegionOptions = Object.entries(cityDistrictMap).flatMap(([city, districts]) => districts.map((d: string) => city + d))
+function filterRegionOption(input: string, option: any) { return (option?.value ?? '').toLowerCase().includes(input.toLowerCase()) }
 
 const columns = [
   { title: '市区县', dataIndex: 'region', key: 'region', width: 110 },
@@ -184,7 +177,7 @@ let chartInstance: echarts.ECharts | null = null
 
 const form = ref({
   facilityId: '', facilityName: '', deviceId: '', deviceName: '', deviceType: '',
-  monitorItem: '', pointName: '', city: undefined as string | undefined, district: undefined as string | undefined,
+  monitorItem: '', pointName: '', regionValue: undefined as string | undefined,
   threshold1: '', threshold2: '', threshold3: '',
 })
 
@@ -227,7 +220,7 @@ watch(showAddModal, (val) => {
 })
 
 function resetFormFields() {
-  form.value = { facilityId: '', facilityName: '', deviceId: '', deviceName: '', deviceType: '', monitorItem: '', pointName: '', city: undefined, district: undefined, threshold1: '', threshold2: '', threshold3: '' }
+  form.value = { facilityId: '', facilityName: '', deviceId: '', deviceName: '', deviceType: '', monitorItem: '', pointName: '', regionValue: undefined, threshold1: '', threshold2: '', threshold3: '' }
   editingId.value = null; isViewMode.value = false
 }
 
@@ -235,13 +228,13 @@ function openAddModal() { resetFormFields(); showAddModal.value = true }
 
 function viewDevice(record: DeviceRow) {
   editingId.value = record.id; isViewMode.value = true
-  form.value = { facilityId: record.facilityId, facilityName: record.facilityName, deviceId: record.deviceId, deviceName: record.deviceName, deviceType: record.deviceType, monitorItem: record.monitorItem, pointName: record.pointName, city: (record as any).city || undefined, district: (record as any).district || undefined, threshold1: (record as any).threshold1 || '', threshold2: (record as any).threshold2 || '', threshold3: (record as any).threshold3 || '' }
+  form.value = { facilityId: record.facilityId, facilityName: record.facilityName, deviceId: record.deviceId, deviceName: record.deviceName, deviceType: record.deviceType, monitorItem: record.monitorItem, pointName: record.pointName, regionValue: record.region || undefined, threshold1: (record as any).threshold1 || '', threshold2: (record as any).threshold2 || '', threshold3: (record as any).threshold3 || '' }
   showAddModal.value = true
 }
 
 function editDevice(record: DeviceRow) {
   editingId.value = record.id; isViewMode.value = false
-  form.value = { facilityId: record.facilityId, facilityName: record.facilityName, deviceId: record.deviceId, deviceName: record.deviceName, deviceType: record.deviceType, monitorItem: record.monitorItem, pointName: record.pointName, city: (record as any).city || undefined, district: (record as any).district || undefined, threshold1: (record as any).threshold1 || '', threshold2: (record as any).threshold2 || '', threshold3: (record as any).threshold3 || '' }
+  form.value = { facilityId: record.facilityId, facilityName: record.facilityName, deviceId: record.deviceId, deviceName: record.deviceName, deviceType: record.deviceType, monitorItem: record.monitorItem, pointName: record.pointName, regionValue: record.region || undefined, threshold1: (record as any).threshold1 || '', threshold2: (record as any).threshold2 || '', threshold3: (record as any).threshold3 || '' }
   showAddModal.value = true
 }
 
@@ -253,7 +246,7 @@ function saveDevice() {
     if (row) { Object.assign(row, form.value); (row as any).threshold1 = form.value.threshold1; (row as any).threshold2 = form.value.threshold2; (row as any).threshold3 = form.value.threshold3 }
   } else {
     const newId = Math.max(...deviceData.value.map(r => r.id), 0) + 1
-    deviceData.value.push({ id: newId, ...form.value, region: [form.value.city, form.value.district].filter(Boolean).join(''), online: '离线', latestTime: '', latestValue: '' } as any as DeviceRow)
+    deviceData.value.push({ id: newId, ...form.value, region: form.value.regionValue || '', online: '离线', latestTime: '', latestValue: '' } as any as DeviceRow)
   }
   editingId.value = null; resetFormFields(); showAddModal.value = false
 }
