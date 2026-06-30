@@ -162,7 +162,6 @@ export const regionOptions = [
 
 // 隧道类型选项
 export const tunnelTypeOptions = [
-  { label: '下穿道', value: '下穿道' },
-  { label: '山体隧道', value: '山体隧道' },
-  { label: '其他', value: '其他' },
+  { label: '人行地道', value: '人行地道' },
+  { label: '城市道路隧道', value: '城市道路隧道' },
 ]

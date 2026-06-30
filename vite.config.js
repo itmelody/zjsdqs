@@ -4,7 +4,7 @@ import { resolve } from 'path';
 import { fileURLToPath } from 'url';
 // https://vitejs.dev/config/
 export default defineConfig({
-    base: process.env.NODE_ENV === 'production' ? '/zjsdqs/' : '/',
+    base: '/stdqs/',
     plugins: [vue()],
     resolve: {
         alias: {

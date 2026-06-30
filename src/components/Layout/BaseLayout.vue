@@ -289,9 +289,9 @@ const siderMenuItems = ref<MenuProps['items']>([
     key: 'basic-info',
     label: '基础信息管理',
     children: [
+      { key: 'road-info', label: '道路信息' },
       { key: 'bridge-info', label: '桥梁信息' },
       { key: 'tunnel-info', label: '隧道信息' },
-      { key: 'road-info', label: '道路信息' },
     ],
   },
 ])

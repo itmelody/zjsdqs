@@ -75,9 +75,17 @@
           <template #icon><PlusOutlined /></template>
           新增
         </a-button>
+        <a-button @click="handleImport">
+          <template #icon><UploadOutlined /></template>
+          导入
+        </a-button>
         <a-button @click="handleExport">
           <template #icon><ExportOutlined /></template>
           导出
+        </a-button>
+        <a-button @click="handleBatchFill" :disabled="selectedRowKeys.length === 0">
+          <template #icon><EditOutlined /></template>
+          批量填写
         </a-button>
         <a-button danger @click="handleBatchDelete" :disabled="selectedRowKeys.length === 0">
           <template #icon><DeleteOutlined /></template>
@@ -157,7 +165,7 @@
         v-model:current="pagination.current"
         v-model:page-size="pagination.pageSize"
         :total="pagination.total"
-        :show-total="(total) => `共${total}条`"
+        :show-total="((total: number) => `共${total}条`) as any"
         :show-size-changer="true"
         :show-quick-jumper="true"
         :page-size-options="['10', '20', '50', '100']"
@@ -317,6 +325,29 @@
                       </a-col>
                     </a-row>
                   </div>
+                  <!-- 公安交警联动单位 -->
+                  <div class="responsibility-block">
+                    <div class="responsibility-sub-title">公安交警联动单位</div>
+                    <a-row :gutter="24">
+                      <a-col :span="12">
+                        <a-form-item label="单位名称" required>
+                          <a-input v-model:value="addForm.policeUnit" placeholder="点击选择" :disabled="isView" />
+                        </a-form-item>
+                      </a-col>
+                      <a-col :span="12">
+                        <a-form-item label="联系人" required>
+                          <a-input v-model:value="addForm.policeContact" placeholder="点击选择" :disabled="isView" />
+                        </a-form-item>
+                      </a-col>
+                    </a-row>
+                    <a-row :gutter="24">
+                      <a-col :span="12">
+                        <a-form-item label="联系方式" required>
+                          <a-input v-model:value="addForm.policeContactPhone" placeholder="点击选择" :disabled="isView" />
+                        </a-form-item>
+                      </a-col>
+                    </a-row>
+                  </div>
                 </div>
 
                 <!-- 安全管理 -->
@@ -361,6 +392,124 @@
         </div>
       </div>
     </a-modal>
+
+    <!-- 批量填写弹窗 -->
+    <a-modal
+      v-model:open="batchFillModalVisible"
+      :footer="null"
+      width="800px"
+      :body-style="{ padding: '0' }"
+      class="batch-fill-modal"
+    >
+      <template #title>
+        <div class="add-modal-header">
+          <span class="add-modal-title">批量填写三级责任体系</span>
+        </div>
+      </template>
+      <div class="add-bridge-content">
+        <div class="add-bridge-form">
+          <a-form :model="batchFillForm" layout="horizontal" :label-col="{ style: { width: '100px' } }">
+            <!-- 行业主管单位 -->
+            <div class="form-section">
+              <div class="form-section-title">行业主管单位</div>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="单位名称">
+                    <a-input v-model:value="batchFillForm.industryUnit" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item label="责任人">
+                    <a-input v-model:value="batchFillForm.industryPerson" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="联系方式">
+                    <a-input v-model:value="batchFillForm.industryContact" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+            </div>
+            <!-- 设施管理单位 -->
+            <div class="form-section">
+              <div class="form-section-title">设施管理单位</div>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="单位名称">
+                    <a-input v-model:value="batchFillForm.facilityUnit" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item label="责任人">
+                    <a-input v-model:value="batchFillForm.facilityPerson" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="联系方式">
+                    <a-input v-model:value="batchFillForm.facilityContact" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+            </div>
+            <!-- 设施养护单位 -->
+            <div class="form-section">
+              <div class="form-section-title">设施养护单位</div>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="单位名称">
+                    <a-input v-model:value="batchFillForm.maintainUnit" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item label="责任人">
+                    <a-input v-model:value="batchFillForm.maintainPerson" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="联系方式">
+                    <a-input v-model:value="batchFillForm.maintainContact" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+            </div>
+            <!-- 公安交警联动单位 -->
+            <div class="form-section">
+              <div class="form-section-title">公安交警联动单位</div>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="单位名称">
+                    <a-input v-model:value="batchFillForm.policeUnit" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="12">
+                  <a-form-item label="联系人">
+                    <a-input v-model:value="batchFillForm.policeContact" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+              <a-row :gutter="24">
+                <a-col :span="12">
+                  <a-form-item label="联系方式">
+                    <a-input v-model:value="batchFillForm.policeContactPhone" placeholder="点击选择" />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+            </div>
+          </a-form>
+        </div>
+        <!-- 底部操作栏 -->
+        <div class="add-modal-footer">
+          <a-button @click="handleCancelBatchFill">取 消</a-button>
+          <a-button type="primary" @click="handleSubmitBatchFill">确 定</a-button>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -373,7 +522,9 @@ import {
   ReloadOutlined,
   SearchOutlined,
   PlusOutlined,
+  UploadOutlined,
   ExportOutlined,
+  EditOutlined,
   DeleteOutlined,
   SettingOutlined,
 } from '@ant-design/icons-vue'
@@ -444,40 +595,10 @@ const columns: TableColumnsType = [
     width: 100,
   },
   {
-    title: '结构类型',
-    dataIndex: 'structureType',
-    key: 'structureType',
-    width: 100,
-  },
-  {
-    title: '建成时间',
-    dataIndex: 'buildTime',
-    key: 'buildTime',
-    width: 120,
-  },
-  {
-    title: '跨度（米）',
-    dataIndex: 'span',
-    key: 'span',
-    width: 100,
-  },
-  {
     title: '是否涉航桥梁',
     dataIndex: 'isNavigationBridge',
     key: 'isNavigationBridge',
     width: 120,
-  },
-  {
-    title: '是否设置监控设备',
-    dataIndex: 'hasMonitorDevice',
-    key: 'hasMonitorDevice',
-    width: 140,
-  },
-  {
-    title: '是否设置监测设施',
-    dataIndex: 'hasMonitorFacility',
-    key: 'hasMonitorFacility',
-    width: 140,
   },
   {
     title: '综合评价等级',
@@ -486,10 +607,10 @@ const columns: TableColumnsType = [
     width: 120,
   },
   {
-    title: '评价年份',
-    dataIndex: 'evalYear',
-    key: 'evalYear',
-    width: 100,
+    title: '检测时间',
+    dataIndex: 'detectTime',
+    key: 'detectTime',
+    width: 120,
   },
   {
     title: '数据是否完善',
@@ -504,12 +625,84 @@ const columns: TableColumnsType = [
     width: 100,
   },
   {
+    title: '检测是否超期',
+    dataIndex: 'isOverdue',
+    key: 'isOverdue',
+    width: 120,
+  },
+  {
     title: '操作',
     key: 'action',
     fixed: 'right',
     width: 200,
   },
 ]
+
+// 批量填写弹窗相关
+const batchFillModalVisible = ref(false)
+const batchFillForm = reactive({
+  industryUnit: '',
+  industryPerson: '',
+  industryContact: '',
+  facilityUnit: '',
+  facilityPerson: '',
+  facilityContact: '',
+  maintainUnit: '',
+  maintainPerson: '',
+  maintainContact: '',
+  policeUnit: '',
+  policeContact: '',
+  policeContactPhone: '',
+})
+
+// 打开批量填写弹窗
+function handleBatchFill() {
+  if (selectedRowKeys.value.length === 0) {
+    message.warning('请先选择要批量填写的数据')
+    return
+  }
+  resetBatchFillForm()
+  batchFillModalVisible.value = true
+}
+
+// 重置批量填写表单
+function resetBatchFillForm() {
+  batchFillForm.industryUnit = ''
+  batchFillForm.industryPerson = ''
+  batchFillForm.industryContact = ''
+  batchFillForm.facilityUnit = ''
+  batchFillForm.facilityPerson = ''
+  batchFillForm.facilityContact = ''
+  batchFillForm.maintainUnit = ''
+  batchFillForm.maintainPerson = ''
+  batchFillForm.maintainContact = ''
+  batchFillForm.policeUnit = ''
+  batchFillForm.policeContact = ''
+  batchFillForm.policeContactPhone = ''
+}
+
+// 取消批量填写
+function handleCancelBatchFill() {
+  batchFillModalVisible.value = false
+  resetBatchFillForm()
+}
+
+// 提交批量填写
+function handleSubmitBatchFill() {
+  Modal.confirm({
+    title: '确认批量填写',
+    content: `确定要将选中的 ${selectedRowKeys.value.length} 条记录的三级责任体系信息批量填写吗？`,
+    okText: '确定',
+    cancelText: '取消',
+    onOk: async () => {
+      message.success(`已成功批量填写 ${selectedRowKeys.value.length} 条记录`)
+      batchFillModalVisible.value = false
+      resetBatchFillForm()
+      selectedRowKeys.value = []
+      loadData()
+    },
+  })
+}
 
 // 加载数据
 async function loadData() {
@@ -581,6 +774,9 @@ const addForm = reactive({
   maintainUnit: '',
   maintainPerson: '',
   maintainContact: '',
+  policeUnit: '',
+  policeContact: '',
+  policeContactPhone: '',
   isNavigationBridge: undefined as boolean | undefined,
   isHeavyTransport: '',
 })
@@ -600,6 +796,9 @@ function resetAddForm() {
   addForm.maintainUnit = ''
   addForm.maintainPerson = ''
   addForm.maintainContact = ''
+  addForm.policeUnit = ''
+  addForm.policeContact = ''
+  addForm.policeContactPhone = ''
   addForm.isNavigationBridge = undefined
   addForm.isHeavyTransport = ''
   addActiveTab.value = 'basic'
@@ -636,6 +835,11 @@ function handleResetAdd() {
 // 导出
 function handleExport() {
   message.info('导出功能开发中')
+}
+
+// 导入
+function handleImport() {
+  message.info('导入功能开发中')
 }
 
 // 批量删除
@@ -894,6 +1098,64 @@ onMounted(() => {
   .ant-btn-primary {
     background: #2A64FF;
     border-color: #2A64FF;
+  }
+}
+</style>
+
+<!-- 批量填写弹窗样式（不受 scoped 限制，因 modal 传送到 body） -->
+<style lang="scss">
+.batch-fill-modal {
+  .add-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+    .add-modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  .add-bridge-form {
+    max-height: 520px;
+    overflow-y: auto;
+    padding: 16px 24px;
+
+    .form-section {
+      margin-bottom: 24px;
+
+      .form-section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.85);
+        margin-bottom: 16px;
+        padding-left: 10px;
+        border-left: 3px solid #2A64FF;
+      }
+    }
+
+    .ant-form-item {
+      margin-bottom: 16px;
+    }
+
+    .ant-form-item-label > label {
+      font-weight: 500;
+    }
+  }
+
+  .add-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid #f0f0f0;
+
+    .ant-btn-primary {
+      background: #2A64FF;
+      border-color: #2A64FF;
+    }
   }
 }
 </style>
