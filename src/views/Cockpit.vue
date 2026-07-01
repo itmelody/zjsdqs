@@ -23,7 +23,7 @@
         <div class="card dark-card">
           <div class="card-title-row">
             <div class="card-title">{{ layerNameMap[activeLayer] }}统计</div>
-            <span class="map-btn active" @click="showFacilityModal = true">市级数据</span>
+            <span class="map-btn active" @click="showFacilityModal = true">查看详情</span>
           </div>
           <!-- 道路统计 -->
           <template v-if="activeLayer === 'road'">
@@ -158,6 +158,10 @@
             </div>
             <div v-show="!bridgeDeviceDrillDown" ref="deviceSubChartRef" class="device-sub-chart"></div>
             <div v-show="bridgeDeviceDrillDown" ref="bridgeDrillChartRef" class="device-sub-chart"></div>
+          </div>
+          <!-- 查看详情按钮 -->
+          <div class="monitor-detail-footer">
+            <a class="monitor-detail-btn" @click="openMonitorDetail">查看详情 &gt;</a>
           </div>
         </div>
       </div>
@@ -538,6 +542,124 @@
               </div>
             </div>
           </div>
+          <!-- 道路图层指标模块 -->
+          <div v-if="monitorLayer === 'road'" class="bridge-monitor-stats">
+            <div class="bridge-stats-card">
+              <div class="bridge-stats-grid">
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">设备总数</div>
+                  <div class="bridge-stat-value blue">2,865<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">在线数</div>
+                  <div class="bridge-stat-value cyan">2,706<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">在线率</div>
+                  <div class="bridge-stat-value green">94.5%</div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">接入道路数</div>
+                  <div class="bridge-stat-value blue">2,288<span class="bridge-stat-unit"> 条</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">接入率</div>
+                  <div class="bridge-stat-value cyan">84.3%</div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">道路边坡监测设备</div>
+                  <div class="bridge-stat-value blue">2,865<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+              </div>
+              <div class="bridge-stats-footer">
+                <a class="bridge-detail-btn" @click="showRoadDeviceDetail = true">查看详情 &gt;</a>
+              </div>
+            </div>
+          </div>
+          <!-- 桥梁图层指标模块 -->
+          <div v-if="monitorLayer === 'bridge'" class="bridge-monitor-stats">
+            <div class="bridge-stats-card">
+              <div class="bridge-stats-grid">
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">设备总数</div>
+                  <div class="bridge-stat-value blue">1,286<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">在线数</div>
+                  <div class="bridge-stat-value cyan">1,158<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">在线率</div>
+                  <div class="bridge-stat-value green">90.0%</div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">接入桥梁数</div>
+                  <div class="bridge-stat-value blue">856<span class="bridge-stat-unit"> 座</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">接入率</div>
+                  <div class="bridge-stat-value cyan">21.9%</div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">桥梁环境监测设备</div>
+                  <div class="bridge-stat-value blue">428<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">桥梁作业监测设备</div>
+                  <div class="bridge-stat-value cyan">386<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">桥梁结构监测设备</div>
+                  <div class="bridge-stat-value green">472<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+              </div>
+              <div class="bridge-stats-footer">
+                <a class="bridge-detail-btn" @click="showBridgeDeviceDetail = true">查看详情 &gt;</a>
+              </div>
+            </div>
+          </div>
+          <!-- 隧道图层指标模块 -->
+          <div v-if="monitorLayer === 'tunnel'" class="bridge-monitor-stats">
+            <div class="bridge-stats-card">
+              <div class="bridge-stats-grid">
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">设备总数</div>
+                  <div class="bridge-stat-value blue">3,248<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">在线数</div>
+                  <div class="bridge-stat-value cyan">3,142<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">在线率</div>
+                  <div class="bridge-stat-value green">96.7%</div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">接入隧道数</div>
+                  <div class="bridge-stat-value blue">2,356<span class="bridge-stat-unit"> 座</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">接入率</div>
+                  <div class="bridge-stat-value cyan">72.5%</div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">隧道环境监测设备</div>
+                  <div class="bridge-stat-value blue">1,128<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">隧道机电监测设备</div>
+                  <div class="bridge-stat-value cyan">1,234<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+                <div class="bridge-stat-item">
+                  <div class="bridge-stat-label">隧道结构监测设备</div>
+                  <div class="bridge-stat-value green">886<span class="bridge-stat-unit"> 台</span></div>
+                </div>
+              </div>
+              <div class="bridge-stats-footer">
+                <a class="bridge-detail-btn" @click="showTunnelDeviceDetail = true">查看详情 &gt;</a>
+              </div>
+            </div>
+          </div>
           <div class="map-placeholder">
             <div ref="monitorMapRef" class="amap-container"></div>
           </div>
@@ -677,6 +799,29 @@
       <a-table :columns="deviceDetailColumns" :data-source="deviceDetailData" :pagination="{ pageSize: 20 }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
     </a-modal>
 
+    <!-- 桥梁设备详情弹窗 -->
+    <a-modal v-model:open="showBridgeDeviceDetail" title="桥梁设备详情" width="1200px" :footer="null" class="bridge-device-detail-modal">
+      <div v-if="bridgeDeviceDrillDown" class="drill-down-header" style="margin-bottom: 12px;">
+        <a-button size="small" @click="bridgeDeviceDrillDown = false">
+          <template #icon><ArrowLeftOutlined /></template>
+          返回
+        </a-button>
+        <span class="drill-down-title">桥梁结构监测设备详情</span>
+      </div>
+      <a-table v-if="!bridgeDeviceDrillDown" :columns="bridgeDeviceDetailColumns" :data-source="bridgeDeviceDetailData" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
+      <a-table v-else :columns="bridgeDrillColumns" :data-source="bridgeDrillData" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ y: 460 }" bordered />
+    </a-modal>
+
+    <!-- 道路设备详情弹窗 -->
+    <a-modal v-model:open="showRoadDeviceDetail" title="道路设备详情" width="1000px" :footer="null" class="road-device-detail-modal">
+      <a-table :columns="roadDeviceDetailColumns" :data-source="roadDeviceDetailData" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
+    </a-modal>
+
+    <!-- 隧道设备详情弹窗 -->
+    <a-modal v-model:open="showTunnelDeviceDetail" title="隧道设备详情" width="1100px" :footer="null" class="tunnel-device-detail-modal">
+      <a-table :columns="tunnelDeviceDetailColumns" :data-source="tunnelDeviceDetailData" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
+    </a-modal>
+
     <!-- 预警详情弹窗 -->
     <a-modal v-model:open="showAlarmDetailModal" title="预警详情" width="1200px" :footer="null" class="alarm-detail-modal">
       <div class="modal-filter-bar">
@@ -696,7 +841,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, watch, nextTick, onMounted, onUnmounted, h } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { Modal as AModal, Table as ATable } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
@@ -1008,6 +1153,107 @@ const deviceDetailData = computed(() => {
 
 // 预警详情弹窗
 const showAlarmDetailModal = ref(false)
+
+// 桥梁设备详情弹窗
+const showBridgeDeviceDetail = ref(false)
+const bridgeDeviceDetailColumns: TableColumnsType = [
+  { title: '市区县', dataIndex: 'city', key: 'city', width: 90 },
+  { title: '设备总数', dataIndex: 'total', key: 'total', width: 80 },
+  { title: '在线数', dataIndex: 'online', key: 'online', width: 80 },
+  { title: '在线率', dataIndex: 'onlineRate', key: 'onlineRate', width: 80 },
+  { title: '接入桥梁数', dataIndex: 'accessBridge', key: 'accessBridge', width: 100 },
+  { title: '接入率', dataIndex: 'accessRate', key: 'accessRate', width: 80 },
+  { title: '桥梁环境监测设备', dataIndex: 'envDevice', key: 'envDevice', width: 130 },
+  { title: '桥梁作用监测设备', dataIndex: 'loadDevice', key: 'loadDevice', width: 130 },
+  { title: '桥梁结构监测设备', dataIndex: 'structDevice', key: 'structDevice', width: 130, customRender: ({ text }: any) => h('a', { onClick: () => { bridgeDeviceDrillDown.value = true } }, text) },
+]
+const bridgeDrillColumns: TableColumnsType = [
+  { title: '市区县', dataIndex: 'city', key: 'city', width: 90 },
+  { title: '吊杆索力振动设备', dataIndex: 'cable', key: 'cable', width: 130 },
+  { title: '位移设备', dataIndex: 'displacement', key: 'displacement', width: 100 },
+  { title: '挠度设备', dataIndex: 'deflection', key: 'deflection', width: 100 },
+  { title: '应变设备', dataIndex: 'strain', key: 'strain', width: 100 },
+  { title: '振动设备', dataIndex: 'vibration', key: 'vibration', width: 100 },
+]
+const bridgeDrillData = ref([
+  { key: 0, city: '杭州市', cable: 86, displacement: 124, deflection: 98, strain: 156, vibration: 132 },
+  { key: 1, city: '宁波市', cable: 68, displacement: 96, deflection: 76, strain: 120, vibration: 102 },
+  { key: 2, city: '温州市', cable: 62, displacement: 88, deflection: 70, strain: 110, vibration: 94 },
+  { key: 3, city: '绍兴市', cable: 46, displacement: 64, deflection: 52, strain: 82, vibration: 70 },
+  { key: 4, city: '湖州市', cable: 30, displacement: 42, deflection: 34, strain: 54, vibration: 46 },
+  { key: 5, city: '嘉兴市', cable: 40, displacement: 56, deflection: 46, strain: 72, vibration: 62 },
+  { key: 6, city: '金华市', cable: 36, displacement: 50, deflection: 40, strain: 64, vibration: 54 },
+  { key: 7, city: '衢州市', cable: 26, displacement: 38, deflection: 30, strain: 48, vibration: 40 },
+  { key: 8, city: '台州市', cable: 42, displacement: 60, deflection: 48, strain: 76, vibration: 64 },
+  { key: 9, city: '丽水市', cable: 20, displacement: 30, deflection: 24, strain: 38, vibration: 32 },
+  { key: 10, city: '舟山市', cable: 14, displacement: 20, deflection: 16, strain: 26, vibration: 22 },
+])
+const bridgeDeviceDetailData = ref([
+  { key: 0, city: '杭州市', total: 1235, online: 1131, onlineRate: '91.6%', accessBridge: 986, accessRate: '79.8%', envDevice: 386, loadDevice: 452, structDevice: 397 },
+  { key: 1, city: '宁波市', total: 956, online: 876, onlineRate: '91.6%', accessBridge: 762, accessRate: '79.7%', envDevice: 298, loadDevice: 350, structDevice: 308 },
+  { key: 2, city: '温州市', total: 876, online: 802, onlineRate: '91.6%', accessBridge: 698, accessRate: '79.7%', envDevice: 274, loadDevice: 320, structDevice: 282 },
+  { key: 3, city: '绍兴市', total: 645, online: 590, onlineRate: '91.5%', accessBridge: 514, accessRate: '79.7%', envDevice: 202, loadDevice: 236, structDevice: 207 },
+  { key: 4, city: '湖州市', total: 423, online: 386, onlineRate: '91.3%', accessBridge: 336, accessRate: '79.4%', envDevice: 132, loadDevice: 154, structDevice: 137 },
+  { key: 5, city: '嘉兴市', total: 567, online: 518, onlineRate: '91.4%', accessBridge: 452, accessRate: '79.7%', envDevice: 178, loadDevice: 208, structDevice: 181 },
+  { key: 6, city: '金华市', total: 498, online: 454, onlineRate: '91.2%', accessBridge: 396, accessRate: '79.5%', envDevice: 156, loadDevice: 182, structDevice: 160 },
+  { key: 7, city: '衢州市', total: 365, online: 332, onlineRate: '91.0%', accessBridge: 290, accessRate: '79.5%', envDevice: 114, loadDevice: 134, structDevice: 117 },
+  { key: 8, city: '台州市', total: 598, online: 546, onlineRate: '91.3%', accessBridge: 476, accessRate: '79.6%', envDevice: 188, loadDevice: 218, structDevice: 192 },
+  { key: 9, city: '丽水市', total: 286, online: 260, onlineRate: '90.9%', accessBridge: 228, accessRate: '79.7%', envDevice: 90, loadDevice: 104, structDevice: 92 },
+  { key: 10, city: '舟山市', total: 198, online: 180, onlineRate: '90.9%', accessBridge: 158, accessRate: '79.8%', envDevice: 62, loadDevice: 72, structDevice: 64 },
+])
+
+// 道路设备详情弹窗
+const showRoadDeviceDetail = ref(false)
+const roadDeviceDetailColumns: TableColumnsType = [
+  { title: '市区县', dataIndex: 'city', key: 'city', width: 90 },
+  { title: '设备总数', dataIndex: 'total', key: 'total', width: 80 },
+  { title: '在线数', dataIndex: 'online', key: 'online', width: 80 },
+  { title: '在线率', dataIndex: 'onlineRate', key: 'onlineRate', width: 80 },
+  { title: '接入道路数', dataIndex: 'accessRoad', key: 'accessRoad', width: 100 },
+  { title: '接入率', dataIndex: 'accessRate', key: 'accessRate', width: 80 },
+  { title: '道路边坡监测设备', dataIndex: 'slopeDevice', key: 'slopeDevice', width: 140 },
+]
+const roadDeviceDetailData = ref([
+  { key: 0, city: '杭州市', total: 486, online: 462, onlineRate: '95.1%', accessRoad: 412, accessRate: '84.8%', slopeDevice: 486 },
+  { key: 1, city: '宁波市', total: 378, online: 358, onlineRate: '94.7%', accessRoad: 318, accessRate: '84.1%', slopeDevice: 378 },
+  { key: 2, city: '温州市', total: 342, online: 326, onlineRate: '95.3%', accessRoad: 286, accessRate: '83.6%', slopeDevice: 342 },
+  { key: 3, city: '绍兴市', total: 256, online: 242, onlineRate: '94.5%', accessRoad: 214, accessRate: '83.6%', slopeDevice: 256 },
+  { key: 4, city: '湖州市', total: 168, online: 158, onlineRate: '94.0%', accessRoad: 142, accessRate: '84.5%', slopeDevice: 168 },
+  { key: 5, city: '嘉兴市', total: 218, online: 206, onlineRate: '94.5%', accessRoad: 184, accessRate: '84.4%', slopeDevice: 218 },
+  { key: 6, city: '金华市', total: 198, online: 186, onlineRate: '93.9%', accessRoad: 166, accessRate: '83.8%', slopeDevice: 198 },
+  { key: 7, city: '衢州市', total: 145, online: 136, onlineRate: '93.8%', accessRoad: 122, accessRate: '84.1%', slopeDevice: 145 },
+  { key: 8, city: '台州市', total: 234, online: 220, onlineRate: '94.0%', accessRoad: 198, accessRate: '84.6%', slopeDevice: 234 },
+  { key: 9, city: '丽水市', total: 112, online: 104, onlineRate: '92.9%', accessRoad: 94, accessRate: '83.9%', slopeDevice: 112 },
+  { key: 10, city: '舟山市', total: 78, online: 72, onlineRate: '92.3%', accessRoad: 66, accessRate: '84.6%', slopeDevice: 78 },
+])
+
+// 隧道设备详情弹窗
+const showTunnelDeviceDetail = ref(false)
+const tunnelDeviceDetailColumns: TableColumnsType = [
+  { title: '市区县', dataIndex: 'city', key: 'city', width: 90 },
+  { title: '设备总数', dataIndex: 'total', key: 'total', width: 80 },
+  { title: '在线数', dataIndex: 'online', key: 'online', width: 80 },
+  { title: '在线率', dataIndex: 'onlineRate', key: 'onlineRate', width: 80 },
+  { title: '接入隧道数', dataIndex: 'accessTunnel', key: 'accessTunnel', width: 100 },
+  { title: '接入率', dataIndex: 'accessRate', key: 'accessRate', width: 80 },
+  { title: '隧道环境监测设备', dataIndex: 'envDevice', key: 'envDevice', width: 130 },
+  { title: '隧道机电监测设备', dataIndex: 'mechDevice', key: 'mechDevice', width: 130 },
+  { title: '隧道结构监测设备', dataIndex: 'structDevice', key: 'structDevice', width: 130 },
+]
+const tunnelDeviceDetailData = ref([
+  { key: 0, city: '杭州市', total: 567, online: 549, onlineRate: '96.8%', accessTunnel: 412, accessRate: '72.7%', envDevice: 198, mechDevice: 215, structDevice: 154 },
+  { key: 1, city: '宁波市', total: 438, online: 424, onlineRate: '96.8%', accessTunnel: 318, accessRate: '72.6%', envDevice: 154, mechDevice: 166, structDevice: 118 },
+  { key: 2, city: '温州市', total: 398, online: 386, onlineRate: '97.0%', accessTunnel: 288, accessRate: '72.4%', envDevice: 140, mechDevice: 152, structDevice: 106 },
+  { key: 3, city: '绍兴市', total: 294, online: 284, onlineRate: '96.6%', accessTunnel: 214, accessRate: '72.8%', envDevice: 104, mechDevice: 112, structDevice: 78 },
+  { key: 4, city: '湖州市', total: 192, online: 186, onlineRate: '96.9%', accessTunnel: 140, accessRate: '72.9%', envDevice: 68, mechDevice: 72, structDevice: 52 },
+  { key: 5, city: '嘉兴市', total: 258, online: 250, onlineRate: '96.9%', accessTunnel: 188, accessRate: '72.9%', envDevice: 92, mechDevice: 98, structDevice: 68 },
+  { key: 6, city: '金华市', total: 228, online: 220, onlineRate: '96.5%', accessTunnel: 166, accessRate: '72.8%', envDevice: 82, mechDevice: 86, structDevice: 60 },
+  { key: 7, city: '衢州市', total: 168, online: 162, onlineRate: '96.4%', accessTunnel: 122, accessRate: '72.6%', envDevice: 60, mechDevice: 64, structDevice: 44 },
+  { key: 8, city: '台州市', total: 276, online: 268, onlineRate: '97.1%', accessTunnel: 200, accessRate: '72.5%', envDevice: 98, mechDevice: 106, structDevice: 72 },
+  { key: 9, city: '丽水市', total: 132, online: 128, onlineRate: '97.0%', accessTunnel: 96, accessRate: '72.7%', envDevice: 48, mechDevice: 50, structDevice: 34 },
+  { key: 10, city: '舟山市', total: 92, online: 88, onlineRate: '95.7%', accessTunnel: 68, accessRate: '73.9%', envDevice: 34, mechDevice: 36, structDevice: 22 },
+])
+
 const alarmDetailColumns: TableColumnsType = [
   { title: '市区县', dataIndex: 'area', key: 'area', width: 110 },
   { title: '设施名称', dataIndex: 'facName', key: 'facName', width: 110 },
@@ -1321,10 +1567,15 @@ function openRiskDetailModal() {
   riskDetail[type] = true
 }
 
-const riskDetailColumns = {
+const facilityNameTitle = computed(() => {
+  const map: Record<string, string> = { road: '道路名称', bridge: '桥梁名称', tunnel: '隧道名称' }
+  return map[activeLayer.value] || '道路/桥梁/隧道名称'
+})
+
+const riskDetailColumns = computed(() => ({
   hidden: [
     { title: '所属区域', dataIndex: 'area', width: 100 },
-    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
+    { title: facilityNameTitle.value, dataIndex: 'road', width: 160 },
     { title: '检查项目', dataIndex: 'project', width: 130 },
     { title: '上报内容', dataIndex: 'content', width: 150 },
     { title: '隐患等级', dataIndex: 'levelText', width: 100 },
@@ -1334,23 +1585,30 @@ const riskDetailColumns = {
   ],
   device: [
     { title: '所属区域', dataIndex: 'area', width: 100 },
-    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
-    { title: '点位名称', dataIndex: 'point', width: 120 },
-    { title: '监测项', dataIndex: 'item', width: 100 },
-    { title: '预警等级', dataIndex: 'levelText', width: 100 },
-    { title: '处置状态', dataIndex: 'status', width: 100 },
-    { title: '处置完成时间', dataIndex: 'doneTime', width: 150 },
-    { title: '处置人', dataIndex: 'handler', width: 100 },
+    { title: '设施名称', dataIndex: 'road', width: 140 },
+    { title: '设备名称', dataIndex: 'deviceName', width: 140 },
+    { title: '点位名称', dataIndex: 'point', width: 100 },
+    { title: '监测项', dataIndex: 'item', width: 90 },
+    { title: '报警开始时间', dataIndex: 'alarmStartTime', width: 140 },
+    { title: '报警结束时间', dataIndex: 'alarmEndTime', width: 140 },
+    { title: '预警值', dataIndex: 'alarmValue', width: 80 },
+    { title: '预警等级', dataIndex: 'levelText', width: 90 },
+    { title: '处置状态', dataIndex: 'status', width: 90 },
+    { title: '处置完成时间', dataIndex: 'doneTime', width: 130 },
+    { title: '处置人', dataIndex: 'handler', width: 90 },
   ],
   inspect: [
     { title: '所属区域', dataIndex: 'area', width: 100 },
-    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
-    { title: '综合评价等级', dataIndex: 'grade', width: 120 },
+    { title: '检测名称', dataIndex: 'inspectName', width: 160 },
+    { title: '检测时间', dataIndex: 'inspectTime', width: 120 },
+    { title: '检测类型', dataIndex: 'inspectType', width: 110 },
+    { title: facilityNameTitle.value, dataIndex: 'road', width: 140 },
+    { title: '综合评价等级', dataIndex: 'grade', width: 110 },
     { title: '整改类型', dataIndex: 'rectype', width: 130 },
     { title: '整改完成状态', dataIndex: 'status', width: 110 },
-    { title: '整改销号日期', dataIndex: 'doneTime', width: 150 },
+    { title: '整改销号日期', dataIndex: 'doneTime', width: 130 },
     {
-      title: '整改后评级', dataIndex: 'afterGrade', width: 120,
+      title: '整改后评级', dataIndex: 'afterGrade', width: 110,
       customRender: ({ text, record }: any) => {
         if (record.rectype === '拆除或完全封控') return '-'
         return text || '-'
@@ -1359,7 +1617,7 @@ const riskDetailColumns = {
   ],
   assess: [
     { title: '所属区域', dataIndex: 'area', width: 100 },
-    { title: '道路/桥梁/隧道名称', dataIndex: 'road', width: 160 },
+    { title: facilityNameTitle.value, dataIndex: 'road', width: 160 },
     { title: '评估项目', dataIndex: 'project', width: 130 },
     { title: '评估主体', dataIndex: 'entity', width: 200 },
     { title: '隐患等级', dataIndex: 'levelText', width: 100 },
@@ -1367,7 +1625,7 @@ const riskDetailColumns = {
     { title: '整改完成时间', dataIndex: 'doneTime', width: 150 },
     { title: '整改人', dataIndex: 'handler', width: 100 },
   ],
-}
+}))
 
 const hiddenDetailBase = [
   { area: '上城区', road: '石贯子巷', project: '道路设施', content: '路面破损严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
@@ -1387,33 +1645,33 @@ const hiddenDetailBase = [
   { area: '西湖区', road: '古翠路', project: '道路设施', content: '路面沥青剥落', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-22', handler: '孙磊' },
 ]
 const deviceDetailBase = [
-  { area: '上城区', road: '石贯子巷', point: 'K1+200', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '上城区', road: '中山中路', point: 'K3+500', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-04-10', handler: '张伟' },
-  { area: '拱墅区', road: '环城北路', point: 'K2+100', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '文三路', point: 'K1+800', item: '变形', levelText: '三级预警', status: '已完成', doneTime: '2026-03-20', handler: '李明' },
-  { area: '滨江区', road: '江南大道', point: 'K4+200', item: '变形', levelText: '二级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '上城区', road: '解放路', point: 'K2+600', item: '变形', levelText: '一级预警', status: '已完成', doneTime: '2026-05-05', handler: '王芳' },
-  { area: '拱墅区', road: '莫干山路', point: 'K5+100', item: '变形', levelText: '三级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '天目山路', point: 'K3+400', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-04-25', handler: '陈强' },
-  { area: '滨江区', road: '时代大道', point: 'K2+900', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '上城区', road: '延安路', point: 'K1+500', item: '变形', levelText: '三级预警', status: '已完成', doneTime: '2026-05-18', handler: '赵军' },
-  { area: '萧山区', road: '市心路', point: 'K3+200', item: '变形', levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '余杭区', road: '文一西路', point: 'K4+800', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-03-12', handler: '刘洋' },
-  { area: '上城区', road: '清泰路', point: 'K1+100', item: '变形', levelText: '二级预警', status: '已完成', doneTime: '2026-04-08', handler: '周伟' },
-  { area: '拱墅区', road: '大关路', point: 'K2+300', item: '变形', levelText: '三级预警', status: '未完成', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '古翠路', point: 'K1+600', item: '变形', levelText: '一级预警', status: '已完成', doneTime: '2026-05-30', handler: '吴静' },
+  { area: '上城区', road: '石贯子巷', deviceName: '石贯子巷变形监测仪', point: 'K1+200', item: '变形', alarmStartTime: '2026-04-20 08:30:00', alarmEndTime: '-', alarmValue: -633.8, levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '上城区', road: '中山中路', deviceName: '中山中路变形监测仪', point: 'K3+500', item: '变形', alarmStartTime: '2026-03-15 14:20:00', alarmEndTime: '2026-04-10 09:00:00', alarmValue: -452.3, levelText: '二级预警', status: '已完成', doneTime: '2026-04-10', handler: '张伟' },
+  { area: '拱墅区', road: '环城北路', deviceName: '环城北路倾斜仪', point: 'K2+100', item: '倾斜', alarmStartTime: '2026-04-22 10:15:00', alarmEndTime: '-', alarmValue: 0.085, levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '文三路', deviceName: '文三路应变计', point: 'K1+800', item: '应变', alarmStartTime: '2026-02-28 16:40:00', alarmEndTime: '2026-03-20 11:30:00', alarmValue: -1.25, levelText: '三级预警', status: '已完成', doneTime: '2026-03-20', handler: '李明' },
+  { area: '滨江区', road: '江南大道', deviceName: '江南大道位移计', point: 'K4+200', item: '位移', alarmStartTime: '2026-04-18 09:00:00', alarmEndTime: '-', alarmValue: 2.86, levelText: '二级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '上城区', road: '解放路', deviceName: '解放路加速度计', point: 'K2+600', item: '振动', alarmStartTime: '2026-04-05 07:50:00', alarmEndTime: '2026-05-05 14:20:00', alarmValue: 0.0156, levelText: '一级预警', status: '已完成', doneTime: '2026-05-05', handler: '王芳' },
+  { area: '拱墅区', road: '莫干山路', deviceName: '莫干山路挠度计', point: 'K5+100', item: '挠度', alarmStartTime: '2026-04-25 13:30:00', alarmEndTime: '-', alarmValue: 1.52, levelText: '三级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '天目山路', deviceName: '天目山路索力仪', point: 'K3+400', item: '索力', alarmStartTime: '2026-03-28 11:20:00', alarmEndTime: '2026-04-25 16:00:00', alarmValue: 856.3, levelText: '二级预警', status: '已完成', doneTime: '2026-04-25', handler: '陈强' },
+  { area: '滨江区', road: '时代大道', deviceName: '时代大道裂缝计', point: 'K2+900', item: '裂缝', alarmStartTime: '2026-04-28 15:10:00', alarmEndTime: '-', alarmValue: 0.32, levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '上城区', road: '延安路', deviceName: '延安路温湿度计', point: 'K1+500', item: '温湿度', alarmStartTime: '2026-04-12 08:00:00', alarmEndTime: '2026-05-18 10:30:00', alarmValue: 92.5, levelText: '三级预警', status: '已完成', doneTime: '2026-05-18', handler: '赵军' },
+  { area: '萧山区', road: '市心路', deviceName: '市心路振动传感器', point: 'K3+200', item: '变形', alarmStartTime: '2026-03-05 09:40:00', alarmEndTime: '-', alarmValue: -328.5, levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '余杭区', road: '文一西路', deviceName: '文一西路静力水准仪', point: 'K4+800', item: '沉降', alarmStartTime: '2026-02-18 14:00:00', alarmEndTime: '2026-03-12 10:30:00', alarmValue: 1.85, levelText: '二级预警', status: '已完成', doneTime: '2026-03-12', handler: '刘洋' },
+  { area: '上城区', road: '清泰路', deviceName: '清泰路测斜仪', point: 'K1+100', item: '倾斜', alarmStartTime: '2026-03-22 11:15:00', alarmEndTime: '2026-04-08 15:40:00', alarmValue: 0.062, levelText: '二级预警', status: '已完成', doneTime: '2026-04-08', handler: '周伟' },
+  { area: '拱墅区', road: '大关路', deviceName: '大关路激光位移计', point: 'K2+300', item: '变形', alarmStartTime: '2026-04-26 16:20:00', alarmEndTime: '-', alarmValue: 0.98, levelText: '三级预警', status: '未完成', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '古翠路', deviceName: '古翠路光纤光栅传感器', point: 'K1+600', item: '应变', alarmStartTime: '2026-05-02 07:30:00', alarmEndTime: '2026-05-30 14:00:00', alarmValue: -2.15, levelText: '一级预警', status: '已完成', doneTime: '2026-05-30', handler: '吴静' },
 ]
 const inspectDetailBase = [
-  { area: '上城区', road: '石贯子巷', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-03-20', afterGrade: 'C' },
-  { area: '上城区', road: '中山中路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-15', afterGrade: 'C' },
-  { area: '拱墅区', road: '环城北路', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-02-10', afterGrade: '-' },
-  { area: '西湖区', road: '文三路', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
-  { area: '滨江区', road: '江南大道', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-01-25', afterGrade: '-' },
-  { area: '上城区', road: '解放路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-05-08', afterGrade: 'C' },
-  { area: '拱墅区', road: '莫干山路', grade: 'D', rectype: '拆除或完全封控', status: '未完成', doneTime: '-', afterGrade: '-' },
-  { area: '西湖区', road: '天目山路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-02', afterGrade: 'B' },
-  { area: '滨江区', road: '时代大道', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
-  { area: '上城区', road: '延安路', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-03-30', afterGrade: '-' },
+  { area: '上城区', road: '石贯子巷', inspectName: '石贯子巷常规检测', inspectTime: '2026-01-15', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-03-20', afterGrade: 'C' },
+  { area: '上城区', road: '中山中路', inspectName: '中山中路结构检测', inspectTime: '2026-02-20', inspectType: '结构检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-15', afterGrade: 'C' },
+  { area: '拱墅区', road: '环城北路', inspectName: '环城北路特殊检测', inspectTime: '2025-12-10', inspectType: '特殊检测', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-02-10', afterGrade: '-' },
+  { area: '西湖区', road: '文三路', inspectName: '文三路常规检测', inspectTime: '2026-03-05', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '滨江区', road: '江南大道', inspectName: '江南大道结构检测', inspectTime: '2025-11-25', inspectType: '结构检测', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-01-25', afterGrade: '-' },
+  { area: '上城区', road: '解放路', inspectName: '解放路常规检测', inspectTime: '2026-04-10', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-05-08', afterGrade: 'C' },
+  { area: '拱墅区', road: '莫干山路', inspectName: '莫干山路特殊检测', inspectTime: '2026-01-18', inspectType: '特殊检测', grade: 'D', rectype: '拆除或完全封控', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '西湖区', road: '天目山路', inspectName: '天目山路常规检测', inspectTime: '2026-02-28', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-02', afterGrade: 'B' },
+  { area: '滨江区', road: '时代大道', inspectName: '时代大道结构检测', inspectTime: '2026-03-20', inspectType: '结构检测', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { area: '上城区', road: '延安路', inspectName: '延安路特殊检测', inspectTime: '2026-01-05', inspectType: '特殊检测', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-03-30', afterGrade: '-' },
   { area: '萧山区', road: '市心路', grade: 'E', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-02-18', afterGrade: '-' },
   { area: '余杭区', road: '文一西路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-05-15', afterGrade: 'C' },
   { area: '上城区', road: '清泰路', grade: 'E', rectype: '拆除或完全封控', status: '未完成', doneTime: '-', afterGrade: '-' },
@@ -1836,6 +2094,17 @@ const handleGoToDashboard = () => {
   router.push('/dashboard')
 }
 
+// 监测模块查看详情
+const openMonitorDetail = () => {
+  if (activeLayer.value === 'road') {
+    showRoadDeviceDetail.value = true
+  } else if (activeLayer.value === 'bridge') {
+    showBridgeDeviceDetail.value = true
+  } else if (activeLayer.value === 'tunnel') {
+    showTunnelDeviceDetail.value = true
+  }
+}
+
 // 在线监测图表
 const alarmTrendChartRef = ref<HTMLElement | null>(null)
 const timeFlowChartRef = ref<HTMLElement | null>(null)
@@ -2093,6 +2362,13 @@ watch(riskType, (val) => {
 
 .device-sub-area { margin-top: 14px; height: 130px; position: relative; }
 .device-sub-chart { width: 100%; height: 100%; }
+.monitor-detail-footer {
+  display: flex; justify-content: flex-end; margin-top: 8px;
+  .monitor-detail-btn {
+    font-size: 12px; color: #5b8ff9; cursor: pointer;
+    &:hover { color: #7ba7ff; text-decoration: underline; }
+  }
+}
 .drill-down-header {
   display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
   .drill-back-btn { font-size: 11px; color: #5b8ff9; cursor: pointer; }
@@ -2479,6 +2755,33 @@ watch(riskType, (val) => {
 .weight-cell { color: #f6a816; font-weight: 600; }
 
 .monitor-map-card { flex: 1; min-height: 200px; display: flex; flex-direction: column; position: relative; }
+.bridge-monitor-stats {
+  margin-bottom: 8px;
+  .bridge-stats-card {
+    background: rgba(12, 30, 65, 0.85); border: 1px solid rgba(42, 100, 255, 0.25);
+    border-radius: 6px; padding: 12px 16px; display: flex; flex-direction: column;
+  }
+  .bridge-stats-grid {
+    display: flex; flex-wrap: wrap; gap: 8px 16px; flex: 1;
+  }
+  .bridge-stat-item {
+    min-width: 80px;
+    .bridge-stat-label { font-size: 12px; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+    .bridge-stat-value { font-size: 20px; font-weight: 600; line-height: 1.2;
+      &.blue { color: #5b8ff9; }
+      &.cyan { color: #5ad8a6; }
+      &.green { color: #5ad8a6; }
+    }
+    .bridge-stat-unit { font-size: 12px; font-weight: 400; opacity: 0.7; }
+  }
+  .bridge-stats-footer {
+    text-align: right; margin-top: 8px;
+    .bridge-detail-btn {
+      font-size: 12px; color: #5b8ff9; cursor: pointer;
+      &:hover { color: #7ba7ff; text-decoration: underline; }
+    }
+  }
+}
 .map-placeholder { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
 .monitor-svg { width: 100%; height: 100%; position: relative; z-index: 2; }
 
