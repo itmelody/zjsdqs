@@ -5,10 +5,10 @@
       <div class="cockpit-tabs">
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'overview' }" @click="cockpitTab = 'overview'">总体态势</div>
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'monitor' }" @click="cockpitTab = 'monitor'">在线监测</div>
+        <div class="cockpit-tab" :class="{ active: cockpitTab === 'ops' }" @click="cockpitTab = 'ops'">运维管理</div>
       </div>
       <div class="cockpit-title">浙江城市道桥隧安全运行监管</div>
       <div class="cockpit-nav">
-        <span class="nav-link">运维管理</span>
         <span class="nav-link">应急处置</span>
         <span class="nav-link">在建项目</span>
         <span class="nav-link" @click="handleGoToDashboard">工作台</span>
@@ -21,6 +21,12 @@
       <div class="panel panel-left">
         <!-- 统计卡片 -->
         <div class="card dark-card">
+          <!-- 风险提醒按钮 -->
+          <div class="risk-hint-bar">
+            <span class="risk-hint-btn" @click="showRiskHintModal = true">
+              <span class="risk-hint-icon">!</span>风险提醒
+            </span>
+          </div>
           <div class="card-title-row">
             <div class="card-title">{{ layerNameMap[activeLayer] }}统计</div>
             <span class="map-btn active" @click="showFacilityModal = true">查看详情</span>
@@ -751,6 +757,262 @@
       </div>
     </div>
 
+    <!-- 运维管理主体内容区 -->
+    <div class="cockpit-body ops-body" v-show="cockpitTab === 'ops'">
+      <!-- 左侧面板 -->
+      <div class="panel ops-left">
+        <!-- 设施检测模块 -->
+        <div class="card dark-card ops-card">
+          <div class="card-title-row">
+            <div class="card-title">设施检测</div>
+            <span class="map-btn active" @click="openOpsInspectDetail">查看详情 &gt;</span>
+          </div>
+          <div class="ops-metrics">
+            <div class="ops-metric-item">
+              <div class="ops-metric-val blue">200</div>
+              <div class="ops-metric-label">应检{{ layerNameMap[opsLayer] }}</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val green">40</div>
+              <div class="ops-metric-label">已检{{ layerNameMap[opsLayer] }}</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val cyan">20.0%</div>
+              <div class="ops-metric-label">检测完成率</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val yellow">30</div>
+              <div class="ops-metric-label">即将超期（不足30天）</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val red">10</div>
+              <div class="ops-metric-label">超期未检</div>
+            </div>
+          </div>
+          <div ref="opsInspectChartRef" class="ops-chart"></div>
+          <div ref="opsExpiringChartRef" class="ops-expiring-chart"></div>
+          <div class="ops-metrics ops-metrics-sub" v-if="opsLayer === 'road'">
+            <div class="ops-metric-item"><div class="ops-metric-val red">5</div><div class="ops-metric-label">D级道路</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val green">3</div><div class="ops-metric-label">已维修整治</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val orange">1</div><div class="ops-metric-label">已拆除或完全封控</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val cyan">60.0%</div><div class="ops-metric-label">整改率</div></div>
+          </div>
+          <div ref="opsGradeChartRef" class="ops-grade-chart" v-if="opsLayer === 'road'"></div>
+          <div class="ops-metrics ops-metrics-sub" v-if="opsLayer === 'bridge'">
+            <div class="ops-metric-item"><div class="ops-metric-val red">4</div><div class="ops-metric-label">D、E级桥梁</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val yellow">2</div><div class="ops-metric-label">不合格桥梁</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val green">3</div><div class="ops-metric-label">已维修整治</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val orange">1</div><div class="ops-metric-label">已拆除或完全封控</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val cyan">75.0%</div><div class="ops-metric-label">整改率</div></div>
+          </div>
+          <div ref="opsGradeChartRef" class="ops-grade-chart" v-if="opsLayer === 'bridge'"></div>
+          <div class="ops-metrics ops-metrics-sub" v-if="opsLayer === 'tunnel'">
+            <div class="ops-metric-item"><div class="ops-metric-val red">3</div><div class="ops-metric-label">D、E级隧道</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val green">2</div><div class="ops-metric-label">已维修整治</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val orange">1</div><div class="ops-metric-label">已拆除或完全封控</div></div>
+            <div class="ops-metric-item"><div class="ops-metric-val cyan">66.7%</div><div class="ops-metric-label">整改率</div></div>
+          </div>
+          <div ref="opsGradeChartRef" class="ops-grade-chart" v-if="opsLayer === 'tunnel'"></div>
+        </div>
+        <!-- 隐患排查模块 -->
+        <div class="card dark-card ops-card">
+          <div class="card-title-row">
+            <div class="card-title">隐患排查</div>
+            <span class="map-btn active" @click="showOpsHiddenDetail = true">查看详情 &gt;</span>
+          </div>
+          <div class="ops-metrics">
+            <div class="ops-metric-item">
+              <div class="ops-metric-val blue">120</div>
+              <div class="ops-metric-label">排查总数</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val green">96</div>
+              <div class="ops-metric-label">排查已完成</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val cyan">80.0%</div>
+              <div class="ops-metric-label">完成率</div>
+            </div>
+          </div>
+          <div class="ops-metrics">
+            <div class="ops-metric-item">
+              <div class="ops-metric-val blue">96</div>
+              <div class="ops-metric-label">隐患总数</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val green">72</div>
+              <div class="ops-metric-label">已整改</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val cyan">75.0%</div>
+              <div class="ops-metric-label">整改率</div>
+            </div>
+          </div>
+          <div ref="opsHiddenChartRef" class="ops-chart"></div>
+          <div class="ops-list">
+            <div class="ops-list-header">
+              <span class="ops-col-area">所属区域</span>
+              <span class="ops-col-total">排查总数</span>
+              <span class="ops-col-done">排查已完成</span>
+              <span class="ops-col-hiddentotal">隐患总数</span>
+              <span class="ops-col-fixed">已整改</span>
+              <span class="ops-col-rate">整改率</span>
+            </div>
+            <div class="ops-list-body">
+              <div v-for="item in opsHiddenList" :key="item.id" class="ops-list-row">
+                <span class="ops-col-area">{{ item.area }}</span>
+                <span class="ops-col-total">{{ item.checkTotal }}</span>
+                <span class="ops-col-done">{{ item.checkDone }}</span>
+                <span class="ops-col-hiddentotal">{{ item.hiddenTotal }}</span>
+                <span class="ops-col-fixed">{{ item.fixedCount }}</span>
+                <span class="ops-col-rate"><span :class="getFixRateClass(item.fixRate)">{{ item.fixRate }}%</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间地图区 -->
+      <div class="panel ops-center">
+        <div class="card dark-card map-card">
+          <div class="map-toolbar">
+            <div class="map-layer-tabs">
+              <span class="layer-tab" :class="{ active: opsLayer === 'road' }" @click="opsLayer = 'road'">道路</span>
+              <span class="layer-tab" :class="{ active: opsLayer === 'bridge' }" @click="opsLayer = 'bridge'">桥梁</span>
+              <span class="layer-tab" :class="{ active: opsLayer === 'tunnel' }" @click="opsLayer = 'tunnel'">隧道</span>
+            </div>
+            <div class="map-type-toggle" @click="toggleMapType">
+              <span :class="{ active: mapStyle === 'standard' }">标准地图</span>
+              <span :class="{ active: mapStyle === 'satellite' }">卫星地图</span>
+            </div>
+            <div class="map-selector" @click="showOpsCityDropdown = !showOpsCityDropdown">
+              <span class="selector-text">{{ opsCity }}</span>
+              <span class="selector-arrow" :class="{ open: showOpsCityDropdown }">&#9662;</span>
+              <div class="city-dropdown" v-show="showOpsCityDropdown" @click.stop>
+                <div class="dropdown-item" :class="{ active: opsCity === '浙江省' }" @click="selectOpsCity('浙江省')">浙江省</div>
+                <div class="dropdown-item" v-for="city in cityList" :key="city" :class="{ active: opsCity === city }" @click="selectOpsCity(city)">
+                  {{ city }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="map-area">
+            <div ref="opsMapRef" class="amap-container"></div>
+          </div>
+          <div class="map-legend">
+            <div class="legend-checkbox-panel">
+              <template v-if="opsSubLayer === 'type'">
+                <label class="checkbox-item" v-for="rt in opsTypeLegend" :key="rt.key">
+                  <span class="custom-checkbox" :class="{ checked: (opsTypeChecked as any)[rt.key] }" @click="(opsTypeChecked as any)[rt.key] = !(opsTypeChecked as any)[rt.key]">
+                    <svg v-if="(opsTypeChecked as any)[rt.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
+                  </span>
+                  <span class="legend-line" :style="{ background: rt.color }"></span>
+                  <span class="checkbox-label">{{ rt.name }}</span>
+                </label>
+              </template>
+              <template v-else>
+                <label class="checkbox-item" v-for="re in opsEvalLegend" :key="re.key">
+                  <span class="custom-checkbox" :class="{ checked: (opsEvalChecked as any)[re.key] }" @click="(opsEvalChecked as any)[re.key] = !(opsEvalChecked as any)[re.key]">
+                    <svg v-if="(opsEvalChecked as any)[re.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
+                  </span>
+                  <span class="legend-line" :style="{ background: re.color }"></span>
+                  <span class="checkbox-label">{{ re.name }}</span>
+                </label>
+              </template>
+            </div>
+            <div class="legend-control-panel">
+              <div class="sub-layer-btns">
+                <span class="radio-item" :class="{ selected: opsSubLayer === 'type' }" @click="opsSubLayer = 'type'"><span class="radio-dot"></span>{{ layerNameMap[opsLayer] }}类型</span>
+                <span class="radio-item" :class="{ selected: opsSubLayer === 'eval' }" @click="opsSubLayer = 'eval'"><span class="radio-dot"></span>{{ layerNameMap[opsLayer] }}评价</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧面板 -->
+      <div class="panel ops-right">
+        <!-- 安全评估模块 -->
+        <div class="card dark-card ops-card">
+          <div class="card-title-row">
+            <div class="card-title">安全评估</div>
+            <span class="map-btn active" @click="showOpsAssessDetail = true">查看详情 &gt;</span>
+          </div>
+          <div class="ops-metrics">
+            <div class="ops-metric-item">
+              <div class="ops-metric-val blue">86</div>
+              <div class="ops-metric-label">评估总数</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val green">64</div>
+              <div class="ops-metric-label">已整改</div>
+            </div>
+            <div class="ops-metric-item">
+              <div class="ops-metric-val cyan">74.4%</div>
+              <div class="ops-metric-label">整改率</div>
+            </div>
+          </div>
+          <div ref="opsAssessChartRef" class="ops-chart"></div>
+          <div class="ops-list">
+            <div class="ops-list-header">
+              <span class="ops-col-area">所属区域</span>
+              <span class="ops-col-name">{{ layerNameMap[opsLayer] }}名称</span>
+              <span class="ops-col-project">评估项目</span>
+              <span class="ops-col-level">隐患等级</span>
+              <span class="ops-col-status">整改状态</span>
+            </div>
+            <div class="ops-list-body">
+              <div v-for="item in opsAssessList" :key="item.id" class="ops-list-row">
+                <span class="ops-col-area">{{ item.area }}</span>
+                <span class="ops-col-name">{{ item.name }}</span>
+                <span class="ops-col-project">{{ item.project }}</span>
+                <span class="ops-col-level"><span :class="'hidden-tag-' + item.level">{{ assessLevelText(item.level) }}</span></span>
+                <span class="ops-col-status"><span :class="item.fixed ? 'status-done' : 'status-undone'">{{ item.fixed ? '已整改' : '待整改' }}</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 运维管理-设施检测详情弹窗（同工作台检测管理详情） -->
+    <a-modal v-model:open="showOpsInspectDetail" title="检测管理详情" width="900px" :footer="null" class="risk-detail-modal">
+      <a-tabs v-model:activeKey="opsInspectDetailTab" class="detail-tabs">
+        <a-tab-pane v-if="opsLayer === 'road'" key="road" tab="道路">
+          <div v-if="opsInspectDrillType" class="drill-down-header">
+            <a-button size="small" @click="opsInspectDrillType = null"><template #icon><ArrowLeftOutlined /></template>返回</a-button>
+            <span class="drill-down-title">{{ opsInspectDrillTitle }}</span>
+          </div>
+          <a-table v-if="!opsInspectDrillType" :columns="opsInspectColumns.road" :data-source="opsInspectDrillData" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 400 }" bordered />
+          <a-table v-else :columns="opsDrillColumns" :data-source="opsDrillData" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 400 }" bordered />
+        </a-tab-pane>
+        <a-tab-pane v-if="opsLayer === 'bridge'" key="bridge" tab="桥梁">
+          <div v-if="opsInspectDrillType" class="drill-down-header">
+            <a-button size="small" @click="opsInspectDrillType = null"><template #icon><ArrowLeftOutlined /></template>返回</a-button>
+            <span class="drill-down-title">{{ opsInspectDrillTitle }}</span>
+          </div>
+          <a-table v-if="!opsInspectDrillType" :columns="opsInspectColumns.bridge" :data-source="opsInspectDrillData" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 400 }" bordered />
+          <a-table v-else :columns="opsDrillColumns" :data-source="opsDrillData" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 400 }" bordered />
+        </a-tab-pane>
+        <a-tab-pane v-if="opsLayer === 'tunnel'" key="tunnel" tab="隧道">
+          <div v-if="opsInspectDrillType" class="drill-down-header">
+            <a-button size="small" @click="opsInspectDrillType = null"><template #icon><ArrowLeftOutlined /></template>返回</a-button>
+            <span class="drill-down-title">{{ opsInspectDrillTitle }}</span>
+          </div>
+          <a-table v-if="!opsInspectDrillType" :columns="opsInspectColumns.tunnel" :data-source="opsInspectDrillData" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 400 }" bordered />
+          <a-table v-else :columns="opsDrillColumns" :data-source="opsDrillData" :pagination="false" size="small" :scroll="{ x: 'max-content', y: 400 }" bordered />
+        </a-tab-pane>
+      </a-tabs>
+    </a-modal>
+    <!-- 运维管理-隐患排查详情弹窗 -->
+    <a-modal v-model:open="showOpsHiddenDetail" title="隐患排查详情" width="1100px" :footer="null" class="risk-detail-modal">
+      <a-table :columns="riskDetailColumns.hidden" :data-source="riskDetailData.hidden" :pagination="false" size="small" bordered />
+    </a-modal>
+    <!-- 运维管理-安全评估详情弹窗 -->
+    <a-modal v-model:open="showOpsAssessDetail" title="安全评估详情" width="1100px" :footer="null" class="risk-detail-modal">
+      <a-table :columns="riskDetailColumns.assess" :data-source="riskDetailData.assess" :pagination="false" size="small" bordered />
+    </a-modal>
+
     <!-- 市级数据弹窗 -->
     <a-modal
       v-model:open="showFacilityModal"
@@ -822,6 +1084,77 @@
       <a-table :columns="tunnelDeviceDetailColumns" :data-source="tunnelDeviceDetailData" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
     </a-modal>
 
+    <!-- 风险隐患表和提示单弹窗 -->
+    <a-modal v-model:open="showRiskHintModal" title="风险隐患表和提示单" width="1000px" :footer="null" class="risk-hint-modal">
+      <div class="risk-hint-tabs">
+        <div class="risk-hint-tab" :class="{ active: riskHintTab === 'road' }" @click="riskHintTab = 'road'">道路</div>
+        <div class="risk-hint-tab" :class="{ active: riskHintTab === 'bridge' }" @click="riskHintTab = 'bridge'">桥梁</div>
+        <div class="risk-hint-tab" :class="{ active: riskHintTab === 'tunnel' }" @click="riskHintTab = 'tunnel'">隧道</div>
+      </div>
+      <div class="risk-hint-content">
+        <!-- 设施检测 -->
+        <div class="risk-hint-section">
+          <div class="risk-hint-section-title">设施检测</div>
+          <div class="risk-hint-section-body">
+            <template v-if="riskHintTab === 'road'">
+              <p>全省开展设施检测，应检测道路<strong>{{ riskHintData.road.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.road.facilityInspection.inspected }}</strong>条，应检未检任务<strong class="text-orange">{{ riskHintData.road.facilityInspection.uninspected }}</strong>条，超期未检道路<strong class="text-red">{{ riskHintData.road.facilityInspection.overdue }}</strong>条，检测出D级道路<strong class="text-red">{{ riskHintData.road.facilityInspection.gradeD }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.road.facilityInspection.shouldRepair }}</strong>条。</p>
+            </template>
+            <template v-else-if="riskHintTab === 'bridge'">
+              <p>全省开展设施检测，应检测桥梁<strong>{{ riskHintData.bridge.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.bridge.facilityInspection.inspected }}</strong>条，应检未检任务<strong class="text-orange">{{ riskHintData.bridge.facilityInspection.uninspected }}</strong>条，超期未检桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.overdue }}</strong>条，检测出D、E级桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.gradeDE }}</strong>条，不合格桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.unqualified }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.bridge.facilityInspection.shouldRepair }}</strong>条。</p>
+            </template>
+            <template v-else>
+              <p>全省开展设施检测，应检测隧道<strong>{{ riskHintData.tunnel.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.tunnel.facilityInspection.inspected }}</strong>条，应检未检任务<strong class="text-orange">{{ riskHintData.tunnel.facilityInspection.uninspected }}</strong>条，超期未检隧道<strong class="text-red">{{ riskHintData.tunnel.facilityInspection.overdue }}</strong>条，检测出D、E级隧道<strong class="text-red">{{ riskHintData.tunnel.facilityInspection.gradeDE }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.tunnel.facilityInspection.shouldRepair }}</strong>条。</p>
+            </template>
+          </div>
+        </div>
+        <!-- 隐患排查 -->
+        <div class="risk-hint-section">
+          <div class="risk-hint-section-title">隐患排查</div>
+          <div class="risk-hint-section-body">
+            <template v-if="riskHintTab === 'road'">
+              <p>全省开展隐患排查，应排查道路<strong>{{ riskHintData.road.hiddenDanger.shouldCheck }}</strong>条，已排查<strong>{{ riskHintData.road.hiddenDanger.checked }}</strong>条。排查出问题隐患<strong>{{ riskHintData.road.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.road.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.road.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.road.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.road.hiddenDanger.fixed }}</strong>个。</p>
+            </template>
+            <template v-else-if="riskHintTab === 'bridge'">
+              <p>全省开展隐患排查，应排查桥梁<strong>{{ riskHintData.bridge.hiddenDanger.shouldCheck }}</strong>条，已排查<strong>{{ riskHintData.bridge.hiddenDanger.checked }}</strong>条。排查出问题隐患<strong>{{ riskHintData.bridge.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.bridge.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.bridge.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.bridge.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.bridge.hiddenDanger.fixed }}</strong>个。</p>
+            </template>
+            <template v-else>
+              <p>全省开展隐患排查，应排查隧道<strong>{{ riskHintData.tunnel.hiddenDanger.shouldCheck }}</strong>条，已排查<strong>{{ riskHintData.tunnel.hiddenDanger.checked }}</strong>条。排查出问题隐患<strong>{{ riskHintData.tunnel.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.tunnel.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.tunnel.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.tunnel.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.tunnel.hiddenDanger.fixed }}</strong>个。</p>
+            </template>
+          </div>
+        </div>
+        <!-- 设备监测 -->
+        <div class="risk-hint-section">
+          <div class="risk-hint-section-title">设备监测</div>
+          <div class="risk-hint-section-body">
+            <template v-if="riskHintTab === 'road'">
+              <p>全省应接入监测设备道路<strong>{{ riskHintData.road.deviceMonitor.shouldConnect }}</strong>条，已接入<strong>{{ riskHintData.road.deviceMonitor.connected }}</strong>条，接入率<strong>{{ riskHintData.road.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.road.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.road.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.road.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.road.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.road.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.road.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.road.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.road.deviceMonitor.handled }}</strong>条。</p>
+            </template>
+            <template v-else-if="riskHintTab === 'bridge'">
+              <p>全省应接入监测设备桥梁<strong>{{ riskHintData.bridge.deviceMonitor.shouldConnect }}</strong>条，已接入<strong>{{ riskHintData.bridge.deviceMonitor.connected }}</strong>条，接入率<strong>{{ riskHintData.bridge.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.bridge.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.bridge.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.bridge.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.bridge.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.bridge.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.bridge.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.bridge.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.bridge.deviceMonitor.handled }}</strong>条。</p>
+            </template>
+            <template v-else>
+              <p>全省应接入监测设备隧道<strong>{{ riskHintData.tunnel.deviceMonitor.shouldConnect }}</strong>条，已接入<strong>{{ riskHintData.tunnel.deviceMonitor.connected }}</strong>条，接入率<strong>{{ riskHintData.tunnel.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.tunnel.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.tunnel.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.tunnel.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.tunnel.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.tunnel.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.tunnel.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.tunnel.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.tunnel.deviceMonitor.handled }}</strong>条。</p>
+            </template>
+          </div>
+        </div>
+        <!-- 安全评估 -->
+        <div class="risk-hint-section">
+          <div class="risk-hint-section-title">安全评估</div>
+          <div class="risk-hint-section-body">
+            <template v-if="riskHintTab === 'road'">
+              <p>全省开展安全评估，应评估道路<strong>{{ riskHintData.road.safetyAssess.shouldAssess }}</strong>条，已评估<strong>{{ riskHintData.road.safetyAssess.assessed }}</strong>条。评估出问题隐患<strong>{{ riskHintData.road.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.road.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.road.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.road.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.road.safetyAssess.fixed }}</strong>个。</p>
+            </template>
+            <template v-else-if="riskHintTab === 'bridge'">
+              <p>全省开展安全评估，应评估桥梁<strong>{{ riskHintData.bridge.safetyAssess.shouldAssess }}</strong>条，已评估<strong>{{ riskHintData.bridge.safetyAssess.assessed }}</strong>条。评估出问题隐患<strong>{{ riskHintData.bridge.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.bridge.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.bridge.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.bridge.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.bridge.safetyAssess.fixed }}</strong>个。</p>
+            </template>
+            <template v-else>
+              <p>全省开展安全评估，应评估隧道<strong>{{ riskHintData.tunnel.safetyAssess.shouldAssess }}</strong>条，已评估<strong>{{ riskHintData.tunnel.safetyAssess.assessed }}</strong>条。评估出问题隐患<strong>{{ riskHintData.tunnel.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.tunnel.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.tunnel.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.tunnel.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.tunnel.safetyAssess.fixed }}</strong>个。</p>
+            </template>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
     <!-- 预警详情弹窗 -->
     <a-modal v-model:open="showAlarmDetailModal" title="预警详情" width="1200px" :footer="null" class="alarm-detail-modal">
       <div class="modal-filter-bar">
@@ -878,14 +1211,18 @@ let inspectBarChart: echarts.ECharts | null = null
 
 const activeLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const subLayer = ref<'type' | 'eval'>('type')
-const cockpitTab = ref<'overview' | 'monitor'>('overview')
+const cockpitTab = ref<'overview' | 'monitor' | 'ops'>('overview')
 
 // 高德地图
 const overviewMapRef = ref<HTMLElement | null>(null)
 const monitorMapRef = ref<HTMLElement | null>(null)
+const opsMapRef = ref<HTMLElement | null>(null)
 const mapStyle = ref<'standard' | 'satellite'>('standard')
 let overviewMap: any = null
 let monitorMap: any = null
+let opsMap: any = null
+let opsMapOverlays: any[] = []
+let opsMapInfoWindow: any = null
 let monitorMapOverlays: any[] = []
 let monitorMapInfoWindow: any = null
 const zjCenter: [number, number] = [120.15, 30.27]
@@ -1071,10 +1408,495 @@ function initMonitorMapOverlays() {
   })
 }
 
+// ===== 运维管理 =====
+const opsLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
+const opsSubLayer = ref<'type' | 'eval'>('type')
+const showOpsInspectDetail = ref(false)
+const showOpsHiddenDetail = ref(false)
+const showOpsAssessDetail = ref(false)
+
+// 风险隐患表和提示单弹窗
+const showRiskHintModal = ref(false)
+const riskHintTab = ref<'road' | 'bridge' | 'tunnel'>('road')
+let hasShownRiskHint = false // 标记是否已显示过
+const opsInspectChartRef = ref<HTMLElement | null>(null)
+const opsExpiringChartRef = ref<HTMLElement | null>(null)
+const opsGradeChartRef = ref<HTMLElement | null>(null)
+const opsHiddenChartRef = ref<HTMLElement | null>(null)
+const opsAssessChartRef = ref<HTMLElement | null>(null)
+let opsInspectChart: echarts.ECharts | null = null
+let opsExpiringChart: echarts.ECharts | null = null
+let opsGradeChart: echarts.ECharts | null = null
+let opsHiddenChart: echarts.ECharts | null = null
+let opsAssessChart: echarts.ECharts | null = null
+
+// 运维管理地市选择
+const opsCity = ref('浙江省')
+const showOpsCityDropdown = ref(false)
+const selectOpsCity = (city: string) => { opsCity.value = city; showOpsCityDropdown.value = false }
+
+// 运维管理图例
+const opsTypeLegend = computed(() => opsLayer.value === 'bridge' ? bridgeTypeLegend : opsLayer.value === 'tunnel' ? tunnelTypeLegend : roadTypeLegend)
+const opsEvalLegend = computed(() => opsLayer.value === 'bridge' ? bridgeEvalLegend : opsLayer.value === 'tunnel' ? tunnelEvalLegend : roadEvalLegend)
+const opsTypeChecked = reactive({ main: true, sub: true, branch: true, highway: true, cable: true, arch: true, beam: true, pier: true, env: true, mech: true, struct: true })
+const opsEvalChecked = reactive({ A: true, B: true, C: true, D: true })
+
+// 运维管理-设施检测列表（同总体态势风险清单设施检测列表）
+const opsInspectList = [
+  { id: 1, area: '上城区', name: '石贯子巷', inspectName: '石贯子巷常规检测', inspectTime: '2026-01-15', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-03-20', afterGrade: 'C' },
+  { id: 2, area: '上城区', name: '中山中路', inspectName: '中山中路结构检测', inspectTime: '2026-02-20', inspectType: '结构检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-04-15', afterGrade: 'C' },
+  { id: 3, area: '拱墅区', name: '环城北路', inspectName: '环城北路特殊检测', inspectTime: '2025-12-10', inspectType: '特殊检测', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-02-10', afterGrade: '-' },
+  { id: 4, area: '西湖区', name: '文三路', inspectName: '文三路常规检测', inspectTime: '2026-03-05', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '未完成', doneTime: '-', afterGrade: '-' },
+  { id: 5, area: '滨江区', name: '江南大道', inspectName: '江南大道结构检测', inspectTime: '2025-11-25', inspectType: '结构检测', grade: 'D', rectype: '拆除或完全封控', status: '已完成', doneTime: '2026-01-25', afterGrade: '-' },
+  { id: 6, area: '上城区', name: '解放路', inspectName: '解放路常规检测', inspectTime: '2026-04-10', inspectType: '常规检测', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-05-08', afterGrade: 'C' },
+]
+
+// 运维管理-设施检测详情（同工作台检测管理详情）
+const opsInspectDetailTab = ref<'road' | 'bridge' | 'tunnel'>('road')
+const opsInspectDrillType = ref<string | null>(null)
+const opsInspectDrillCity = ref('')
+
+const opsInspectDrillTitle = computed(() => {
+  const t = opsInspectDrillType.value
+  const tab = opsInspectDetailTab.value
+  if (t === 'overdue') return `${opsInspectDrillCity.value} - 超期未检${tab === 'bridge' ? '桥梁' : tab === 'tunnel' ? '隧道' : '道路'}详情`
+  if (t === 'expiringSoon') return `${opsInspectDrillCity.value} - 即将超期${tab === 'bridge' ? '桥梁' : tab === 'tunnel' ? '隧道' : '道路'}详情`
+  const map: Record<string, string> = { gradeD: 'D级道路详情', gradeDE: 'D、E级详情', unqualified: '不合格桥梁详情' }
+  return `${opsInspectDrillCity.value} - ${map[t || ''] || ''}`
+})
+
+function openOpsInspectDetail() {
+  opsInspectDetailTab.value = opsLayer.value
+  opsInspectDrillType.value = null
+  showOpsInspectDetail.value = true
+}
+
+function enterOpsDrill(field: string, cityName: string) {
+  opsInspectDrillType.value = field
+  opsInspectDrillCity.value = cityName
+}
+
+// 运维管理检测管理列（同工作台detectionColumns，支持下钻）
+const opsClickLink = (field: string) => ({ customRender: ({ text, record }: any) => ({ children: h('a', { onClick: () => enterOpsDrill(field, record.city) }, text) }) })
+const opsInspectColumns = {
+  road: [{ title: '地市', dataIndex: 'city', key: 'city', width: 70 }, { title: '道路总数(条)', dataIndex: 'total', key: 'total', width: 90 }, { title: '已检测', dataIndex: 'detected', key: 'detected', width: 70 }, { title: '检测率', dataIndex: 'rate', key: 'rate', width: 70 }, { title: 'D级道路', dataIndex: 'gradeD', key: 'gradeD', width: 70, ...opsClickLink('gradeD') }, { title: '已维修整治', dataIndex: 'repaired', key: 'repaired', width: 90 }, { title: '已拆除或完全封控', dataIndex: 'removed', key: 'removed', width: 95 }, { title: '超期未检', dataIndex: 'overdue', key: 'overdue', width: 80, ...opsClickLink('overdue') }, { title: '即将超期\n(不足30天)', dataIndex: 'expiringSoon', key: 'expiringSoon', width: 100, ...opsClickLink('expiringSoon') }],
+  bridge: [{ title: '地市', dataIndex: 'city', key: 'city', width: 70 }, { title: '桥梁总数(座)', dataIndex: 'total', key: 'total', width: 95 }, { title: '已检测', dataIndex: 'detected', key: 'detected', width: 70 }, { title: '检测率', dataIndex: 'rate', key: 'rate', width: 70 }, { title: 'D、E级桥梁', dataIndex: 'gradeDE', key: 'gradeDE', width: 90, ...opsClickLink('gradeDE') }, { title: '不合格桥梁', dataIndex: 'unqualified', key: 'unqualified', width: 90, ...opsClickLink('unqualified') }, { title: '已维修整治', dataIndex: 'repaired', key: 'repaired', width: 90 }, { title: '已拆除或完全封控', dataIndex: 'removed', key: 'removed', width: 95 }, { title: '超期未检', dataIndex: 'overdue', key: 'overdue', width: 80, ...opsClickLink('overdue') }, { title: '即将超期\n(不足30天)', dataIndex: 'expiringSoon', key: 'expiringSoon', width: 100, ...opsClickLink('expiringSoon') }],
+  tunnel: [{ title: '地市', dataIndex: 'city', key: 'city', width: 70 }, { title: '隧道总数(座)', dataIndex: 'total', key: 'total', width: 95 }, { title: '已检测', dataIndex: 'detected', key: 'detected', width: 70 }, { title: '检测率', dataIndex: 'rate', key: 'rate', width: 70 }, { title: 'D、E级隧道', dataIndex: 'gradeDE', key: 'gradeDE', width: 90, ...opsClickLink('gradeDE') }, { title: '已维修整治', dataIndex: 'repaired', key: 'repaired', width: 90 }, { title: '已拆除或完全封控', dataIndex: 'removed', key: 'removed', width: 95 }, { title: '超期未检', dataIndex: 'overdue', key: 'overdue', width: 80, ...opsClickLink('overdue') }, { title: '即将超期\n(不足30天)', dataIndex: 'expiringSoon', key: 'expiringSoon', width: 100, ...opsClickLink('expiringSoon') }],
+}
+
+// 运维管理检测数据（同工作台detectionData）
+const opsInspectDrillData = computed(() => {
+  const cities = ['杭州市', '宁波市', '温州市', '绍兴市', '湖州市', '嘉兴市', '金华市', '衢州市', '台州市', '丽水市', '舟山市']
+  const tab = opsInspectDetailTab.value
+  if (tab === 'road') return cities.map((c: string, i: number) => ({ key: i, city: c, total: [86, 72, 64, 48, 32, 42, 38, 28, 45, 22, 14][i], detected: [78, 65, 58, 42, 28, 38, 34, 24, 40, 19, 12][i], rate: ['90.7%', '90.3%', '90.6%', '87.5%', '87.5%', '90.5%', '89.5%', '85.7%', '88.9%', '86.4%', '85.7%'][i], gradeD: [5, 3, 4, 2, 1, 2, 2, 1, 3, 1, 0][i], repaired: [3, 1, 2, 1, 0, 1, 0, 0, 2, 0, 0][i], removed: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0][i], overdue: [4, 3, 2, 2, 1, 2, 1, 1, 2, 1, 1][i], expiringSoon: [6, 4, 4, 3, 2, 2, 2, 2, 3, 1, 1][i] }))
+  if (tab === 'bridge') return cities.map((c: string, i: number) => ({ key: i, city: c, total: [567, 423, 389, 256, 178, 234, 198, 145, 267, 123, 87][i], detected: [512, 382, 351, 228, 158, 210, 176, 128, 238, 108, 76][i], rate: ['90.3%', '90.3%', '90.2%', '89.1%', '88.8%', '89.7%', '88.9%', '88.3%', '89.1%', '87.8%', '87.4%'][i], gradeDE: [28, 21, 18, 12, 8, 11, 10, 7, 14, 6, 4][i], unqualified: [15, 11, 9, 6, 4, 6, 5, 3, 7, 3, 2][i], repaired: [18, 12, 10, 6, 4, 6, 5, 3, 8, 3, 2][i], removed: [5, 4, 3, 2, 1, 2, 1, 1, 3, 1, 0][i], overdue: [18, 13, 12, 8, 6, 8, 7, 5, 10, 5, 4][i], expiringSoon: [24, 18, 16, 10, 7, 10, 8, 6, 12, 5, 4][i] }))
+  return cities.map((c: string, i: number) => ({ key: i, city: c, total: [98, 76, 68, 45, 32, 41, 35, 26, 48, 21, 14][i], detected: [89, 68, 62, 40, 28, 37, 31, 23, 43, 18, 12][i], rate: ['90.8%', '89.5%', '91.2%', '88.9%', '87.5%', '90.2%', '88.6%', '88.5%', '89.6%', '85.7%', '85.7%'][i], gradeDE: [6, 4, 4, 2, 2, 2, 2, 1, 3, 1, 1][i], repaired: [3, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0][i], removed: [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0][i], overdue: [5, 4, 3, 2, 2, 2, 2, 1, 3, 2, 1][i], expiringSoon: [7, 5, 5, 3, 2, 3, 2, 2, 4, 2, 1][i] }))
+})
+
+// 运维管理下钻列
+const opsDrillColumns = computed(() => {
+  const t = opsInspectDrillType.value
+  if (t === 'overdue' || t === 'expiringSoon') {
+    const nameTitle = opsInspectDetailTab.value === 'bridge' ? '桥梁名称' : opsInspectDetailTab.value === 'tunnel' ? '隧道名称' : '道路名称'
+    return [{ title: '地市', dataIndex: 'city', key: 'city', width: 80 }, { title: nameTitle, dataIndex: 'name', key: 'name', width: 150 }, { title: '最新检测时间', dataIndex: 'lastInspectDate', key: 'lastInspectDate', width: 120 }, { title: '检测周期', dataIndex: 'cycle', key: 'cycle', width: 90 }, { title: '检测到期时间', dataIndex: 'expireDate', key: 'expireDate', width: 120 }]
+  }
+  const tab = opsInspectDetailTab.value
+  const nameTitle = tab === 'bridge' ? '桥梁名称' : tab === 'tunnel' ? '隧道名称' : '道路名称'
+  const resultTitle = tab === 'bridge' ? '桥梁整改销号结果' : tab === 'tunnel' ? '隧道整改销号结果' : '道路整改销号结果'
+  return [{ title: '地市', dataIndex: 'city', key: 'city', width: 80 }, { title: '检测名称', dataIndex: 'inspectName', key: 'inspectName', width: 120 }, { title: '检测时间', dataIndex: 'inspectDate', key: 'inspectDate', width: 110 }, { title: '检测类型', dataIndex: 'inspectType', key: 'inspectType', width: 90 }, { title: nameTitle, dataIndex: 'name', key: 'name', width: 120 }, { title: '综合评价等级', dataIndex: 'grade', key: 'grade', width: 100 }, { title: resultTitle, dataIndex: 'result', key: 'result', width: 240 }]
+})
+
+// 运维管理下钻数据
+const opsDrillData = computed(() => {
+  const city = opsInspectDrillCity.value
+  const t = opsInspectDrillType.value
+  const tab = opsInspectDetailTab.value
+  const data = opsInspectDrillData.value
+  const row = data.find((r: any) => r.city === city)
+  if (!row) return []
+  const count = (row as any)?.[t === 'overdue' ? 'overdue' : t === 'expiringSoon' ? 'expiringSoon' : t === 'gradeD' ? 'gradeD' : t === 'unqualified' ? 'unqualified' : 'gradeDE'] ?? 2
+  const namePrefix = { road: '路段', bridge: '桥梁', tunnel: '隧道' }
+  const inspectionCycles = ['一年', '两年', '三年']
+  if (t === 'overdue') {
+    return Array.from({ length: count }, (_, i) => {
+      const cycle = inspectionCycles[i % 3]
+      const years = cycle === '一年' ? 1 : cycle === '两年' ? 2 : 3
+      const lastYear = 2024 - years - 1
+      const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')
+      const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')
+      return { key: i, city, name: `${city}${namePrefix[tab as 'road' | 'bridge' | 'tunnel']}${String(i + 1).padStart(3, '0')}`, lastInspectDate: `${lastYear}-${month}-${day}`, cycle, expireDate: `${lastYear + years}-${month}-${day}` }
+    })
+  }
+  if (t === 'expiringSoon') {
+    const today = new Date()
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return Array.from({ length: count }, (_, i) => {
+      const cycle = inspectionCycles[i % 3]
+      const years = cycle === '一年' ? 1 : cycle === '两年' ? 2 : 3
+      const offsetDays = 1 + (i * 29 / Math.max(count, 1)) | 0
+      const expireDate = new Date(today.getTime() + offsetDays * 86400000)
+      const expStr = `${expireDate.getFullYear()}-${pad(expireDate.getMonth() + 1)}-${pad(expireDate.getDate())}`
+      const lastDate = new Date(expireDate)
+      lastDate.setFullYear(lastDate.getFullYear() - years)
+      return { key: i, city, name: `${city}${namePrefix[tab as 'road' | 'bridge' | 'tunnel']}${String(i + 1).padStart(3, '0')}`, lastInspectDate: `${lastDate.getFullYear()}-${pad(lastDate.getMonth() + 1)}-${pad(lastDate.getDate())}`, cycle, expireDate: expStr }
+    })
+  }
+  const typeMap: Record<string, string> = { road: '常规检测', bridge: '常规检测', tunnel: '常规检测', unqualified: '专项检测' }
+  const results = ['未完成', '已完成（销号日期2024-08-19；新评级A）', '已完成（销号日期2024-08-19；拆除或完全封控）']
+  const grades = ['D', 'D', 'E', 'D', 'E']
+  const newGrades = ['A', 'B', 'C']
+  return Array.from({ length: count }, (_, i) => ({
+    key: i, city,
+    inspectName: `${city}${namePrefix[tab as 'road' | 'bridge' | 'tunnel']}检测-2024-${String(i + 1).padStart(3, '0')}`,
+    inspectDate: `2024-${String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+    inspectType: typeMap[t || 'road'],
+    name: `${city}${namePrefix[tab as 'road' | 'bridge' | 'tunnel']}${String(i + 1).padStart(3, '0')}`,
+    grade: t === 'unqualified' ? '不合格' : tab === 'road' ? 'D' : grades[i % grades.length],
+    result: (() => { const r = results[i % results.length]; if (r.includes('新评级') && t !== 'unqualified') { const g = newGrades[i % newGrades.length]; return r.replace(/新评级[A-Z]/, `新评级${g}`) } return r })(),
+  }))
+})
+
+// 运维管理-隐患排查列表（按区域统计）
+const opsHiddenList = [
+  { id: 1, area: '上城区', checkTotal: 20, checkDone: 18, hiddenTotal: 15, fixedCount: 12, fixRate: 80.0 },
+  { id: 2, area: '拱墅区', checkTotal: 18, checkDone: 14, hiddenTotal: 12, fixedCount: 9, fixRate: 75.0 },
+  { id: 3, area: '西湖区', checkTotal: 16, checkDone: 12, hiddenTotal: 10, fixedCount: 8, fixRate: 80.0 },
+  { id: 4, area: '滨江区', checkTotal: 14, checkDone: 10, hiddenTotal: 8, fixedCount: 6, fixRate: 75.0 },
+  { id: 5, area: '萧山区', checkTotal: 12, checkDone: 8, hiddenTotal: 6, fixedCount: 4, fixRate: 66.7 },
+  { id: 6, area: '余杭区', checkTotal: 10, checkDone: 6, hiddenTotal: 5, fixedCount: 3, fixRate: 60.0 },
+  { id: 7, area: '临平区', checkTotal: 8, checkDone: 5, hiddenTotal: 4, fixedCount: 2, fixRate: 50.0 },
+  { id: 8, area: '钱塘区', checkTotal: 6, checkDone: 4, hiddenTotal: 3, fixedCount: 2, fixRate: 66.7 },
+]
+
+function getFixRateClass(rate: number) {
+  return rate >= 80 ? 'rate-high' : rate >= 60 ? 'rate-mid' : 'rate-low'
+}
+
+// 风险隐患表和提示单数据
+const riskHintData = {
+  road: {
+    facilityInspection: {
+      shouldInspect: 1076,
+      inspected: 620,
+      uninspected: 456,
+      overdue: 65,
+      gradeD: 78,
+      shouldRepair: 56,
+    },
+    hiddenDanger: {
+      shouldCheck: 980,
+      checked: 900,
+      totalHazards: 98,
+      general: 67,
+      larger: 18,
+      major: 13,
+      fixed: 87,
+    },
+    deviceMonitor: {
+      shouldConnect: 980,
+      connected: 960,
+      connectRate: 98.0,
+      totalDevices: 3467,
+      online: 3400,
+      onlineRate: 99.0,
+      warnings: 87,
+      warningLevel1: 12,
+      warningLevel2: 20,
+      warningLevel3: 55,
+      handled: 60,
+    },
+    safetyAssess: {
+      shouldAssess: 980,
+      assessed: 900,
+      totalHazards: 98,
+      general: 67,
+      larger: 18,
+      major: 13,
+      fixed: 87,
+    },
+  },
+  bridge: {
+    facilityInspection: {
+      shouldInspect: 856,
+      inspected: 520,
+      uninspected: 336,
+      overdue: 45,
+      gradeDE: 58,
+      unqualified: 32,
+      shouldRepair: 42,
+    },
+    hiddenDanger: {
+      shouldCheck: 780,
+      checked: 720,
+      totalHazards: 76,
+      general: 52,
+      larger: 14,
+      major: 10,
+      fixed: 68,
+    },
+    deviceMonitor: {
+      shouldConnect: 780,
+      connected: 760,
+      connectRate: 97.4,
+      totalDevices: 2856,
+      online: 2800,
+      onlineRate: 98.0,
+      warnings: 65,
+      warningLevel1: 8,
+      warningLevel2: 15,
+      warningLevel3: 42,
+      handled: 48,
+    },
+    safetyAssess: {
+      shouldAssess: 780,
+      assessed: 720,
+      totalHazards: 76,
+      general: 52,
+      larger: 14,
+      major: 10,
+      fixed: 68,
+    },
+  },
+  tunnel: {
+    facilityInspection: {
+      shouldInspect: 656,
+      inspected: 420,
+      uninspected: 236,
+      overdue: 35,
+      gradeDE: 42,
+      shouldRepair: 28,
+    },
+    hiddenDanger: {
+      shouldCheck: 580,
+      checked: 540,
+      totalHazards: 54,
+      general: 38,
+      larger: 10,
+      major: 6,
+      fixed: 48,
+    },
+    deviceMonitor: {
+      shouldConnect: 580,
+      connected: 560,
+      connectRate: 96.6,
+      totalDevices: 1856,
+      online: 1820,
+      onlineRate: 98.1,
+      warnings: 42,
+      warningLevel1: 5,
+      warningLevel2: 10,
+      warningLevel3: 27,
+      handled: 32,
+    },
+    safetyAssess: {
+      shouldAssess: 580,
+      assessed: 540,
+      totalHazards: 54,
+      general: 38,
+      larger: 10,
+      major: 6,
+      fixed: 48,
+    },
+  },
+}
+
+// 运维管理-安全评估列表
+const opsAssessList = [
+  { id: 1, area: '上城区', name: '石贯子巷', project: '道路设施', level: 3, fixed: true },
+  { id: 2, area: '拱墅区', name: '环城北路', project: '道路设施', level: 3, fixed: false },
+  { id: 3, area: '西湖区', name: '文三路', project: '道路照明设施', level: 1, fixed: true },
+  { id: 4, area: '滨江区', name: '江南大道', project: '道路设施', level: 1, fixed: true },
+  { id: 5, area: '上城区', name: '解放路', project: '道路照明设施', level: 2, fixed: false },
+  { id: 6, area: '拱墅区', name: '莫干山路', project: '道路设施', level: 3, fixed: true },
+]
+
+function initOpsMap() {
+  const AMap = (window as any).AMap
+  if (!opsMapRef.value || !AMap) return
+  if (opsMap) opsMap.destroy()
+  const layers: any[] = []
+  if (mapStyle.value === 'satellite') {
+    layers.push(new AMap.TileLayer.Satellite())
+    layers.push(new AMap.TileLayer.RoadNet())
+  }
+  opsMap = new AMap.Map(opsMapRef.value, {
+    zoom: 11, center: [120.15, 30.27], layers,
+    viewMode: '2D', dragEnable: true, zoomEnable: true,
+    mapStyle: 'amap://styles/dark',
+  })
+  initOpsMapOverlays()
+}
+
+function initOpsMapOverlays() {
+  const AMap = (window as any).AMap
+  if (!opsMap || !AMap) return
+  opsMapOverlays.forEach(o => opsMap.remove(o))
+  opsMapOverlays = []
+  if (opsMapInfoWindow) { opsMapInfoWindow.close(); opsMapInfoWindow = null }
+  const facilities = opsLayer.value === 'road' ? roadFacilities
+    : opsLayer.value === 'bridge' ? bridgeFacilities : tunnelFacilities
+  opsMapInfoWindow = new AMap.InfoWindow({ isCustom: true, autoMove: true, offset: new AMap.Pixel(0, -10) })
+  facilities.forEach((fac: any, idx: number) => {
+    const polyline = new AMap.Polyline({
+      path: fac.path.map((p: [number, number]) => new AMap.LngLat(p[0], p[1])),
+      strokeColor: fac.color, strokeWeight: 4, strokeOpacity: 0.9,
+      lineJoin: 'round', lineCap: 'round', cursor: 'pointer', extData: { fac, idx },
+    })
+    polyline.on('mouseover', () => polyline.setOptions({ strokeWeight: 7, strokeOpacity: 1 }))
+    polyline.on('mouseout', () => polyline.setOptions({ strokeWeight: 4, strokeOpacity: 0.9 }))
+    polyline.on('click', () => {
+      const gradeColor = (g: string) => ({ A: '#5b8ff9', B: '#5ad8a6', C: '#f6bd16', D: '#e86452', E: '#e86452' }[g] || '#fff')
+      let html = '<div class="map-popup">'
+      Object.entries(fac.info).forEach(([k, v]) => {
+        if (k.includes('等级')) {
+          html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value grade" style="color:${gradeColor(String(v))}">${v}</span></div>`
+        } else {
+          html += `<div class="popup-row"><span class="popup-label">${k}</span><span class="popup-value">${v}</span></div>`
+        }
+      })
+      html += '</div>'
+      const path = fac.path
+      const mid = path[Math.floor(path.length / 2)]
+      opsMapInfoWindow!.setContent(html)
+      opsMapInfoWindow!.open(opsMap, new AMap.LngLat(mid[0], mid[1]))
+    })
+    opsMap.add(polyline)
+    opsMapOverlays.push(polyline)
+  })
+}
+
+// 各地市D级/DE级数据
+const opsGradeData = {
+  road: {
+    title: 'D级道路',
+    cities: ['杭州', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州', '台州', '丽水', '舟山'],
+    series: [{ name: 'D级道路', type: 'bar', data: [5, 4, 3, 2, 2, 2, 2, 1, 3, 1, 0], itemStyle: { color: '#e86452' }, barWidth: 12 }],
+  },
+  bridge: {
+    title: 'D、E级桥梁 / 不合格桥梁',
+    cities: ['杭州', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州', '台州', '丽水', '舟山'],
+    series: [
+      { name: 'D、E级桥梁', type: 'bar', stack: 'grade', data: [3, 3, 2, 2, 1, 2, 1, 1, 2, 1, 0], itemStyle: { color: '#e86452' }, barWidth: 12 },
+      { name: '不合格桥梁', type: 'bar', stack: 'grade', data: [2, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0], itemStyle: { color: '#f6bd16' }, barWidth: 12 },
+    ],
+  },
+  tunnel: {
+    title: 'D、E级隧道',
+    cities: ['杭州', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州', '台州', '丽水', '舟山'],
+    series: [{ name: 'D、E级隧道', type: 'bar', data: [2, 2, 1, 1, 1, 1, 1, 0, 1, 1, 0], itemStyle: { color: '#e86452' }, barWidth: 12 }],
+  },
+}
+
+function updateOpsGradeChart() {
+  if (!opsGradeChartRef.value) return
+  if (opsGradeChart) opsGradeChart.dispose()
+  opsGradeChart = echarts.init(opsGradeChartRef.value)
+  const layer = opsLayer.value as 'road' | 'bridge' | 'tunnel'
+  const data = opsGradeData[layer]
+  opsGradeChart.setOption({
+    tooltip: { trigger: 'axis' },
+    legend: layer === 'bridge' ? { top: 0, right: 0, textStyle: { color: 'rgba(255,255,255,0.6)', fontSize: 10 }, itemWidth: 10, itemHeight: 8 } : undefined,
+    grid: { top: layer === 'bridge' ? 18 : 6, right: 10, bottom: 18, left: 30 },
+    xAxis: { type: 'category', data: data.cities, axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 9, rotate: 15 }, axisLine: { lineStyle: { color: 'rgba(100,160,255,0.15)' } } },
+    yAxis: { type: 'value', axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 9 }, splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)' } } },
+    series: data.series,
+  })
+}
+
+function initOpsCharts() {
+  const cities = ['杭州', '宁波', '温州', '绍兴', '湖州', '嘉兴', '金华', '衢州', '台州', '丽水', '舟山']
+  // 设施检测柱状图（11地市）
+  if (opsInspectChartRef.value) {
+    if (opsInspectChart) opsInspectChart.dispose()
+    opsInspectChart = echarts.init(opsInspectChartRef.value)
+    opsInspectChart.setOption({
+      tooltip: { trigger: 'axis' },
+      grid: { top: 10, right: 10, bottom: 20, left: 40 },
+      xAxis: { type: 'category', data: cities, axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10, rotate: 15 }, axisLine: { lineStyle: { color: 'rgba(100,160,255,0.15)' } } },
+      yAxis: { type: 'value', axisLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 10 }, splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)' } } },
+      series: [
+        { name: '应检', type: 'bar', data: [86, 72, 64, 48, 32, 42, 38, 28, 45, 22, 14], itemStyle: { color: '#5b8ff9' }, barWidth: 10 },
+        { name: '已检', type: 'bar', data: [78, 65, 58, 42, 28, 38, 34, 24, 40, 19, 12], itemStyle: { color: '#5ad8a6' }, barWidth: 10 },
+      ],
+    })
+  }
+  // 即将超期/超期未检柱状图
+  if (opsExpiringChartRef.value) {
+    if (opsExpiringChart) opsExpiringChart.dispose()
+    opsExpiringChart = echarts.init(opsExpiringChartRef.value)
+    opsExpiringChart.setOption({
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: '2%', right: '12%', top: '10%', bottom: '8%', containLabel: true },
+      xAxis: {
+        type: 'value',
+        axisLabel: { fontSize: 10, color: 'rgba(255,255,255,0.4)' },
+        splitLine: { lineStyle: { color: 'rgba(100,160,255,0.08)', type: 'dashed' } },
+      },
+      yAxis: {
+        type: 'category', data: ['超期未检', '即将超期（不足30天）'],
+        axisLabel: { fontSize: 10, color: 'rgba(255,255,255,0.5)', interval: 0 },
+        axisTick: { show: false },
+        axisLine: { show: false },
+      },
+      series: [{
+        type: 'bar', data: [
+          { value: 10, itemStyle: { color: '#e86452' } },
+          { value: 30, itemStyle: { color: '#f6bd16' } },
+        ],
+        barWidth: '45%', itemStyle: { borderRadius: [0, 3, 3, 0] },
+      }],
+    })
+  }
+  // D级/DE级等级柱状图
+  setTimeout(() => {
+    if (opsGradeChartRef.value) {
+      updateOpsGradeChart()
+    }
+  }, 200)
+  // 隐患排查饼图（同总体态势风险清单隐患排查饼图）
+  if (opsHiddenChartRef.value) {
+    if (opsHiddenChart) opsHiddenChart.dispose()
+    opsHiddenChart = echarts.init(opsHiddenChartRef.value)
+    opsHiddenChart.setOption({
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+      legend: { bottom: 0, textStyle: { color: 'rgba(255,255,255,0.6)', fontSize: 10 }, itemWidth: 10, itemHeight: 10 },
+      series: [{
+        type: 'pie', radius: ['40%', '65%'], center: ['50%', '45%'],
+        label: { show: true, position: 'inside', fontSize: 11, fontWeight: 700, color: '#fff', formatter: '{c}' },
+        data: [
+          { name: '一般隐患', value: 52, itemStyle: { color: '#5b8ff9' } },
+          { name: '较大隐患', value: 32, itemStyle: { color: '#f6bd16' } },
+          { name: '重大隐患', value: 12, itemStyle: { color: '#e86452' } },
+        ],
+      }],
+    })
+  }
+  // 安全评估饼图
+  if (opsAssessChartRef.value) {
+    if (opsAssessChart) opsAssessChart.dispose()
+    opsAssessChart = echarts.init(opsAssessChartRef.value)
+    opsAssessChart.setOption({
+      tooltip: { trigger: 'item' },
+      legend: { bottom: 0, textStyle: { color: 'rgba(255,255,255,0.6)', fontSize: 10 } },
+      series: [{
+        type: 'pie', radius: ['40%', '65%'], center: ['50%', '45%'],
+        label: { show: false },
+        data: [
+          { value: 30, name: 'A级', itemStyle: { color: '#5ad8a6' } },
+          { value: 25, name: 'B级', itemStyle: { color: '#5b8ff9' } },
+          { value: 20, name: 'C级', itemStyle: { color: '#f6bd16' } },
+          { value: 11, name: 'D级', itemStyle: { color: '#e86452' } },
+        ],
+      }],
+    })
+  }
+}
+
 function toggleMapType() {
   mapStyle.value = mapStyle.value === 'standard' ? 'satellite' : 'standard'
   initOverviewMap()
   if (cockpitTab.value === 'monitor') initMonitorMap()
+  if (cockpitTab.value === 'ops') initOpsMap()
 }
 
 // 道路图例复选框
@@ -2151,10 +2973,25 @@ function initMonitorCharts() {
 }
 
 watch(cockpitTab, (val) => {
+  if (val === 'overview') {
+    // 首次进入总体态势页面时自动弹出风险隐患表和提示单
+    if (!hasShownRiskHint) {
+      hasShownRiskHint = true
+      setTimeout(() => {
+        showRiskHintModal.value = true
+      }, 300)
+    }
+  }
   if (val === 'monitor') {
     nextTick(() => {
       setTimeout(initMonitorCharts, 50)
       setTimeout(initMonitorMap, 200)
+    })
+  }
+  if (val === 'ops') {
+    nextTick(() => {
+      setTimeout(initOpsCharts, 50)
+      setTimeout(initOpsMap, 200)
     })
   }
 })
@@ -2163,6 +3000,10 @@ watch(monitorLayer, (val) => {
     nextTick(() => { setTimeout(initMonitorCharts, 50) })
   }
   initMonitorMapOverlays()
+})
+watch(opsLayer, () => {
+  initOpsMapOverlays()
+  nextTick(() => updateOpsGradeChart())
 })
 watch(activeLayer, () => {
   bridgeDeviceDrillDown.value = false
@@ -2317,6 +3158,49 @@ watch(riskType, (val) => {
 .card-title-row {
   display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
   .card-title { margin-bottom: 0; }
+}
+
+.card-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.risk-hint-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 4px;
+}
+
+.risk-hint-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #f6bd16;
+  border: 1px solid rgba(246, 189, 22, 0.4);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover {
+    background: rgba(246, 189, 22, 0.12);
+    border-color: #f6bd16;
+    color: #f6bd16;
+  }
+}
+
+.risk-hint-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 11px;
+  height: 11px;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: #f6bd16;
+  border-radius: 50%;
 }
 
 /* 道路统计 */
@@ -2905,5 +3789,187 @@ watch(riskType, (val) => {
       }
     }
   }
+}
+
+// 运维管理页面样式
+.ops-body {
+  grid-template-columns: 400px 1fr 400px !important;
+}
+.ops-left { display: flex; flex-direction: column; gap: 8px; }
+.ops-center { display: flex; flex-direction: column; gap: 8px; }
+.ops-right { display: flex; flex-direction: column; gap: 8px; }
+.ops-card {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  padding: 12px 14px;
+}
+.ops-metrics {
+  display: flex; gap: 12px; margin-bottom: 8px;
+}
+.ops-metrics-sub {
+  margin-top: 4px; margin-bottom: 4px;
+  .ops-metric-item { padding: 4px 0; }
+  .ops-metric-val { font-size: 16px; }
+}
+.ops-metric-item {
+  flex: 1; text-align: center; padding: 6px 0;
+  background: rgba(91,143,249,0.06); border-radius: 4px;
+}
+.ops-metric-val {
+  font-size: 20px; font-weight: 600; line-height: 1.2;
+  &.blue { color: #5b8ff9; }
+  &.green { color: #5ad8a6; }
+  &.cyan { color: #5ad8a6; }
+  &.yellow { color: #f6bd16; }
+  &.red { color: #e86452; }
+  &.orange { color: #f6bd16; }
+}
+.rate-high { color: #5ad8a6; font-weight: 600; }
+.rate-mid { color: #f6bd16; font-weight: 600; }
+.rate-low { color: #e86452; font-weight: 600; }
+.ops-metric-label {
+  font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;
+}
+.ops-chart {
+  height: 120px; margin-bottom: 8px;
+}
+.ops-expiring-chart {
+  height: 60px; margin-bottom: 8px;
+}
+.ops-grade-chart {
+  height: 100px; margin-top: 4px; margin-bottom: 4px;
+}
+.ops-list {
+  flex: 1; overflow: hidden; display: flex; flex-direction: column;
+}
+.ops-list-header {
+  display: flex; gap: 4px; padding: 6px 4px;
+  background: rgba(91,143,249,0.08); border-radius: 3px;
+  font-size: 11px; color: rgba(255,255,255,0.5);
+  span { flex: 1; text-align: center; }
+  .ops-col-area { flex: 0.7; }
+  .ops-col-total { flex: 0.8; }
+  .ops-col-done { flex: 0.8; }
+  .ops-col-hiddentotal { flex: 0.8; }
+  .ops-col-fixed { flex: 0.8; }
+  .ops-col-rate { flex: 0.7; }
+  .ops-col-inspect-name { flex: 1.3; }
+  .ops-col-inspect-time { flex: 0.9; }
+  .ops-col-inspect-type { flex: 0.7; }
+  .ops-col-name { flex: 1; }
+  .ops-col-grade { flex: 0.5; }
+  .ops-col-rectype { flex: 0.9; }
+  .ops-col-status { flex: 0.7; }
+  .ops-col-donetime { flex: 0.9; }
+  .ops-col-aftergrade { flex: 0.5; }
+}
+.ops-list-body {
+  flex: 1; overflow-y: auto;
+}
+.ops-list-row {
+  display: flex; gap: 4px; padding: 5px 4px;
+  border-bottom: 1px solid rgba(100,160,255,0.06);
+  font-size: 11px; color: rgba(255,255,255,0.7);
+  span { flex: 1; text-align: center; }
+  .ops-col-area { flex: 0.7; }
+  .ops-col-total { flex: 0.8; }
+  .ops-col-done { flex: 0.8; }
+  .ops-col-hiddentotal { flex: 0.8; }
+  .ops-col-fixed { flex: 0.8; }
+  .ops-col-rate { flex: 0.7; }
+  .ops-col-inspect-name { flex: 1.3; }
+  .ops-col-inspect-time { flex: 0.9; }
+  .ops-col-inspect-type { flex: 0.7; }
+  .ops-col-name { flex: 1; }
+  .ops-col-grade { flex: 0.5; }
+  .ops-col-rectype { flex: 0.9; }
+  .ops-col-status { flex: 0.7; }
+  .ops-col-donetime { flex: 0.9; }
+  .ops-col-aftergrade { flex: 0.5; }
+  &:hover { background: rgba(91,143,249,0.04); }
+}
+
+// 风险隐患表和提示单弹窗样式
+.risk-hint-modal {
+  .ant-modal-content {
+    background: #1a2332;
+    border: 1px solid rgba(91,143,249,0.2);
+    color: rgba(255,255,255,0.85);
+  }
+  .ant-modal-header {
+    background: #1a2332;
+    border-bottom: 1px solid rgba(91,143,249,0.15);
+    .ant-modal-title { color: rgba(255,255,255,0.9); }
+  }
+  .ant-modal-close {
+    color: rgba(255,255,255,0.5);
+    &:hover { color: #fff; }
+  }
+}
+
+.risk-hint-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(91,143,249,0.15);
+}
+
+.risk-hint-tab {
+  flex: 1;
+  padding: 10px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  &:hover { color: rgba(255,255,255,0.85); }
+  &.active {
+    color: #5b8ff9;
+    border-bottom-color: #5b8ff9;
+    font-weight: 600;
+  }
+}
+
+.risk-hint-content {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 4px;
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-thumb { background: rgba(91,143,249,0.3); border-radius: 2px; }
+}
+
+.risk-hint-section {
+  margin-bottom: 16px;
+  border: 1px solid rgba(91,143,249,0.12);
+  border-radius: 6px;
+  overflow: hidden;
+  &:last-child { margin-bottom: 0; }
+}
+
+.risk-hint-section-title {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #5b8ff9;
+  background: rgba(91,143,249,0.08);
+  border-bottom: 1px solid rgba(91,143,249,0.1);
+}
+
+.risk-hint-section-body {
+  padding: 10px 14px;
+  p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.75);
+  }
+  strong {
+    color: rgba(255,255,255,0.95);
+    font-weight: 600;
+    margin: 0 2px;
+  }
+  .text-red { color: #e86452; }
+  .text-orange { color: #f6bd16; }
+  .text-green { color: #5ad8a6; }
 }
 </style>
