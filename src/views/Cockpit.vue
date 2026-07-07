@@ -1100,13 +1100,13 @@
           <div class="risk-hint-section-title">设施检测</div>
           <div class="risk-hint-section-body">
             <template v-if="riskHintTab === 'road'">
-              <p>全省开展设施检测，应检测道路<strong>{{ riskHintData.road.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.road.facilityInspection.inspected }}</strong>条，应检未检任务<strong class="text-orange">{{ riskHintData.road.facilityInspection.uninspected }}</strong>条，超期未检道路<strong class="text-red">{{ riskHintData.road.facilityInspection.overdue }}</strong>条，检测出D级道路<strong class="text-red">{{ riskHintData.road.facilityInspection.gradeD }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.road.facilityInspection.shouldRepair }}</strong>条。</p>
+              <p>全省开展设施检测，应检测道路<strong>{{ riskHintData.road.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.road.facilityInspection.inspected }}</strong>条，应检未检<strong class="text-orange">{{ riskHintData.road.facilityInspection.uninspected }}</strong>条，超期未检<strong class="text-red">{{ riskHintData.road.facilityInspection.overdue }}</strong>条，检测出D级道路<strong class="text-red">{{ riskHintData.road.facilityInspection.gradeD }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.road.facilityInspection.shouldRepair }}</strong>条。</p>
             </template>
             <template v-else-if="riskHintTab === 'bridge'">
-              <p>全省开展设施检测，应检测桥梁<strong>{{ riskHintData.bridge.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.bridge.facilityInspection.inspected }}</strong>条，应检未检任务<strong class="text-orange">{{ riskHintData.bridge.facilityInspection.uninspected }}</strong>条，超期未检桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.overdue }}</strong>条，检测出D、E级桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.gradeDE }}</strong>条，不合格桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.unqualified }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.bridge.facilityInspection.shouldRepair }}</strong>条。</p>
+              <p>全省开展设施检测，应检测桥梁<strong>{{ riskHintData.bridge.facilityInspection.shouldInspect }}</strong>座，已检测<strong>{{ riskHintData.bridge.facilityInspection.inspected }}</strong>座，应检未检<strong class="text-orange">{{ riskHintData.bridge.facilityInspection.uninspected }}</strong>座，超期未检<strong class="text-red">{{ riskHintData.bridge.facilityInspection.overdue }}</strong>座，检测出D、E级桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.gradeDE }}</strong>座，不合格桥梁<strong class="text-red">{{ riskHintData.bridge.facilityInspection.unqualified }}</strong>座，应修未修<strong class="text-orange">{{ riskHintData.bridge.facilityInspection.shouldRepair }}</strong>座。</p>
             </template>
             <template v-else>
-              <p>全省开展设施检测，应检测隧道<strong>{{ riskHintData.tunnel.facilityInspection.shouldInspect }}</strong>条，已检测<strong>{{ riskHintData.tunnel.facilityInspection.inspected }}</strong>条，应检未检任务<strong class="text-orange">{{ riskHintData.tunnel.facilityInspection.uninspected }}</strong>条，超期未检隧道<strong class="text-red">{{ riskHintData.tunnel.facilityInspection.overdue }}</strong>条，检测出D、E级隧道<strong class="text-red">{{ riskHintData.tunnel.facilityInspection.gradeDE }}</strong>条，应修未修<strong class="text-orange">{{ riskHintData.tunnel.facilityInspection.shouldRepair }}</strong>条。</p>
+              <p>全省开展设施检测，应检测隧道<strong>{{ riskHintData.tunnel.facilityInspection.shouldInspect }}</strong>座，已检测<strong>{{ riskHintData.tunnel.facilityInspection.inspected }}</strong>座，应检未检<strong class="text-orange">{{ riskHintData.tunnel.facilityInspection.uninspected }}</strong>座，超期未检<strong class="text-red">{{ riskHintData.tunnel.facilityInspection.overdue }}</strong>座，检测出D、E级隧道<strong class="text-red">{{ riskHintData.tunnel.facilityInspection.gradeDE }}</strong>座，应修未修<strong class="text-orange">{{ riskHintData.tunnel.facilityInspection.shouldRepair }}</strong>座。</p>
             </template>
           </div>
         </div>
@@ -1118,10 +1118,10 @@
               <p>全省开展隐患排查，应排查道路<strong>{{ riskHintData.road.hiddenDanger.shouldCheck }}</strong>条，已排查<strong>{{ riskHintData.road.hiddenDanger.checked }}</strong>条。排查出问题隐患<strong>{{ riskHintData.road.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.road.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.road.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.road.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.road.hiddenDanger.fixed }}</strong>个。</p>
             </template>
             <template v-else-if="riskHintTab === 'bridge'">
-              <p>全省开展隐患排查，应排查桥梁<strong>{{ riskHintData.bridge.hiddenDanger.shouldCheck }}</strong>条，已排查<strong>{{ riskHintData.bridge.hiddenDanger.checked }}</strong>条。排查出问题隐患<strong>{{ riskHintData.bridge.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.bridge.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.bridge.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.bridge.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.bridge.hiddenDanger.fixed }}</strong>个。</p>
+              <p>全省开展隐患排查，应排查桥梁<strong>{{ riskHintData.bridge.hiddenDanger.shouldCheck }}</strong>座，已排查<strong>{{ riskHintData.bridge.hiddenDanger.checked }}</strong>座。排查出问题隐患<strong>{{ riskHintData.bridge.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.bridge.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.bridge.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.bridge.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.bridge.hiddenDanger.fixed }}</strong>个。</p>
             </template>
             <template v-else>
-              <p>全省开展隐患排查，应排查隧道<strong>{{ riskHintData.tunnel.hiddenDanger.shouldCheck }}</strong>条，已排查<strong>{{ riskHintData.tunnel.hiddenDanger.checked }}</strong>条。排查出问题隐患<strong>{{ riskHintData.tunnel.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.tunnel.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.tunnel.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.tunnel.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.tunnel.hiddenDanger.fixed }}</strong>个。</p>
+              <p>全省开展隐患排查，应排查隧道<strong>{{ riskHintData.tunnel.hiddenDanger.shouldCheck }}</strong>座，已排查<strong>{{ riskHintData.tunnel.hiddenDanger.checked }}</strong>座。排查出问题隐患<strong>{{ riskHintData.tunnel.hiddenDanger.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.tunnel.hiddenDanger.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.tunnel.hiddenDanger.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.tunnel.hiddenDanger.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.tunnel.hiddenDanger.fixed }}</strong>个。</p>
             </template>
           </div>
         </div>
@@ -1133,10 +1133,10 @@
               <p>全省应接入监测设备道路<strong>{{ riskHintData.road.deviceMonitor.shouldConnect }}</strong>条，已接入<strong>{{ riskHintData.road.deviceMonitor.connected }}</strong>条，接入率<strong>{{ riskHintData.road.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.road.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.road.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.road.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.road.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.road.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.road.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.road.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.road.deviceMonitor.handled }}</strong>条。</p>
             </template>
             <template v-else-if="riskHintTab === 'bridge'">
-              <p>全省应接入监测设备桥梁<strong>{{ riskHintData.bridge.deviceMonitor.shouldConnect }}</strong>条，已接入<strong>{{ riskHintData.bridge.deviceMonitor.connected }}</strong>条，接入率<strong>{{ riskHintData.bridge.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.bridge.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.bridge.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.bridge.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.bridge.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.bridge.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.bridge.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.bridge.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.bridge.deviceMonitor.handled }}</strong>条。</p>
+              <p>全省应接入监测设备桥梁<strong>{{ riskHintData.bridge.deviceMonitor.shouldConnect }}</strong>座，已接入<strong>{{ riskHintData.bridge.deviceMonitor.connected }}</strong>座，接入率<strong>{{ riskHintData.bridge.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.bridge.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.bridge.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.bridge.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.bridge.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.bridge.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.bridge.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.bridge.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.bridge.deviceMonitor.handled }}</strong>条。</p>
             </template>
             <template v-else>
-              <p>全省应接入监测设备隧道<strong>{{ riskHintData.tunnel.deviceMonitor.shouldConnect }}</strong>条，已接入<strong>{{ riskHintData.tunnel.deviceMonitor.connected }}</strong>条，接入率<strong>{{ riskHintData.tunnel.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.tunnel.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.tunnel.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.tunnel.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.tunnel.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.tunnel.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.tunnel.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.tunnel.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.tunnel.deviceMonitor.handled }}</strong>条。</p>
+              <p>全省应接入监测设备隧道<strong>{{ riskHintData.tunnel.deviceMonitor.shouldConnect }}</strong>座，已接入<strong>{{ riskHintData.tunnel.deviceMonitor.connected }}</strong>座，接入率<strong>{{ riskHintData.tunnel.deviceMonitor.connectRate }}%</strong>，监测设备总数<strong>{{ riskHintData.tunnel.deviceMonitor.totalDevices }}</strong>个，在线数<strong>{{ riskHintData.tunnel.deviceMonitor.online }}</strong>个，在线率<strong>{{ riskHintData.tunnel.deviceMonitor.onlineRate }}%</strong>。监测出预警<strong>{{ riskHintData.tunnel.deviceMonitor.warnings }}</strong>条，一级预警<strong class="text-red">{{ riskHintData.tunnel.deviceMonitor.warningLevel1 }}</strong>条，二级预警<strong class="text-orange">{{ riskHintData.tunnel.deviceMonitor.warningLevel2 }}</strong>条，三级预警<strong>{{ riskHintData.tunnel.deviceMonitor.warningLevel3 }}</strong>条。已处置预警<strong class="text-green">{{ riskHintData.tunnel.deviceMonitor.handled }}</strong>条。</p>
             </template>
           </div>
         </div>
@@ -1148,10 +1148,10 @@
               <p>全省开展安全评估，应评估道路<strong>{{ riskHintData.road.safetyAssess.shouldAssess }}</strong>条，已评估<strong>{{ riskHintData.road.safetyAssess.assessed }}</strong>条。评估出问题隐患<strong>{{ riskHintData.road.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.road.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.road.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.road.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.road.safetyAssess.fixed }}</strong>个。</p>
             </template>
             <template v-else-if="riskHintTab === 'bridge'">
-              <p>全省开展安全评估，应评估桥梁<strong>{{ riskHintData.bridge.safetyAssess.shouldAssess }}</strong>条，已评估<strong>{{ riskHintData.bridge.safetyAssess.assessed }}</strong>条。评估出问题隐患<strong>{{ riskHintData.bridge.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.bridge.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.bridge.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.bridge.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.bridge.safetyAssess.fixed }}</strong>个。</p>
+              <p>全省开展安全评估，应评估桥梁<strong>{{ riskHintData.bridge.safetyAssess.shouldAssess }}</strong>座，已评估<strong>{{ riskHintData.bridge.safetyAssess.assessed }}</strong>座。评估出问题隐患<strong>{{ riskHintData.bridge.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.bridge.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.bridge.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.bridge.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.bridge.safetyAssess.fixed }}</strong>个。</p>
             </template>
             <template v-else>
-              <p>全省开展安全评估，应评估隧道<strong>{{ riskHintData.tunnel.safetyAssess.shouldAssess }}</strong>条，已评估<strong>{{ riskHintData.tunnel.safetyAssess.assessed }}</strong>条。评估出问题隐患<strong>{{ riskHintData.tunnel.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.tunnel.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.tunnel.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.tunnel.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.tunnel.safetyAssess.fixed }}</strong>个。</p>
+              <p>全省开展安全评估，应评估隧道<strong>{{ riskHintData.tunnel.safetyAssess.shouldAssess }}</strong>座，已评估<strong>{{ riskHintData.tunnel.safetyAssess.assessed }}</strong>座。评估出问题隐患<strong>{{ riskHintData.tunnel.safetyAssess.totalHazards }}</strong>个，一般隐患<strong>{{ riskHintData.tunnel.safetyAssess.general }}</strong>个，较大隐患<strong class="text-orange">{{ riskHintData.tunnel.safetyAssess.larger }}</strong>个，重大隐患<strong class="text-red">{{ riskHintData.tunnel.safetyAssess.major }}</strong>个，已整改问题隐患<strong class="text-green">{{ riskHintData.tunnel.safetyAssess.fixed }}</strong>个。</p>
             </template>
           </div>
         </div>
@@ -1167,10 +1167,10 @@
     <a-modal v-model:open="showAlarmDrillDownModal" :title="`${drillDownCity}${getDrillDownTitle()}明细`" width="1400px" :footer="null" class="alarm-drilldown-modal">
       <div class="modal-filter-bar drilldown-filter-bar">
         <a-form layout="inline" :model="drillDownFilters" style="margin-bottom: 12px;">
-          <a-form-item label="设施名称">
+          <a-form-item label="设施名称" :label-style="{ color: '#fff' }">
             <a-input v-model:value="drillDownFilters.facilityName" placeholder="请输入" allow-clear style="width: 180px" />
           </a-form-item>
-          <a-form-item label="监测项">
+          <a-form-item label="监测项" :label-style="{ color: '#fff' }">
             <a-select v-model:value="drillDownFilters.monitorItem" placeholder="请选择" allow-clear style="width: 160px">
               <a-select-option value="">请选择</a-select-option>
               <a-select-option v-if="monitorLayer === 'road'" value="路面状况">路面状况</a-select-option>
@@ -1184,7 +1184,7 @@
               <a-select-option v-if="monitorLayer === 'tunnel'" value="收敛">收敛</a-select-option>
             </a-select>
           </a-form-item>
-          <a-form-item label="处置状态">
+          <a-form-item label="处置状态" :label-style="{ color: '#fff' }">
             <a-select v-model:value="drillDownFilters.handleStatus" placeholder="请选择" allow-clear style="width: 140px">
               <a-select-option value="">请选择</a-select-option>
               <a-select-option value="已完成">已完成</a-select-option>
@@ -2315,6 +2315,15 @@ function handleAlarmDrillDown(record: any, type: string) {
   
   alarmDrillDownData.value = data
   showAlarmDrillDownModal.value = true
+  
+  // 动态设置表单标签白色
+  nextTick(() => {
+    const labels = document.querySelectorAll('.alarm-drilldown-modal .ant-form-item-label > label')
+    labels.forEach((label: any) => {
+      label.style.color = '#fff'
+      label.style.setProperty('color', '#fff', 'important')
+    })
+  })
 }
 
 // 生成道路报警数据
@@ -4119,6 +4128,9 @@ watch(riskType, (val) => {
   :deep(.ant-form-item) {
     margin-bottom: 8px;
   }
+  :deep(.ant-form-item-label > label) {
+    color: #fff !important;
+  }
   :deep(.ant-input), :deep(.ant-select-selector), :deep(.ant-cascader-picker) {
     background: rgba(255,255,255,0.08) !important;
     border-color: rgba(100,160,255,0.2) !important;
@@ -4152,6 +4164,11 @@ watch(riskType, (val) => {
   }
   .ant-modal-close { color: rgba(255,255,255,0.4); &:hover { color: rgba(255,255,255,0.8); } }
   .ant-modal-body { padding: 16px 20px; }
+  
+  // 表单标签白色
+  :deep(.ant-form-item-label > label) {
+    color: #fff !important;
+  }
   
   // 设备列表筛选区横向排列样式
   &.device-detail-modal {
@@ -4468,5 +4485,20 @@ watch(riskType, (val) => {
   .text-red { color: #e86452; }
   .text-orange { color: #f6bd16; }
   .text-green { color: #5ad8a6; }
+}
+</style>
+
+<style lang="scss">
+// 全局样式（非scoped）：确保所有深色modal中的表单标签白色
+.alarm-drilldown-modal,
+.device-detail-modal,
+.alarm-detail-modal,
+.risk-detail-modal,
+.road-device-detail-modal,
+.bridge-device-detail-modal,
+.tunnel-device-detail-modal {
+  .ant-form-item-label > label {
+    color: #fff !important;
+  }
 }
 </style>

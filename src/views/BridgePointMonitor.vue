@@ -753,8 +753,10 @@ const handleResize = () => charts.forEach(c => c.resize())
   padding: 16px 20px 12px; border-bottom: 1px solid rgba(100,160,255,0.1);
 }
 .pm-modal-close { color: rgba(255,255,255,0.5); font-size: 20px; cursor: pointer; text-decoration: none; &:hover { color: #fff; } }
-.pm-modal-filters { display: flex; gap: 12px; align-items: center; padding: 12px 20px;
+.pm-modal-filters {
+  display: flex; gap: 12px; align-items: center; padding: 12px 20px;
   .filter-item { display: flex; align-items: center; gap: 6px; }
+  .filter-label { font-size: 13px; color: #fff !important; white-space: nowrap; }
 }
 .pm-input {
   background: rgba(255,255,255,0.08); border: 1px solid rgba(100,160,255,0.2); border-radius: 4px;
@@ -869,7 +871,6 @@ const handleResize = () => charts.forEach(c => c.resize())
   font-size: 28px; color: rgba(255,255,255,0.2);
 }
 .vd-photo-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
-.filter-label { font-size: 13px; color: rgba(255,255,255,0.7); white-space: nowrap; }
 .filter-btn {
   background: #5b8ff9; color: #fff; border: none; border-radius: 4px;
   padding: 4px 16px; font-size: 13px; cursor: pointer; height: 30px;
