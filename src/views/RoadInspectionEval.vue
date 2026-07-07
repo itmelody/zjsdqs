@@ -730,7 +730,7 @@ const savedRoadColumns = [
   { title: '序号', dataIndex: 'subId', key: 'subId', width: 60, align: 'center' as const },
   { title: '道路名称', dataIndex: 'roadName', key: 'roadName', width: 200 },
   { title: '所属区域', dataIndex: 'area', key: 'area', width: 150 },
-  { title: 'PQI *', dataIndex: 'pqi', key: 'pqi', width: 120, align: 'center' as const },
+  { title: '道路PQI *', dataIndex: 'pqi', key: 'pqi', width: 120, align: 'center' as const },
   { title: '道路综合评价等级 *', dataIndex: 'grade', key: 'grade', width: 180, align: 'center' as const },
 ]
 

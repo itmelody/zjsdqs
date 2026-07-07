@@ -1044,7 +1044,7 @@
       <a-table :columns="riskDetailColumns.assess" :data-source="riskDetailPageData.assess" :pagination="{ current: riskDetailPage.assess, pageSize: 10, total: riskDetailData.assess.length, showTotal: (t: number) => `共${t}条`, onChange: (p: number) => { riskDetailPage.assess = p } }" size="small" bordered />
     </a-modal>
     <a-modal v-model:open="showDeviceDetailModal" title="设备列表" width="1200px" :footer="null" class="device-detail-modal">
-      <div class="modal-filter-bar">
+      <div class="modal-filter-bar device-filter-bar">
         <div class="filter-item">
           <span class="filter-label">市区县</span>
           <select class="filter-select"><option>请选择</option></select>
@@ -1090,6 +1090,9 @@
         <div class="risk-hint-tab" :class="{ active: riskHintTab === 'road' }" @click="riskHintTab = 'road'">道路</div>
         <div class="risk-hint-tab" :class="{ active: riskHintTab === 'bridge' }" @click="riskHintTab = 'bridge'">桥梁</div>
         <div class="risk-hint-tab" :class="{ active: riskHintTab === 'tunnel' }" @click="riskHintTab = 'tunnel'">隧道</div>
+        <span class="risk-hint-download" @click="handleRiskHintDownload">
+          <span class="download-icon">⬇</span>下载
+        </span>
       </div>
       <div class="risk-hint-content">
         <!-- 设施检测 -->
@@ -1156,19 +1159,47 @@
     </a-modal>
 
     <!-- 预警详情弹窗 -->
-    <a-modal v-model:open="showAlarmDetailModal" title="预警详情" width="1200px" :footer="null" class="alarm-detail-modal">
-      <div class="modal-filter-bar">
-        <div class="filter-item">
-          <span class="filter-label">市区县</span>
-          <select class="filter-select"><option>请选择</option></select>
-        </div>
-        <div class="filter-item">
-          <span class="filter-label">设施名称</span>
-          <input class="filter-input" placeholder="请输入" />
-        </div>
-        <button class="filter-btn">查询</button>
+    <a-modal v-model:open="showAlarmDetailModal" :title="`${layerNameMap[monitorLayer]}报警详情`" width="1000px" :footer="null" class="alarm-detail-modal">
+      <a-table :columns="alarmSummaryColumns" :data-source="alarmSummaryData" :pagination="{ pageSize: 15, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
+    </a-modal>
+
+    <!-- 报警下钻明细弹窗 -->
+    <a-modal v-model:open="showAlarmDrillDownModal" :title="`${drillDownCity}${getDrillDownTitle()}明细`" width="1400px" :footer="null" class="alarm-drilldown-modal">
+      <div class="modal-filter-bar drilldown-filter-bar">
+        <a-form layout="inline" :model="drillDownFilters" style="margin-bottom: 12px;">
+          <a-form-item label="设施名称">
+            <a-input v-model:value="drillDownFilters.facilityName" placeholder="请输入" allow-clear style="width: 180px" />
+          </a-form-item>
+          <a-form-item label="监测项">
+            <a-select v-model:value="drillDownFilters.monitorItem" placeholder="请选择" allow-clear style="width: 160px">
+              <a-select-option value="">请选择</a-select-option>
+              <a-select-option v-if="monitorLayer === 'road'" value="路面状况">路面状况</a-select-option>
+              <a-select-option v-if="monitorLayer === 'bridge'" value="应变">应变</a-select-option>
+              <a-select-option v-if="monitorLayer === 'bridge'" value="位移">位移</a-select-option>
+              <a-select-option v-if="monitorLayer === 'bridge'" value="加速度">加速度</a-select-option>
+              <a-select-option v-if="monitorLayer === 'bridge'" value="吊杆索力振动">吊杆索力振动</a-select-option>
+              <a-select-option v-if="monitorLayer === 'bridge'" value="挠度">挠度</a-select-option>
+              <a-select-option v-if="monitorLayer === 'tunnel'" value="位移">位移</a-select-option>
+              <a-select-option v-if="monitorLayer === 'tunnel'" value="沉降">沉降</a-select-option>
+              <a-select-option v-if="monitorLayer === 'tunnel'" value="收敛">收敛</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item label="处置状态">
+            <a-select v-model:value="drillDownFilters.handleStatus" placeholder="请选择" allow-clear style="width: 140px">
+              <a-select-option value="">请选择</a-select-option>
+              <a-select-option value="已完成">已完成</a-select-option>
+              <a-select-option value="未完成">未完成</a-select-option>
+            </a-select>
+          </a-form-item>
+          <a-form-item>
+            <a-space>
+              <a-button @click="resetDrillDownFilters">重置</a-button>
+              <a-button type="primary" @click="handleDrillDownSearch">搜索</a-button>
+            </a-space>
+          </a-form-item>
+        </a-form>
       </div>
-      <a-table :columns="alarmDetailColumns" :data-source="alarmDetailData" :pagination="{ pageSize: 20 }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
+      <a-table :columns="alarmDrillDownColumns" :data-source="filteredDrillDownData" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }" size="small" :scroll="{ x: 'max-content', y: 460 }" bordered />
     </a-modal>
   </div>
 </template>
@@ -1419,6 +1450,38 @@ const showOpsAssessDetail = ref(false)
 const showRiskHintModal = ref(false)
 const riskHintTab = ref<'road' | 'bridge' | 'tunnel'>('road')
 let hasShownRiskHint = false // 标记是否已显示过
+
+// 风险隐患表和提示单下载
+const handleRiskHintDownload = () => {
+  const tabLabel = { road: '道路', bridge: '桥梁', tunnel: '隧道' }[riskHintTab.value]
+  const data = riskHintData[riskHintTab.value]
+  let content = `风险隐患表和提示单 - ${tabLabel}\n`
+  content += '='.repeat(50) + '\n\n'
+  // 设施检测
+  const fi = data.facilityInspection
+  content += `【设施检测】\n应检测: ${fi.shouldInspect}条, 已检测: ${fi.inspected}条, 应检未检: ${fi.uninspected}条, 超期未检: ${fi.overdue}条`
+  if ('gradeD' in fi) content += `, D级: ${fi.gradeD}条`
+  if ('gradeDE' in fi) content += `, D/E级: ${fi.gradeDE}条`
+  if ('unqualified' in fi) content += `, 不合格: ${fi.unqualified}条`
+  content += `, 应修未修: ${fi.shouldRepair}条\n\n`
+  // 隐患排查
+  const hd = data.hiddenDanger
+  content += `【隐患排查】\n应排查: ${hd.shouldCheck}条, 已排查: ${hd.checked}条, 问题隐患: ${hd.totalHazards}个, 一般隐患: ${hd.general}个, 较大隐患: ${hd.larger}个, 重大隐患: ${hd.major}个, 已整改: ${hd.fixed}个\n\n`
+  // 设备监测
+  const dm = data.deviceMonitor
+  content += `【设备监测】\n应接入: ${dm.shouldConnect}条, 已接入: ${dm.connected}条, 接入率: ${dm.connectRate}%, 设备总数: ${dm.totalDevices}个, 在线: ${dm.online}个, 在线率: ${dm.onlineRate}%\n预警: ${dm.warnings}条 (一级: ${dm.warningLevel1}, 二级: ${dm.warningLevel2}, 三级: ${dm.warningLevel3}), 已处置: ${dm.handled}条\n\n`
+  // 安全评估
+  const sa = data.safetyAssess
+  content += `【安全评估】\n应评估: ${sa.shouldAssess}条, 已评估: ${sa.assessed}条, 问题隐患: ${sa.totalHazards}个, 一般隐患: ${sa.general}个, 较大隐患: ${sa.larger}个, 重大隐患: ${sa.major}个, 已整改: ${sa.fixed}个\n`
+  // 下载
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `风险隐患表和提示单_${tabLabel}.txt`
+  a.click()
+  URL.revokeObjectURL(url)
+}
 const opsInspectChartRef = ref<HTMLElement | null>(null)
 const opsExpiringChartRef = ref<HTMLElement | null>(null)
 const opsGradeChartRef = ref<HTMLElement | null>(null)
@@ -1975,6 +2038,10 @@ const deviceDetailData = computed(() => {
 
 // 预警详情弹窗
 const showAlarmDetailModal = ref(false)
+// 报警下钻明细弹窗
+const showAlarmDrillDownModal = ref(false)
+const drillDownCity = ref('') // 当前下钻的城市
+const drillDownType = ref('') // 下钻类型：total/level1/level2/level3/handled
 
 // 桥梁设备详情弹窗
 const showBridgeDeviceDetail = ref(false)
@@ -2077,44 +2144,370 @@ const tunnelDeviceDetailData = ref([
 ])
 
 const alarmDetailColumns: TableColumnsType = [
-  { title: '市区县', dataIndex: 'area', key: 'area', width: 110 },
-  { title: '设施名称', dataIndex: 'facName', key: 'facName', width: 110 },
+  { title: '市区县', dataIndex: 'area', key: 'area', width: 100 },
+  { title: '设施名称', dataIndex: 'facName', key: 'facName', width: 120 },
   { title: '设备名称', dataIndex: 'devName', key: 'devName', width: 160 },
-  { title: '监测项', dataIndex: 'monitorItem', key: 'monitorItem', width: 70 },
-  { title: '点位名称', dataIndex: 'pointName', key: 'pointName', width: 260 },
-  { title: '报警时间', dataIndex: 'alarmTime', key: 'alarmTime', width: 160 },
-  { title: '预警值', dataIndex: 'alarmValue', key: 'alarmValue', width: 80 },
-  { title: '预警等级', dataIndex: 'alarmLevel', key: 'alarmLevel', width: 90 },
-  { title: '处置状态', dataIndex: 'status', key: 'status', width: 80 },
+  { title: '监测项', dataIndex: 'monitorItem', key: 'monitorItem', width: 100 },
+  { title: '点位名称', dataIndex: 'pointName', key: 'pointName', width: 240 },
+  { title: '报警开始时间', dataIndex: 'alarmTime', key: 'alarmTime', width: 160 },
+  { title: '报警结束时间', dataIndex: 'alarmEndTime', key: 'alarmEndTime', width: 160 },
+  { title: '预警值', dataIndex: 'alarmValue', key: 'alarmValue', width: 90 },
+  { title: '预警等级', dataIndex: 'alarmLevel', key: 'alarmLevel', width: 100 },
+  { title: '处置状态', dataIndex: 'status', key: 'status', width: 100 },
   { title: '处置完成时间', dataIndex: 'finishTime', key: 'finishTime', width: 160 },
+  { title: '处置人', dataIndex: 'handler', key: 'handler', width: 80 },
 ]
 const alarmDetailData = computed(() => {
   if (monitorLayer.value === 'road') {
     return [
-      { key: 1, area: '绍兴市越城区', facName: '石贯子巷', devName: '石贯子巷变形设备', monitorItem: '变形', pointName: '25-北侧变形·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15' },
-      { key: 2, area: '绍兴市越城区', facName: '石贯子巷', devName: '石贯子巷变形设备', monitorItem: '变形', pointName: '25-南侧变形·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 16:20:00', alarmValue: -733.8, alarmLevel: '一级预警', status: '未完成', finishTime: '/' },
-      { key: 3, area: '杭州市滨江区', facName: '复兴大道', devName: '复兴大道变形设备', monitorItem: '变形', pointName: '18-南侧变形·第1跨拱肋截面1/3等分点', alarmTime: '2026-4-26 08:10:00', alarmValue: -520.3, alarmLevel: '二级预警', status: '已完成', finishTime: '2026-4-26 09:25:00' },
-      { key: 4, area: '杭州市上城区', facName: '备塘河桥路', devName: '备塘河桥路变形设备', monitorItem: '变形', pointName: '12-东侧变形·第3跨拱肋截面1/2等分点', alarmTime: '2026-4-27 10:05:00', alarmValue: 2.15, alarmLevel: '三级预警', status: '已完成', finishTime: '2026-4-27 11:30:00' },
-      { key: 5, area: '杭州市拱墅区', facName: '拱墅路', devName: '拱墅路变形设备', monitorItem: '变形', pointName: '8-西侧变形·第2跨拱肋截面1/4等分点', alarmTime: '2026-4-28 14:45:00', alarmValue: -480.6, alarmLevel: '一级预警', status: '未完成', finishTime: '/' },
+      { key: 1, area: '绍兴市越城区', facName: '石贯子巷', devName: '石贯子巷路面设备', monitorItem: '路面状况', pointName: 'K2+300路面平整度监测点', alarmTime: '2026-4-25 15:30:00', alarmEndTime: '2026-4-25 16:00:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15', handler: '张伟' },
+      { key: 2, area: '绍兴市越城区', facName: '石贯子巷', devName: '石贯子巷路面设备', monitorItem: '路面状况', pointName: 'K3+100路面平整度监测点', alarmTime: '2026-4-25 16:20:00', alarmEndTime: '', alarmValue: -733.8, alarmLevel: '一级预警', status: '未完成', finishTime: '/', handler: '' },
+      { key: 3, area: '杭州市滨江区', facName: '复兴大道', devName: '复兴大道路面设备', monitorItem: '路面状况', pointName: 'K5+500路面平整度监测点', alarmTime: '2026-4-26 08:10:00', alarmEndTime: '2026-4-26 09:00:00', alarmValue: -520.3, alarmLevel: '二级预警', status: '已完成', finishTime: '2026-4-26 09:25:00', handler: '李明' },
+      { key: 4, area: '杭州市上城区', facName: '备塘河桥路', devName: '备塘河桥路路面设备', monitorItem: '路面状况', pointName: 'K1+200路面平整度监测点', alarmTime: '2026-4-27 10:05:00', alarmEndTime: '2026-4-27 11:00:00', alarmValue: 2.15, alarmLevel: '三级预警', status: '已完成', finishTime: '2026-4-27 11:30:00', handler: '王芳' },
+      { key: 5, area: '杭州市拱墅区', facName: '拱墅路', devName: '拱墅路路面设备', monitorItem: '路面状况', pointName: 'K4+800路面平整度监测点', alarmTime: '2026-4-28 14:45:00', alarmEndTime: '', alarmValue: -480.6, alarmLevel: '一级预警', status: '未完成', finishTime: '/', handler: '' },
     ]
   }
   if (monitorLayer.value === 'tunnel') {
     return [
-      { key: 1, area: '绍兴市越城区', facName: '紫金港北路下穿道', devName: '紫金港北路下穿道位移设备', monitorItem: '位移', pointName: '25-北侧位移·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15' },
-      { key: 2, area: '绍兴市越城区', facName: '紫金港北路下穿道', devName: '紫金港北路下穿道位移设备', monitorItem: '位移', pointName: '25-南侧位移·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 16:20:00', alarmValue: -733.8, alarmLevel: '一级预警', status: '未完成', finishTime: '/' },
-      { key: 3, area: '杭州市滨江区', facName: '复兴路隧道', devName: '复兴路隧道位移设备', monitorItem: '位移', pointName: '18-南侧位移·第1跨拱肋截面1/3等分点', alarmTime: '2026-4-26 08:10:00', alarmValue: -520.3, alarmLevel: '二级预警', status: '已完成', finishTime: '2026-4-26 09:25:00' },
-      { key: 4, area: '杭州市上城区', facName: '环城北路隧道', devName: '环城北路隧道位移设备', monitorItem: '位移', pointName: '12-东侧位移·第3跨拱肋截面1/2等分点', alarmTime: '2026-4-27 10:05:00', alarmValue: 2.15, alarmLevel: '三级预警', status: '已完成', finishTime: '2026-4-27 11:30:00' },
-      { key: 5, area: '杭州市拱墅区', facName: '半山隧道', devName: '半山隧道位移设备', monitorItem: '位移', pointName: '8-西侧位移·第2跨拱肋截面1/4等分点', alarmTime: '2026-4-28 14:45:00', alarmValue: -480.6, alarmLevel: '一级预警', status: '未完成', finishTime: '/' },
+      { key: 1, area: '绍兴市越城区', facName: '紫金港北路下穿道', devName: '紫金港北路下穿道位移设备', monitorItem: '位移', pointName: '25-北侧位移·第2跨截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmEndTime: '2026-4-25 16:00:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15', handler: '张伟' },
+      { key: 2, area: '绍兴市越城区', facName: '紫金港北路下穿道', devName: '紫金港北路下穿道位移设备', monitorItem: '位移', pointName: '25-南侧位移·第2跨截面1/2等分点', alarmTime: '2026-4-25 16:20:00', alarmEndTime: '', alarmValue: -733.8, alarmLevel: '一级预警', status: '未完成', finishTime: '/', handler: '' },
+      { key: 3, area: '杭州市滨江区', facName: '复兴路隧道', devName: '复兴路隧道位移设备', monitorItem: '位移', pointName: '18-南侧位移·第1跨截面1/3等分点', alarmTime: '2026-4-26 08:10:00', alarmEndTime: '2026-4-26 09:00:00', alarmValue: -520.3, alarmLevel: '二级预警', status: '已完成', finishTime: '2026-4-26 09:25:00', handler: '李明' },
+      { key: 4, area: '杭州市上城区', facName: '环城北路隧道', devName: '环城北路隧道位移设备', monitorItem: '位移', pointName: '12-东侧位移·第3跨截面1/2等分点', alarmTime: '2026-4-27 10:05:00', alarmEndTime: '2026-4-27 11:00:00', alarmValue: 2.15, alarmLevel: '三级预警', status: '已完成', finishTime: '2026-4-27 11:30:00', handler: '王芳' },
+      { key: 5, area: '杭州市拱墅区', facName: '半山隧道', devName: '半山隧道位移设备', monitorItem: '位移', pointName: '8-西侧位移·第2跨截面1/4等分点', alarmTime: '2026-4-28 14:45:00', alarmEndTime: '', alarmValue: -480.6, alarmLevel: '一级预警', status: '未完成', finishTime: '/', handler: '' },
     ]
   }
   return [
-    { key: 1, area: '绍兴市越城区', facName: '沪德立交桥', devName: '沪德立交桥应变设备', monitorItem: '应变', pointName: '25-北侧应变·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15' },
-    { key: 2, area: '绍兴市越城区', facName: '沪德立交桥', devName: '沪德立交桥应变设备', monitorItem: '应变', pointName: '25-南侧应变·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 16:20:00', alarmValue: -733.8, alarmLevel: '一级预警', status: '未完成', finishTime: '/' },
-    { key: 3, area: '杭州市滨江区', facName: '复兴大桥', devName: '复兴大桥应变设备', monitorItem: '应变', pointName: '18-南侧应变·第1跨拱肋截面1/3等分点', alarmTime: '2026-4-26 08:10:00', alarmValue: -520.3, alarmLevel: '二级预警', status: '已完成', finishTime: '2026-4-26 09:25:00' },
-    { key: 4, area: '杭州市上城区', facName: '备塘河桥', devName: '备塘河桥倾角设备', monitorItem: '应变', pointName: '12-东侧倾角·第3跨拱肋截面1/2等分点', alarmTime: '2026-4-27 10:05:00', alarmValue: 2.15, alarmLevel: '三级预警', status: '已完成', finishTime: '2026-4-27 11:30:00' },
-    { key: 5, area: '杭州市拱墅区', facName: '半山桥', devName: '半山桥应变设备', monitorItem: '应变', pointName: '8-西侧应变·第2跨拱肋截面1/4等分点', alarmTime: '2026-4-28 14:45:00', alarmValue: -480.6, alarmLevel: '一级预警', status: '未完成', finishTime: '/' },
+    { key: 1, area: '绍兴市越城区', facName: '沪德立交桥', devName: '沪德立交桥应变设备', monitorItem: '应变', pointName: '25-北侧应变·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmEndTime: '2026-4-25 16:00:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15', handler: '张伟' },
+    { key: 2, area: '绍兴市越城区', facName: '沪德立交桥', devName: '沪德立交桥应变设备', monitorItem: '应变', pointName: '25-南侧应变·第2跨拱肋截面1/2等分点', alarmTime: '2026-4-25 16:20:00', alarmEndTime: '', alarmValue: -733.8, alarmLevel: '一级预警', status: '未完成', finishTime: '/', handler: '' },
+    { key: 3, area: '杭州市滨江区', facName: '复兴大桥', devName: '复兴大桥应变设备', monitorItem: '应变', pointName: '18-南侧应变·第1跨拱肋截面1/3等分点', alarmTime: '2026-4-26 08:10:00', alarmEndTime: '2026-4-26 09:00:00', alarmValue: -520.3, alarmLevel: '二级预警', status: '已完成', finishTime: '2026-4-26 09:25:00', handler: '李明' },
+    { key: 4, area: '杭州市上城区', facName: '备塘河桥', devName: '备塘河桥倾角设备', monitorItem: '应变', pointName: '12-东侧倾角·第3跨拱肋截面1/2等分点', alarmTime: '2026-4-27 10:05:00', alarmEndTime: '2026-4-27 11:00:00', alarmValue: 2.15, alarmLevel: '三级预警', status: '已完成', finishTime: '2026-4-27 11:30:00', handler: '王芳' },
+    { key: 5, area: '杭州市拱墅区', facName: '半山桥', devName: '半山桥应变设备', monitorItem: '应变', pointName: '8-西侧应变·第2跨拱肋截面1/4等分点', alarmTime: '2026-4-28 14:45:00', alarmEndTime: '', alarmValue: -480.6, alarmLevel: '一级预警', status: '未完成', finishTime: '/', handler: '' },
   ]
 })
+
+// 报警汇总表列定义（按地市统计）
+const alarmSummaryColumns: TableColumnsType = [
+  { title: '地市', dataIndex: 'city', key: 'city', width: 100, fixed: 'left' as const },
+  { 
+    title: '预警总数', 
+    dataIndex: 'total', 
+    key: 'total', 
+    width: 100,
+    customRender: ({ record }: { record: any }) => h('span', { style: { color: '#5b8ff9', cursor: 'pointer' }, onClick: () => handleAlarmDrillDown(record, 'total') }, record.total)
+  },
+  { 
+    title: '一级预警', 
+    dataIndex: 'level1', 
+    key: 'level1', 
+    width: 100,
+    customRender: ({ record }: { record: any }) => h('span', { style: { color: '#ff4d4f', cursor: 'pointer' }, onClick: () => handleAlarmDrillDown(record, 'level1') }, record.level1)
+  },
+  { 
+    title: '二级预警', 
+    dataIndex: 'level2', 
+    key: 'level2', 
+    width: 100,
+    customRender: ({ record }: { record: any }) => h('span', { style: { color: '#faad14', cursor: 'pointer' }, onClick: () => handleAlarmDrillDown(record, 'level2') }, record.level2)
+  },
+  { 
+    title: '三级预警', 
+    dataIndex: 'level3', 
+    key: 'level3', 
+    width: 100,
+    customRender: ({ record }: { record: any }) => h('span', { style: { color: '#52c41a', cursor: 'pointer' }, onClick: () => handleAlarmDrillDown(record, 'level3') }, record.level3)
+  },
+  { 
+    title: '处置总数', 
+    dataIndex: 'handled', 
+    key: 'handled', 
+    width: 100,
+    customRender: ({ record }: { record: any }) => h('span', { style: { color: '#5b8ff9', cursor: 'pointer' }, onClick: () => handleAlarmDrillDown(record, 'handled') }, record.handled)
+  },
+  { title: '处置率', dataIndex: 'rate', key: 'rate', width: 100 },
+]
+
+// 报警汇总数据（按地市统计）
+const alarmSummaryData = computed(() => {
+  // 根据图层返回不同的统计数据
+  if (monitorLayer.value === 'road') {
+    return [
+      { key: 1, city: '宁波市', total: 96, level1: 14, level2: 38, level3: 44, handled: 84, rate: '87.5%' },
+      { key: 2, city: '温州市', total: 84, level1: 12, level2: 34, level3: 38, handled: 73, rate: '86.9%' },
+      { key: 3, city: '绍兴市', total: 62, level1: 8, level2: 25, level3: 29, handled: 54, rate: '87.1%' },
+      { key: 4, city: '湖州市', total: 44, level1: 6, level2: 18, level3: 20, handled: 38, rate: '86.4%' },
+      { key: 5, city: '嘉兴市', total: 58, level1: 8, level2: 24, level3: 26, handled: 50, rate: '86.2%' },
+      { key: 6, city: '金华市', total: 52, level1: 7, level2: 21, level3: 24, handled: 45, rate: '86.5%' },
+      { key: 7, city: '衢州市', total: 38, level1: 5, level2: 15, level3: 18, handled: 33, rate: '86.8%' },
+      { key: 8, city: '台州市', total: 68, level1: 10, level2: 28, level3: 30, handled: 59, rate: '86.8%' },
+      { key: 9, city: '丽水市', total: 32, level1: 5, level2: 13, level3: 14, handled: 28, rate: '87.5%' },
+      { key: 10, city: '舟山市', total: 22, level1: 3, level2: 9, level3: 10, handled: 19, rate: '86.4%' },
+    ]
+  }
+  if (monitorLayer.value === 'bridge') {
+    return [
+      { key: 1, city: '宁波市', total: 108, level1: 16, level2: 42, level3: 50, handled: 94, rate: '87.0%' },
+      { key: 2, city: '温州市', total: 92, level1: 14, level2: 38, level3: 40, handled: 80, rate: '87.0%' },
+      { key: 3, city: '绍兴市', total: 68, level1: 10, level2: 28, level3: 30, handled: 59, rate: '86.8%' },
+      { key: 4, city: '湖州市', total: 48, level1: 7, level2: 20, level3: 21, handled: 42, rate: '87.5%' },
+      { key: 5, city: '嘉兴市', total: 64, level1: 9, level2: 26, level3: 29, handled: 56, rate: '87.5%' },
+      { key: 6, city: '金华市', total: 58, level1: 8, level2: 24, level3: 26, handled: 50, rate: '86.2%' },
+      { key: 7, city: '衢州市', total: 42, level1: 6, level2: 17, level3: 19, handled: 37, rate: '88.1%' },
+      { key: 8, city: '台州市', total: 76, level1: 11, level2: 31, level3: 34, handled: 66, rate: '86.8%' },
+      { key: 9, city: '丽水市', total: 36, level1: 5, level2: 15, level3: 16, handled: 31, rate: '86.1%' },
+      { key: 10, city: '舟山市', total: 24, level1: 4, level2: 10, level3: 10, handled: 21, rate: '87.5%' },
+    ]
+  }
+  // tunnel
+  return [
+    { key: 1, city: '宁波市', total: 120, level1: 18, level2: 48, level3: 54, handled: 105, rate: '87.5%' },
+    { key: 2, city: '温州市', total: 98, level1: 15, level2: 40, level3: 43, handled: 85, rate: '86.7%' },
+    { key: 3, city: '绍兴市', total: 72, level1: 11, level2: 30, level3: 31, handled: 63, rate: '87.5%' },
+    { key: 4, city: '湖州市', total: 52, level1: 8, level2: 22, level3: 22, handled: 45, rate: '86.5%' },
+    { key: 5, city: '嘉兴市', total: 68, level1: 10, level2: 28, level3: 30, handled: 59, rate: '86.8%' },
+    { key: 6, city: '金华市', total: 62, level1: 9, level2: 26, level3: 27, handled: 54, rate: '87.1%' },
+    { key: 7, city: '衢州市', total: 46, level1: 7, level2: 19, level3: 20, handled: 40, rate: '87.0%' },
+    { key: 8, city: '台州市', total: 82, level1: 12, level2: 34, level3: 36, handled: 72, rate: '87.8%' },
+    { key: 9, city: '丽水市', total: 38, level1: 6, level2: 16, level3: 16, handled: 33, rate: '86.8%' },
+    { key: 10, city: '舟山市', total: 26, level1: 4, level2: 11, level3: 11, handled: 23, rate: '88.5%' },
+  ]
+})
+
+// 过滤后的汇总数据（简化版，暂不实现复杂过滤）
+const filteredAlarmSummaryData = computed(() => {
+  return alarmSummaryData.value
+})
+
+// 报警下钻明细列定义
+const alarmDrillDownColumns: TableColumnsType = [
+  { title: '市区县', dataIndex: 'area', key: 'area', width: 100 },
+  { title: '设施名称', dataIndex: 'facName', key: 'facName', width: 120 },
+  { title: '设备名称', dataIndex: 'devName', key: 'devName', width: 160 },
+  { title: '监测项', dataIndex: 'monitorItem', key: 'monitorItem', width: 100 },
+  { title: '点位名称', dataIndex: 'pointName', key: 'pointName', width: 240 },
+  { title: '报警开始时间', dataIndex: 'alarmTime', key: 'alarmTime', width: 160 },
+  { title: '报警结束时间', dataIndex: 'alarmEndTime', key: 'alarmEndTime', width: 160 },
+  { title: '预警值', dataIndex: 'alarmValue', key: 'alarmValue', width: 90 },
+  { title: '预警等级', dataIndex: 'alarmLevel', key: 'alarmLevel', width: 100 },
+  { title: '处置状态', dataIndex: 'status', key: 'status', width: 100 },
+  { title: '处置完成时间', dataIndex: 'finishTime', key: 'finishTime', width: 160 },
+  { title: '处置人', dataIndex: 'handler', key: 'handler', width: 80 },
+]
+
+// 报警下钻明细数据
+const alarmDrillDownData = ref<any[]>([])
+
+// 点击数字下钻处理函数
+function handleAlarmDrillDown(record: any, type: string) {
+  drillDownCity.value = record.city
+  drillDownType.value = type
+  
+  // 根据图层、城市和下钻类型生成明细数据
+  const layer = monitorLayer.value
+  let data: any[] = []
+  
+  if (layer === 'road') {
+    data = generateRoadAlarmData(record.city, type)
+  } else if (layer === 'bridge') {
+    data = generateBridgeAlarmData(record.city, type)
+  } else {
+    data = generateTunnelAlarmData(record.city, type)
+  }
+  
+  alarmDrillDownData.value = data
+  showAlarmDrillDownModal.value = true
+}
+
+// 生成道路报警数据
+function generateRoadAlarmData(city: string, type: string): any[] {
+  const baseData = [
+    { area: `${city}XX区`, facName: `${city}XX路`, devName: `${city}XX路面设备`, monitorItem: '路面状况', pointName: 'Kx+xxx路面平整度监测点', alarmTime: '2026-4-25 15:30:00', alarmEndTime: '2026-4-25 16:00:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15', handler: '张伟' },
+  ]
+  
+  // 根据下钻类型筛选数据
+  if (type === 'level1') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '一级预警' }))
+  } else if (type === 'level2') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '二级预警', alarmValue: -520.3 }))
+  } else if (type === 'level3') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '三级预警', alarmValue: 2.15 }))
+  } else if (type === 'handled') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, status: '已完成' }))
+  } else {
+    // total: 返回所有类型
+    return [
+      ...baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '一级预警' })),
+      ...baseData.map((item, i) => ({ ...item, key: i + 10, alarmLevel: '二级预警', alarmValue: -520.3 })),
+      ...baseData.map((item, i) => ({ ...item, key: i + 20, alarmLevel: '三级预警', alarmValue: 2.15 })),
+    ]
+  }
+}
+
+// 生成桥梁报警数据
+function generateBridgeAlarmData(city: string, type: string): any[] {
+  const baseData = [
+    { area: `${city}XX区`, facName: `${city}XX大桥`, devName: `${city}XX应变设备`, monitorItem: '应变', pointName: 'XX-北侧应变·第X跨拱肋截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmEndTime: '2026-4-25 16:00:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15', handler: '张伟' },
+  ]
+  
+  if (type === 'level1') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '一级预警' }))
+  } else if (type === 'level2') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '二级预警', alarmValue: -520.3 }))
+  } else if (type === 'level3') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '三级预警', alarmValue: 2.15 }))
+  } else if (type === 'handled') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, status: '已完成' }))
+  } else {
+    return [
+      ...baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '一级预警' })),
+      ...baseData.map((item, i) => ({ ...item, key: i + 10, alarmLevel: '二级预警', alarmValue: -520.3 })),
+      ...baseData.map((item, i) => ({ ...item, key: i + 20, alarmLevel: '三级预警', alarmValue: 2.15 })),
+    ]
+  }
+}
+
+// 生成隧道报警数据
+function generateTunnelAlarmData(city: string, type: string): any[] {
+  const baseData = [
+    { area: `${city}XX区`, facName: `${city}XX隧道`, devName: `${city}XX位移设备`, monitorItem: '位移', pointName: 'XX-北侧位移·第X跨截面1/2等分点', alarmTime: '2026-4-25 15:30:00', alarmEndTime: '2026-4-25 16:00:00', alarmValue: -633.8, alarmLevel: '一级预警', status: '已完成', finishTime: '2026-4-25 15:49:15', handler: '张伟' },
+  ]
+  
+  if (type === 'level1') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '一级预警' }))
+  } else if (type === 'level2') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '二级预警', alarmValue: -520.3 }))
+  } else if (type === 'level3') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '三级预警', alarmValue: 2.15 }))
+  } else if (type === 'handled') {
+    return baseData.map((item, i) => ({ ...item, key: i + 1, status: '已完成' }))
+  } else {
+    return [
+      ...baseData.map((item, i) => ({ ...item, key: i + 1, alarmLevel: '一级预警' })),
+      ...baseData.map((item, i) => ({ ...item, key: i + 10, alarmLevel: '二级预警', alarmValue: -520.3 })),
+      ...baseData.map((item, i) => ({ ...item, key: i + 20, alarmLevel: '三级预警', alarmValue: 2.15 })),
+    ]
+  }
+}
+
+// 下钻明细筛选条件
+interface DrillDownFilters {
+  facilityName: string
+  monitorItem: string
+  handleStatus: string
+}
+
+const drillDownFilters = ref<DrillDownFilters>({
+  facilityName: '',
+  monitorItem: '',
+  handleStatus: '',
+})
+
+function resetDrillDownFilters() {
+  drillDownFilters.value = {
+    facilityName: '',
+    monitorItem: '',
+    handleStatus: '',
+  }
+}
+
+function handleDrillDownSearch() {
+  // 搜索逻辑由computed自动处理
+}
+
+// 过滤后的下钻明细数据
+const filteredDrillDownData = computed(() => {
+  return alarmDrillDownData.value.filter(row => {
+    if (drillDownFilters.value.facilityName && !row.facName.includes(drillDownFilters.value.facilityName)) return false
+    if (drillDownFilters.value.monitorItem && row.monitorItem !== drillDownFilters.value.monitorItem) return false
+    if (drillDownFilters.value.handleStatus && row.status !== drillDownFilters.value.handleStatus) return false
+    return true
+  })
+})
+
+// 获取下钻标题
+function getDrillDownTitle(): string {
+  const typeMap: Record<string, string> = {
+    'total': '预警总数',
+    'level1': '一级预警',
+    'level2': '二级预警',
+    'level3': '三级预警',
+    'handled': '处置总数',
+  }
+  return typeMap[drillDownType.value] || ''
+}
+
+// 报警详情筛选条件
+const cityDistrictMap: Record<string, string[]> = {
+  '杭州市': ['上城区', '拱墅区', '西湖区', '滨江区', '萧山区', '余杭区', '临平区', '钱塘区', '富阳区', '临安区', '桐庐县', '淳安县', '建德市'],
+  '宁波市': ['海曙区', '江北区', '镇海区', '北仑区', '鄞州区', '奉化区', '余姚市', '慈溪市', '象山县', '宁海县'],
+  '温州市': ['鹿城区', '龙湾区', '瓯海区', '洞头区', '瑞安市', '乐清市', '永嘉县', '平阳县', '苍南县', '文成县', '泰顺县', '龙港市'],
+  '绍兴市': ['越城区', '柯桥区', '上虞区', '诸暨市', '嵊州市', '新昌县'],
+  '湖州市': ['吴兴区', '南浔区', '德清县', '长兴县', '安吉县'],
+  '嘉兴市': ['南湖区', '秀洲区', '海宁市', '平湖市', '桐乡市', '嘉善县', '海盐县'],
+  '金华市': ['婺城区', '金东区', '义乌市', '东阳市', '永康市', '兰溪市', '浦江县', '武义县', '磐安县'],
+  '衢州市': ['柯城区', '衢江区', '江山市', '龙游县', '常山县', '开化县'],
+  '台州市': ['椒江区', '黄岩区', '路桥区', '临海市', '温岭市', '玉环市', '天台县', '仙居县', '三门县'],
+  '丽水市': ['莲都区', '龙泉市', '青田县', '缙云县', '遂昌县', '松阳县', '云和县', '庆元县', '景宁畲族自治县'],
+  '舟山市': ['定海区', '普陀区', '岱山县', '泗县'],
+}
+
+const cityDistrictCascaderOptions = Object.keys(cityDistrictMap).map(city => ({
+  value: city,
+  label: city,
+  children: cityDistrictMap[city].map(d => ({ value: d, label: d })),
+}))
+
+interface AlarmFilters {
+  regionValue?: string[]
+  facilityName: string
+  deviceName: string
+  monitorItem: string
+  pointName: string
+  alertLevel: string
+  handleStatus: string
+}
+
+const alarmFilters = ref<AlarmFilters>({
+  regionValue: undefined,
+  facilityName: '',
+  deviceName: '',
+  monitorItem: '',
+  pointName: '',
+  alertLevel: '',
+  handleStatus: '',
+})
+
+function resetAlarmFilters() {
+  alarmFilters.value = {
+    regionValue: undefined,
+    facilityName: '',
+    deviceName: '',
+    monitorItem: '',
+    pointName: '',
+    alertLevel: '',
+    handleStatus: '',
+  }
+}
+
+function handleAlarmSearch() {
+  // 搜索逻辑由computed自动处理
+}
+
+// 过滤后的报警数据
+const filteredAlarmData = computed(() => {
+  return alarmDetailData.value.filter(row => {
+    const rv = alarmFilters.value.regionValue
+    if (rv && rv[0] && !row.area.startsWith(rv[0])) return false
+    if (rv && rv[1] && !row.area.includes(rv[1])) return false
+    if (alarmFilters.value.facilityName && !row.facName.includes(alarmFilters.value.facilityName)) return false
+    if (alarmFilters.value.deviceName && !row.devName.includes(alarmFilters.value.deviceName)) return false
+    if (alarmFilters.value.monitorItem && row.monitorItem !== alarmFilters.value.monitorItem) return false
+    if (alarmFilters.value.pointName && !row.pointName.includes(alarmFilters.value.pointName)) return false
+    if (alarmFilters.value.alertLevel && row.alarmLevel !== alarmFilters.value.alertLevel) return false
+    if (alarmFilters.value.handleStatus && row.status !== alarmFilters.value.handleStatus) return false
+    return true
+  })
+})
+
 const C = (field: string, w?: number) => ({ title: '地市', dataIndex: field, key: field, width: w || 80, fixed: 'left' as const })
 const facilityColumns: Record<string, TableColumnsType> = {
   road: [C('city'), { title: '道路总长(km)', dataIndex: 'totalLength', key: 'totalLength' }, { title: '道路总面积(km²)', dataIndex: 'totalArea', key: 'totalArea' }, { title: '建成区面积(km²)', dataIndex: 'builtArea', key: 'builtArea' }, { title: '路网密度', dataIndex: 'density', key: 'density' }, { title: '道路面积率', dataIndex: 'areaRatio', key: 'areaRatio' }, { title: '快速路', children: [{ title: '道路长度(km)', dataIndex: 'expressway', key: 'expressway' }, { title: '路网密度', dataIndex: 'expresswayDensity', key: 'expresswayDensity' }] }, { title: '主干路', children: [{ title: '道路长度(km)', dataIndex: 'arterial', key: 'arterial' }, { title: '路网密度', dataIndex: 'arterialDensity', key: 'arterialDensity' }] }, { title: '次干路', children: [{ title: '道路长度(km)', dataIndex: 'collector', key: 'collector' }, { title: '路网密度', dataIndex: 'collectorDensity', key: 'collectorDensity' }] }, { title: '支路', children: [{ title: '道路长度(km)', dataIndex: 'local', key: 'local' }, { title: '路网密度', dataIndex: 'localDensity', key: 'localDensity' }] }],
@@ -3723,27 +4116,32 @@ watch(riskType, (val) => {
 .link-btn { font-size: 12px; color: #5b8ff9; cursor: pointer; text-decoration: none; &:hover { text-decoration: underline; } }
 
 .modal-filter-bar {
-  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
-  .filter-item {
-    display: flex; align-items: center; gap: 6px;
-    .filter-label { font-size: 13px; color: rgba(255,255,255,0.7); white-space: nowrap; }
+  :deep(.ant-form-item) {
+    margin-bottom: 8px;
   }
-  .filter-select, .filter-input {
-    background: rgba(255,255,255,0.08); border: 1px solid rgba(100,160,255,0.2); border-radius: 4px;
-    color: rgba(255,255,255,0.75); padding: 4px 10px; font-size: 13px; outline: none; height: 30px;
-    &::placeholder { color: rgba(255,255,255,0.35); }
-    &:focus { border-color: #5b8ff9; }
+  :deep(.ant-input), :deep(.ant-select-selector), :deep(.ant-cascader-picker) {
+    background: rgba(255,255,255,0.08) !important;
+    border-color: rgba(100,160,255,0.2) !important;
+    color: rgba(255,255,255,0.75) !important;
+    height: 30px !important;
+    .ant-input::placeholder { color: rgba(255,255,255,0.35) !important; }
+    .ant-select-selection-placeholder { color: rgba(255,255,255,0.35) !important; }
+    .ant-select-selection-item { color: rgba(255,255,255,0.75) !important; }
   }
-  .filter-select { min-width: 120px; option { background: #0d1f3c; color: #fff; } }
-  .filter-input { min-width: 140px; }
-  .filter-btn {
-    background: #5b8ff9; color: #fff; border: none; border-radius: 4px; padding: 4px 16px;
-    font-size: 13px; cursor: pointer; height: 30px;
-    &:hover { background: #4a7de8; }
+  :deep(.ant-input:hover), :deep(.ant-select-selector:hover), :deep(.ant-cascader-picker:hover) {
+    border-color: #5b8ff9 !important;
+  }
+  :deep(.ant-btn) {
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.75);
+    border-color: rgba(100,160,255,0.2); height: 30px;
+    &:hover { background: rgba(255,255,255,0.12); border-color: #5b8ff9; }
+    &.ant-btn-primary { background: #5b8ff9; border-color: #5b8ff9; color: #fff;
+      &:hover { background: #4a7de8; border-color: #4a7de8; }
+    }
   }
 }
 
-.device-detail-modal, .alarm-detail-modal, .risk-detail-modal {
+.device-detail-modal, .alarm-detail-modal, .risk-detail-modal, .road-device-detail-modal, .bridge-device-detail-modal, .tunnel-device-detail-modal, .alarm-drilldown-modal {
   .ant-modal-content {
     background: linear-gradient(180deg, #0d1f3c, #0a1628);
     border: 1px solid rgba(100,160,255,0.15); border-radius: 10px;
@@ -3754,6 +4152,86 @@ watch(riskType, (val) => {
   }
   .ant-modal-close { color: rgba(255,255,255,0.4); &:hover { color: rgba(255,255,255,0.8); } }
   .ant-modal-body { padding: 16px 20px; }
+  
+  // 设备列表筛选区横向排列样式
+  &.device-detail-modal {
+    .device-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+      
+      .filter-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        
+        .filter-label {
+          color: rgba(255,255,255,0.85);
+          font-size: 13px;
+          white-space: nowrap;
+        }
+        
+        .filter-select,
+        .filter-input {
+          background: rgba(255,255,255,0.08);
+          border: 1px solid rgba(100,160,255,0.2);
+          border-radius: 4px;
+          color: rgba(255,255,255,0.75);
+          height: 30px;
+          padding: 0 12px;
+          font-size: 13px;
+          outline: none;
+          transition: all 0.3s;
+          
+          &::placeholder {
+            color: rgba(255,255,255,0.35);
+          }
+          
+          &:hover,
+          &:focus {
+            border-color: #5b8ff9;
+            background: rgba(255,255,255,0.12);
+          }
+          
+          option {
+            background: #0d1f3c;
+            color: rgba(255,255,255,0.75);
+          }
+        }
+        
+        .filter-select {
+          min-width: 140px;
+        }
+        
+        .filter-input {
+          min-width: 160px;
+        }
+      }
+    }
+  }
+  
+  :deep(.ant-select-dropdown), :deep(.ant-cascader-menus) {
+    background: #0d1f3c !important;
+    border-color: rgba(100,160,255,0.2) !important;
+    .ant-select-item, .ant-cascader-menu-item {
+      color: rgba(255,255,255,0.75) !important;
+      &:hover { background: rgba(91,143,249,0.12) !important; }
+      &.ant-select-item-active, &.ant-cascader-menu-item-active { background: rgba(91,143,249,0.15) !important; }
+      &.ant-select-item-selected, &.ant-cascader-menu-item-selected { color: #5b8ff9 !important; }
+    }
+  }
+  .ant-cascader {
+    .ant-select-selector {
+      background: rgba(255,255,255,0.08) !important;
+      border-color: rgba(100,160,255,0.2) !important;
+      color: rgba(255,255,255,0.75) !important;
+      height: 30px !important;
+      .ant-select-selection-placeholder { color: rgba(255,255,255,0.35) !important; }
+      .ant-select-selection-item { color: rgba(255,255,255,0.75) !important; }
+    }
+    &:hover .ant-select-selector { border-color: #5b8ff9 !important; }
+  }
   .ant-table {
     background: transparent; color: rgba(255,255,255,0.75);
     .ant-table-header { background: transparent; border-radius: 0; }
@@ -3911,6 +4389,25 @@ watch(riskType, (val) => {
   gap: 0;
   margin-bottom: 16px;
   border-bottom: 1px solid rgba(91,143,249,0.15);
+  align-items: center;
+}
+
+.risk-hint-download {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  margin-left: auto;
+  margin-right: 8px;
+  font-size: 12px;
+  color: #5b8ff9;
+  border: 1px solid rgba(91,143,249,0.4);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  &:hover { background: rgba(91,143,249,0.12); border-color: #5b8ff9; }
+  .download-icon { font-size: 13px; }
 }
 
 .risk-hint-tab {

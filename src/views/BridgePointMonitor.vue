@@ -191,8 +191,8 @@
       <div class="pm-modal pm-modal-wide">
         <div class="pm-modal-header">报警详情<a class="pm-modal-close" @click="showAlarmModal = false">&times;</a></div>
         <div class="pm-modal-filters">
-          <div class="filter-item"><span class="filter-label">设施名称</span><select v-model="alarmFilter.facName" class="pm-input"><option value="">请选择</option><option>备塘河桥</option><option>武林桥</option><option>登云桥</option><option>滨江大桥</option><option>市心桥</option></select></div>
-          <div class="filter-item"><span class="filter-label">设备名称</span><input v-model="alarmFilter.devName" placeholder="请输入" class="pm-input" /></div>
+          <div class="filter-item"><span class="filter-label">监测设备</span><input v-model="alarmFilter.devName" placeholder="请输入" class="pm-input" /></div>
+          <div class="filter-item"><span class="filter-label">测点名称</span><select v-model="alarmFilter.monitorPoint" class="pm-input"><option value="">请选择</option><option v-for="p in pointList" :key="p" :value="p">{{ p }}</option></select></div>
           <div class="filter-item"><span class="filter-label">监测项</span><select v-model="alarmFilter.monitorItem" class="pm-input"><option value="">请选择</option><option>索力</option><option>振动</option><option>位移</option><option>挠度</option><option>应变</option><option>加速度</option></select></div>
           <div class="filter-item"><span class="filter-label">预警等级</span><select v-model="alarmFilter.level" class="pm-input"><option value="">请选择</option><option>一级预警</option><option>二级预警</option><option>三级预警</option></select></div>
           <div class="filter-item"><span class="filter-label">处置状态</span><select v-model="alarmFilter.done" class="pm-input"><option value="">请选择</option><option value="done">已完成</option><option value="undone">未完成</option></select></div>
@@ -200,13 +200,13 @@
         </div>
         <div class="pm-modal-table-wrap">
           <table class="dark-table pm-bordered">
-            <thead><tr><th>市区县</th><th>设施名称</th><th>设备名称</th><th>监测项</th><th>点位名称</th><th>报警开始时间</th><th>报警结束时间</th><th>预警值</th><th>预警等级</th><th>处置状态</th><th>处置完成时间</th><th>处置人</th></tr></thead>
+            <thead><tr><th>处置状态</th><th>桥梁名称</th><th>监测设备</th><th>测点编号</th><th>测点名称</th><th>报警开始时间</th><th>报警结束时间</th><th>预警值</th><th>预警等级</th><th>报警状态</th><th>处置完成时间</th><th>处置人</th></tr></thead>
             <tbody>
               <tr v-for="row in alarmPageData" :key="row.id">
-                <td>{{ row.area }}</td><td>{{ row.facName }}</td><td>{{ row.devName }}</td><td>{{ row.monitorItem }}</td><td>{{ row.point }}</td>
+                <td><span :class="row.done ? 'status-green' : 'status-red'">{{ row.done ? '已完成' : '未完成' }}</span></td><td>{{ row.facName }}</td><td>{{ row.devName }}</td><td>{{ row.monitorContent }}</td><td>{{ row.monitorPoint }}</td>
                 <td>{{ row.startTime }}</td><td>{{ row.endTime }}</td><td>{{ row.warnValue }}</td>
                 <td><span :class="'level-' + row.level">{{ row.levelText }}</span></td>
-                <td><span :class="row.done ? 'status-green' : 'status-red'">{{ row.done ? '已完成' : '未完成' }}</span></td>
+                <td><span :class="row.done ? 'status-green' : 'status-red'">{{ row.done ? '已解除' : '报警中' }}</span></td>
                 <td>{{ row.doneTime }}</td><td>{{ row.handler }}</td>
               </tr>
             </tbody>
@@ -446,19 +446,19 @@ watch(monitorTypeTab, () => { monitorDetailPoint.value = 0; nextTick(() => initD
 watch(monitorDetailPoint, () => nextTick(() => initDetailChart()))
 
 // 报警详情
-const alarmFilter = reactive({ facName: '', devName: '', monitorItem: '', level: '', done: '' })
+const alarmFilter = reactive({ devName: '', monitorPoint: '', monitorItem: '', level: '', done: '' })
 const alarmDetailList = ref([
-  { id: 1, area: '杭州市上城区', facName: '备塘河桥', devName: '应变计-S11', monitorItem: '索力', point: '第2跨北侧S11拉索', startTime: '2026-06-07 08:15', endTime: '2026-06-07 09:30', warnValue: '7200 kN', level: 1, levelText: '一级预警', done: true, doneTime: '2026-06-07 10:00', handler: '张伟' },
-  { id: 2, area: '杭州市上城区', facName: '备塘河桥', devName: '加速度计-A01', monitorItem: '振动', point: '第3跨中部', startTime: '2026-06-06 14:20', endTime: '2026-06-06 15:00', warnValue: '0.35 m/s²', level: 2, levelText: '二级预警', done: true, doneTime: '2026-06-06 16:30', handler: '李明' },
-  { id: 3, area: '杭州市西湖区', facName: '武林桥', devName: '位移传感器-D01', monitorItem: '位移', point: '第1跨南侧', startTime: '2026-06-08 02:10', endTime: '', warnValue: '18.5 mm', level: 2, levelText: '二级预警', done: false, doneTime: '', handler: '' },
-  { id: 4, area: '杭州市西湖区', facName: '武林桥', devName: '挠度计-F01', monitorItem: '挠度', point: '主跨中分点', startTime: '2026-06-05 22:45', endTime: '2026-06-05 23:30', warnValue: '15.2 mm', level: 3, levelText: '三级预警', done: true, doneTime: '2026-06-06 08:00', handler: '王芳' },
-  { id: 5, area: '杭州市拱墅区', facName: '登云桥', devName: '应变计-S31', monitorItem: '应变', point: '主跨北侧', startTime: '2026-06-04 10:20', endTime: '2026-06-04 11:00', warnValue: '6500 kN', level: 1, levelText: '一级预警', done: true, doneTime: '2026-06-04 12:00', handler: '赵六' },
-  { id: 6, area: '杭州市滨江区', facName: '滨江大桥', devName: '挠度计-F02', monitorItem: '挠度', point: '主跨中分点', startTime: '2026-06-03 16:30', endTime: '', warnValue: '16.8 mm', level: 2, levelText: '二级预警', done: false, doneTime: '', handler: '' },
-  { id: 7, area: '杭州市余杭区', facName: '未来科技城桥', devName: '应变计-S41', monitorItem: '应变', point: '第3跨北侧', startTime: '2026-06-02 09:15', endTime: '2026-06-02 10:30', warnValue: '6800 kN', level: 3, levelText: '三级预警', done: true, doneTime: '2026-06-02 14:00', handler: '陈七' },
-  { id: 8, area: '杭州市萧山区', facName: '市心桥', devName: '加速度计-A03', monitorItem: '加速度', point: '主跨南侧', startTime: '2026-06-01 22:00', endTime: '2026-06-01 23:15', warnValue: '0.40 m/s²', level: 1, levelText: '一级预警', done: true, doneTime: '2026-06-02 08:00', handler: '周八' },
-  { id: 9, area: '杭州市上城区', facName: '备塘河桥', devName: '挠度计-F03', monitorItem: '挠度', point: '第1跨中分点', startTime: '2026-05-31 14:30', endTime: '2026-05-31 15:45', warnValue: '14.5 mm', level: 2, levelText: '二级预警', done: true, doneTime: '2026-05-31 18:00', handler: '吴九' },
-  { id: 10, area: '杭州市西湖区', facName: '武林桥', devName: '应变计-S12', monitorItem: '应变', point: '第2跨南侧S12拉索', startTime: '2026-05-30 08:20', endTime: '2026-05-30 09:00', warnValue: '7500 kN', level: 1, levelText: '一级预警', done: true, doneTime: '2026-05-30 10:30', handler: '郑十' },
-  { id: 11, area: '杭州市拱墅区', facName: '登云桥', devName: '位移传感器-D02', monitorItem: '位移', point: '第2跨南侧', startTime: '2026-05-29 19:00', endTime: '2026-05-29 20:15', warnValue: '19.2 mm', level: 3, levelText: '三级预警', done: true, doneTime: '2026-05-29 22:00', handler: '张伟' },
+  { id: 1, area: '杭州市上城区', facName: bridgeName, devName: '应变计-S11', monitorPoint: 'K0+200·北侧应变·第1段', monitorContent: '结构应变监测', monitorItem: '索力', point: '第2跨北侧S11拉索', startTime: '2026-06-07 08:15', endTime: '2026-06-07 09:30', warnValue: '7200 kN', level: 1, levelText: '一级预警', done: true, doneTime: '2026-06-07 10:00', handler: '张伟' },
+  { id: 2, area: '杭州市上城区', facName: bridgeName, devName: '加速度计-A01', monitorPoint: 'K0+800·加速度测点', monitorContent: '结构振动监测', monitorItem: '振动', point: '第3跨中部', startTime: '2026-06-06 14:20', endTime: '2026-06-06 15:00', warnValue: '0.35 m/s²', level: 2, levelText: '二级预警', done: true, doneTime: '2026-06-06 16:30', handler: '李明' },
+  { id: 3, area: '杭州市西湖区', facName: bridgeName, devName: '位移传感器-D01', monitorPoint: 'K0+400·南侧位移·第2段', monitorContent: '结构位移监测', monitorItem: '位移', point: '第1跨南侧', startTime: '2026-06-08 02:10', endTime: '', warnValue: '18.5 mm', level: 2, levelText: '二级预警', done: false, doneTime: '', handler: '' },
+  { id: 4, area: '杭州市西湖区', facName: bridgeName, devName: '挠度计-F01', monitorPoint: 'K0+600·挠度中分点', monitorContent: '结构挠度监测', monitorItem: '挠度', point: '主跨中分点', startTime: '2026-06-05 22:45', endTime: '2026-06-05 23:30', warnValue: '15.2 mm', level: 3, levelText: '三级预警', done: true, doneTime: '2026-06-06 08:00', handler: '王芳' },
+  { id: 5, area: '杭州市拱墅区', facName: bridgeName, devName: '应变计-S31', monitorPoint: 'K0+200·北侧应变·第1段', monitorContent: '结构应变监测', monitorItem: '应变', point: '主跨北侧', startTime: '2026-06-04 10:20', endTime: '2026-06-04 11:00', warnValue: '6500 kN', level: 1, levelText: '一级预警', done: true, doneTime: '2026-06-04 12:00', handler: '赵六' },
+  { id: 6, area: '杭州市滨江区', facName: bridgeName, devName: '挠度计-F02', monitorPoint: 'K0+600·挠度中分点', monitorContent: '结构挠度监测', monitorItem: '挠度', point: '主跨中分点', startTime: '2026-06-03 16:30', endTime: '', warnValue: '16.8 mm', level: 2, levelText: '二级预警', done: false, doneTime: '', handler: '' },
+  { id: 7, area: '杭州市余杭区', facName: bridgeName, devName: '应变计-S41', monitorPoint: 'K0+200·北侧应变·第1段', monitorContent: '结构应变监测', monitorItem: '应变', point: '第3跨北侧', startTime: '2026-06-02 09:15', endTime: '2026-06-02 10:30', warnValue: '6800 kN', level: 3, levelText: '三级预警', done: true, doneTime: '2026-06-02 14:00', handler: '陈七' },
+  { id: 8, area: '杭州市萧山区', facName: bridgeName, devName: '加速度计-A03', monitorPoint: 'K0+800·加速度测点', monitorContent: '结构振动监测', monitorItem: '加速度', point: '主跨南侧', startTime: '2026-06-01 22:00', endTime: '2026-06-01 23:15', warnValue: '0.40 m/s²', level: 1, levelText: '一级预警', done: true, doneTime: '2026-06-02 08:00', handler: '周八' },
+  { id: 9, area: '杭州市上城区', facName: bridgeName, devName: '挠度计-F03', monitorPoint: 'K0+600·挠度中分点', monitorContent: '结构挠度监测', monitorItem: '挠度', point: '第1跨中分点', startTime: '2026-05-31 14:30', endTime: '2026-05-31 15:45', warnValue: '14.5 mm', level: 2, levelText: '二级预警', done: true, doneTime: '2026-05-31 18:00', handler: '吴九' },
+  { id: 10, area: '杭州市西湖区', facName: bridgeName, devName: '应变计-S12', monitorPoint: 'K1+000·吊杆索力测点', monitorContent: '吊杆索力监测', monitorItem: '应变', point: '第2跨南侧S12拉索', startTime: '2026-05-30 08:20', endTime: '2026-05-30 09:00', warnValue: '7500 kN', level: 1, levelText: '一级预警', done: true, doneTime: '2026-05-30 10:30', handler: '郑十' },
+  { id: 11, area: '杭州市拱墅区', facName: bridgeName, devName: '位移传感器-D02', monitorPoint: 'K0+400·南侧位移·第2段', monitorContent: '结构位移监测', monitorItem: '位移', point: '第2跨南侧', startTime: '2026-05-29 19:00', endTime: '2026-05-29 20:15', warnValue: '19.2 mm', level: 3, levelText: '三级预警', done: true, doneTime: '2026-05-29 22:00', handler: '张伟' },
 ])
 const alarmPageData = computed(() => {
   const start = (alarmPage.value - 1) * pageSize
