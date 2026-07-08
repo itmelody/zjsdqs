@@ -6,10 +6,10 @@
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'overview' }" @click="cockpitTab = 'overview'">总体态势</div>
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'monitor' }" @click="cockpitTab = 'monitor'">在线监测</div>
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'ops' }" @click="cockpitTab = 'ops'">运维管理</div>
+        <div class="cockpit-tab" :class="{ active: cockpitTab === 'ops2' }" @click="cockpitTab = 'ops2'">运维管理2</div>
       </div>
       <div class="cockpit-title">浙江城市道桥隧安全运行监管</div>
       <div class="cockpit-nav">
-        <span class="nav-link">应急处置</span>
         <span class="nav-link">在建项目</span>
         <span class="nav-link" @click="handleGoToDashboard">工作台</span>
       </div>
@@ -321,7 +321,7 @@
             <div class="risk-alert-list">
               <div class="risk-alert-header">
                 <span class="ra-col-area">所属区域</span>
-                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
+                <span class="ra-col-name">设施名称</span>
                 <span class="ra-col-point">点位名称</span>
                 <span class="ra-col-item">监测项</span>
                 <span class="ra-col-level">预警等级</span>
@@ -360,7 +360,7 @@
             <div class="risk-alert-list">
               <div class="risk-alert-header">
                 <span class="ra-col-area">所属区域</span>
-                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
+                <span class="ra-col-name">检查对象</span>
                 <span class="ra-col-project">检查项目</span>
                 <span class="ra-col-content">上报内容</span>
                 <span class="ra-col-level">隐患等级</span>
@@ -428,9 +428,9 @@
             <div class="risk-alert-list">
               <div class="risk-alert-header">
                 <span class="ra-col-area">所属区域</span>
-                <span class="ra-col-name">{{ layerNameMap[activeLayer] }}名称</span>
-                <span class="ra-col-project">评估项目</span>
-                <span class="ra-col-entity">评估主体</span>
+                <span class="ra-col-name">评估单元</span>
+                <span class="ra-col-project">检查项目</span>
+                <span class="ra-col-entity">评估单位</span>
                 <span class="ra-col-level">隐患等级</span>
                 <span class="ra-col-status">整改状态</span>
               </div>
@@ -975,6 +975,2160 @@
       </div>
     </div>
 
+    <!-- 运维管理2子页签 -->
+    <div class="ops2-sub-tabs" v-show="cockpitTab === 'ops2'">
+      <div 
+        v-for="tab in ops2SubTabs" 
+        :key="tab" 
+        class="ops2-sub-tab" 
+        :class="{ active: ops2SubTab === tab }" 
+        @click="ops2SubTab = tab"
+      >{{ tab }}</div>
+    </div>
+
+    <!-- 运维管理2主体内容区 -->
+    <div class="cockpit-body ops2-body" v-show="cockpitTab === 'ops2' && ops2SubTab === '运维检测'">
+      <!-- 城市道路 -->
+      <div class="ops2-card road-card">
+        <div class="ops2-card-header">
+          <span class="header-icon">▌</span>
+          <span class="header-title">城市道路</span>
+          <span class="header-icon">▌</span>
+        </div>
+        <div class="ops2-card-content">
+          <!-- 常规检测 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">常规检测</span>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-road"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">应检数</div>
+                  <div class="item-value digital">3329.07<span class="unit">km</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">本年度累计检测</div>
+                  <div class="item-value">2,774.09<span class="unit">km</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-clock"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">即将超期(不足30天)</div>
+                  <div class="item-value digital">170.16<span class="unit">km</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box warning">
+                  <svg viewBox="0 0 24 24" class="icon-alert"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z" fill="#ffeb3b"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">超期未检</div>
+                  <div class="item-value warning">554.82<span class="unit">km</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-clipboard"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">应检未检数</div>
+                  <div class="item-value warning">554.98<span class="unit">km</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">检测完成率</div>
+                  <div class="item-value highlight">83.33<span class="unit">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 脱空检查 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">脱空检查</span>
+            </div>
+            <div class="inspection-row single">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">本年度累计检测</div>
+                  <div class="item-value digital">03870<span class="unit">km</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 路段分级情况统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">路段分级情况统计</span>
+            </div>
+            <div class="grade-stats">
+              <div class="ring-chart-wrapper">
+                <div class="ring-chart road-ring" @click="showRingTooltip('road', $event)">
+                  <div class="ring-center">
+                    <div class="center-text">道路<br/>数据占比</div>
+                  </div>
+                </div>
+                <div class="ring-labels">
+                  <div class="label-item"><span class="label-dot a"></span>A级 49.97%</div>
+                  <div class="label-item"><span class="label-dot b"></span>B级 47.87%</div>
+                  <div class="label-item"><span class="label-dot c"></span>C级 1.3%</div>
+                  <div class="label-item"><span class="label-dot d"></span>D级 0.86%</div>
+                </div>
+              </div>
+              <div class="grade-list">
+                <div class="grade-row"><span class="grade-label">A级</span><span class="grade-value">1831.60km</span></div>
+                <div class="grade-row"><span class="grade-label">B级</span><span class="grade-value">1754.46km</span></div>
+                <div class="grade-row"><span class="grade-label">C级</span><span class="grade-value">47.80km</span></div>
+                <div class="grade-row"><span class="grade-label">D级</span><span class="grade-value">31.53km</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- 设区市数据统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">设区市数据统计</span>
+            </div>
+            <div class="ops2-table-wrapper">
+              <table class="ops2-table">
+                <thead>
+                  <tr>
+                    <th>设区市</th>
+                    <th>应检数<br/>(km)</th>
+                    <th>即将超期<br/>(km)</th>
+                    <th>超期未检<br/>(km)</th>
+                    <th>检测完成率<br/>(%)</th>
+                    <th>A级路段<br/>(km)</th>
+                    <th>B级路段<br/>(km)</th>
+                    <th>C级路段<br/>(km)</th>
+                    <th>D级路段<br/>(km)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>杭州市</td><td>1020</td><td>52.0</td><td>170.2</td><td>85.0</td><td>510.5</td><td>497.2</td><td>10.6</td><td>8.0</td></tr>
+                  <tr><td>宁波市</td><td>520</td><td>26.5</td><td>86.7</td><td>83.5</td><td>260.3</td><td>255.8</td><td>5.4</td><td>4.1</td></tr>
+                  <tr><td>温州市</td><td>230</td><td>11.7</td><td>38.4</td><td>83.8</td><td>115.1</td><td>91.8</td><td>51.3</td><td>21.1</td></tr>
+                  <tr><td>嘉兴市</td><td>71</td><td>3.6</td><td>11.9</td><td>83.2</td><td>35.5</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>湖州市</td><td>212</td><td>10.8</td><td>35.4</td><td>83.3</td><td>106.3</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>绍兴市</td><td>351</td><td>17.9</td><td>58.6</td><td>83.3</td><td>175.7</td><td>125.3</td><td>1.8</td><td>0</td></tr>
+                  <tr><td>金华市</td><td>375</td><td>19.1</td><td>62.5</td><td>83.3</td><td>188.4</td><td>150.5</td><td>18.9</td><td>7.1</td></tr>
+                  <tr><td>衢州市</td><td>175</td><td>8.9</td><td>29.1</td><td>83.3</td><td>87.4</td><td>69.1</td><td>15.6</td><td>5.1</td></tr>
+                  <tr><td>舟山市</td><td>95</td><td>4.8</td><td>15.8</td><td>83.3</td><td>47.4</td><td>36.9</td><td>8.8</td><td>2.1</td></tr>
+                  <tr><td>台州市</td><td>320</td><td>16.3</td><td>53.5</td><td>83.3</td><td>160.2</td><td>128.0</td><td>22.1</td><td>6.0</td></tr>
+                  <tr><td>丽水市</td><td>196</td><td>10.0</td><td>32.8</td><td>83.3</td><td>98.1</td><td>73.7</td><td>18.4</td><td>7.3</td></tr>
+                  <tr class="total-row"><td>合计</td><td>3565</td><td>181.6</td><td>594.8</td><td>83.3</td><td>1784.9</td><td>1428.3</td><td>152.7</td><td>60.8</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 城市桥梁 -->
+      <div class="ops2-card bridge-card">
+        <div class="ops2-card-header">
+          <span class="header-icon">▌</span>
+          <span class="header-title">城市桥梁</span>
+          <span class="header-icon">▌</span>
+        </div>
+        <div class="ops2-card-content">
+          <!-- 常规检测 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">常规检测</span>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-bridge"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">应检数</div>
+                  <div class="item-value digital">05128<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">本年度累计检测</div>
+                  <div class="item-value digital">03513<span class="unit">座</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-clock"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">即将超期(不足30天)</div>
+                  <div class="item-value digital">00855<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box warning">
+                  <svg viewBox="0 0 24 24" class="icon-alert"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z" fill="#ffeb3b"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">超期未检</div>
+                  <div class="item-value digital">00703<span class="unit">座</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-clipboard"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">应检未检数</div>
+                  <div class="item-value warning">1615<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">检测完成率</div>
+                  <div class="item-value highlight">68.73<span class="unit">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 桥梁分级情况统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">桥梁分级情况统计</span>
+            </div>
+            <div class="grade-stats">
+              <div class="ring-chart-wrapper">
+                <div class="ring-chart bridge-ring" @click="showRingTooltip('bridge', $event)">
+                  <div class="ring-center">
+                    <div class="center-text">桥梁<br/>数据占比</div>
+                  </div>
+                </div>
+                <div class="ring-labels">
+                  <div class="label-item"><span class="label-dot a"></span>A级 44.89%</div>
+                  <div class="label-item"><span class="label-dot b"></span>B级 48.34%</div>
+                  <div class="label-item"><span class="label-dot c"></span>C级 6.23%</div>
+                  <div class="label-item"><span class="label-dot d"></span>D级 0.54%</div>
+                  <div class="label-item"><span class="label-dot e"></span>E级 0%</div>
+                  <div class="label-item"><span class="label-dot pass"></span>合格 99.46%</div>
+                  <div class="label-item"><span class="label-dot fail"></span>不合格 0.54%</div>
+                </div>
+              </div>
+              <div class="grade-list">
+                <div class="grade-row"><span class="grade-label">A级</span><span class="grade-value">2095座</span></div>
+                <div class="grade-row"><span class="grade-label">B级</span><span class="grade-value">2256座</span></div>
+                <div class="grade-row"><span class="grade-label">C级</span><span class="grade-value">291座</span></div>
+                <div class="grade-row"><span class="grade-label">D级</span><span class="grade-value">25座</span></div>
+                <div class="grade-row"><span class="grade-label">E级</span><span class="grade-value">0座</span></div>
+                <div class="grade-row"><span class="grade-label">合格</span><span class="grade-value">4646座</span></div>
+                <div class="grade-row"><span class="grade-label">不合格</span><span class="grade-value">25座</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- 设区市数据统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">设区市数据统计</span>
+            </div>
+            <div class="ops2-table-wrapper">
+              <table class="ops2-table">
+                <thead>
+                  <tr>
+                    <th>设区市</th>
+                    <th>应检数<br/>(座)</th>
+                    <th>即将超期<br/>(座)</th>
+                    <th>超期未检<br/>(座)</th>
+                    <th>检测完成率<br/>(%)</th>
+                    <th>合格桥梁<br/>(座)</th>
+                    <th>不合格桥梁<br/>(座)</th>
+                    <th>A级桥梁<br/>(座)</th>
+                    <th>B级桥梁<br/>(座)</th>
+                    <th>C级桥梁<br/>(座)</th>
+                    <th>D级桥梁<br/>(座)</th>
+                    <th>E级桥梁<br/>(座)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>杭州市</td><td>500</td><td>48</td><td>80</td><td>72.0</td><td>478</td><td>2</td><td>111</td><td>99</td><td>21</td><td>0</td><td>0</td></tr>
+                  <tr><td>宁波市</td><td>420</td><td>40</td><td>67</td><td>72.1</td><td>405</td><td>1</td><td>37</td><td>33</td><td>7</td><td>0</td><td>0</td></tr>
+                  <tr><td>温州市</td><td>400</td><td>38</td><td>63</td><td>72.3</td><td>383</td><td>1</td><td>82</td><td>167</td><td>27</td><td>5</td><td>0</td></tr>
+                  <tr><td>嘉兴市</td><td>620</td><td>60</td><td>99</td><td>72.3</td><td>598</td><td>2</td><td>680</td><td>552</td><td>64</td><td>7</td><td>0</td></tr>
+                  <tr><td>湖州市</td><td>300</td><td>29</td><td>48</td><td>72.0</td><td>288</td><td>1</td><td>247</td><td>225</td><td>10</td><td>1</td><td>0</td></tr>
+                  <tr><td>绍兴市</td><td>500</td><td>48</td><td>80</td><td>72.0</td><td>480</td><td>2</td><td>350</td><td>606</td><td>89</td><td>6</td><td>0</td></tr>
+                  <tr><td>金华市</td><td>460</td><td>44</td><td>74</td><td>72.2</td><td>442</td><td>1</td><td>289</td><td>312</td><td>45</td><td>8</td><td>0</td></tr>
+                  <tr><td>衢州市</td><td>240</td><td>23</td><td>38</td><td>72.5</td><td>230</td><td>1</td><td>156</td><td>178</td><td>22</td><td>3</td><td>0</td></tr>
+                  <tr><td>舟山市</td><td>180</td><td>17</td><td>28</td><td>72.2</td><td>173</td><td>1</td><td>98</td><td>112</td><td>15</td><td>2</td><td>0</td></tr>
+                  <tr><td>台州市</td><td>430</td><td>41</td><td>69</td><td>72.1</td><td>414</td><td>1</td><td>267</td><td>289</td><td>38</td><td>4</td><td>0</td></tr>
+                  <tr><td>丽水市</td><td>280</td><td>27</td><td>45</td><td>72.1</td><td>268</td><td>1</td><td>178</td><td>195</td><td>28</td><td>6</td><td>0</td></tr>
+                  <tr class="total-row"><td>合计</td><td>4330</td><td>415</td><td>691</td><td>72.2</td><td>4079</td><td>14</td><td>2495</td><td>2768</td><td>366</td><td>42</td><td>0</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 城市隧道 -->
+      <div class="ops2-card tunnel-card">
+        <div class="ops2-card-header">
+          <span class="header-icon"></span>
+          <span class="header-title">城市隧道</span>
+          <span class="header-icon">▌</span>
+        </div>
+        <div class="ops2-card-content">
+          <!-- 常规检测 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">常规检测</span>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-tunnel"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">应检数</div>
+                  <div class="item-value digital">00225<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">本年度累计检测</div>
+                  <div class="item-value digital">00178<span class="unit">座</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-clock"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">即将超期(不足30天)</div>
+                  <div class="item-value digital">00047<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box warning">
+                  <svg viewBox="0 0 24 24" class="icon-alert"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z" fill="#ffeb3b"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">超期未检</div>
+                  <div class="item-value digital">00058<span class="unit">座</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-clipboard"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-2 14l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">应检未检数</div>
+                  <div class="item-value warning">00047<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">检测完成率</div>
+                  <div class="item-value highlight">73.78<span class="unit">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 隧道分级情况统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">隧道分级情况统计</span>
+            </div>
+            <div class="grade-stats">
+              <div class="ring-chart-wrapper">
+                <div class="ring-chart tunnel-ring" @click="showRingTooltip('tunnel', $event)">
+                  <div class="ring-center">
+                    <div class="center-text">隧道<br/>数据占比</div>
+                  </div>
+                </div>
+                <div class="ring-labels">
+                  <div class="label-item"><span class="label-dot a"></span>A级 50.41%</div>
+                  <div class="label-item"><span class="label-dot b"></span>B级 33.61%</div>
+                  <div class="label-item"><span class="label-dot c"></span>C级 15.98%</div>
+                  <div class="label-item"><span class="label-dot d"></span>D级 0%</div>
+                  <div class="label-item"><span class="label-dot e"></span>E级 0%</div>
+                </div>
+              </div>
+              <div class="grade-list">
+                <div class="grade-row"><span class="grade-label">A级</span><span class="grade-value">123座</span></div>
+                <div class="grade-row"><span class="grade-label">B级</span><span class="grade-value">82座</span></div>
+                <div class="grade-row"><span class="grade-label">C级</span><span class="grade-value">39座</span></div>
+                <div class="grade-row"><span class="grade-label">D级</span><span class="grade-value">0座</span></div>
+                <div class="grade-row"><span class="grade-label">E级</span><span class="grade-value">0座</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- 设区市数据统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">设区市数据统计</span>
+            </div>
+            <div class="ops2-table-wrapper">
+              <table class="ops2-table">
+                <thead>
+                  <tr>
+                    <th>设区市</th>
+                    <th>应检数<br/>(座)</th>
+                    <th>即将超期<br/>(座)</th>
+                    <th>超期未检<br/>(座)</th>
+                    <th>检测完成率<br/>(%)</th>
+                    <th>A级隧道<br/>(座)</th>
+                    <th>B级隧道<br/>(座)</th>
+                    <th>C级隧道<br/>(座)</th>
+                    <th>D级隧道<br/>(座)</th>
+                    <th>E级隧道<br/>(座)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>杭州市</td><td>25</td><td>3</td><td>5</td><td>76.0</td><td>19</td><td>11</td><td>7</td><td>0</td><td>0</td></tr>
+                  <tr><td>宁波市</td><td>20</td><td>2</td><td>4</td><td>75.0</td><td>7</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>温州市</td><td>12</td><td>1</td><td>3</td><td>75.0</td><td>2</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>嘉兴市</td><td>4</td><td>1</td><td>1</td><td>75.0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>湖州市</td><td>4</td><td>1</td><td>1</td><td>75.0</td><td>1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>绍兴市</td><td>6</td><td>1</td><td>1</td><td>83.3</td><td>0</td><td>4</td><td>1</td><td>0</td><td>0</td></tr>
+                  <tr><td>金华市</td><td>12</td><td>1</td><td>2</td><td>83.3</td><td>5</td><td>2</td><td>1</td><td>0</td><td>0</td></tr>
+                  <tr><td>衢州市</td><td>5</td><td>1</td><td>1</td><td>80.0</td><td>2</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>舟山市</td><td>3</td><td>0</td><td>1</td><td>66.7</td><td>1</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>台州市</td><td>8</td><td>1</td><td>1</td><td>87.5</td><td>3</td><td>2</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr><td>丽水市</td><td>5</td><td>1</td><td>1</td><td>80.0</td><td>2</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+                  <tr class="total-row"><td>合计</td><td>104</td><td>14</td><td>21</td><td>79.8</td><td>43</td><td>26</td><td>9</td><td>0</td><td>0</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 隐患排查 -->
+    <div class="cockpit-body ops2-body" v-show="cockpitTab === 'ops2' && ops2SubTab === '隐患排查'">
+      <!-- 城市道路 -->
+      <div class="ops2-card road-card">
+        <div class="ops2-card-header">
+          <span class="header-icon">▌</span>
+          <span class="header-title">城市道路</span>
+          <span class="header-icon">▌</span>
+        </div>
+        <div class="ops2-card-content">
+          <!-- 排查指标 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">排查情况</span>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-road"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">排查总数</div>
+                  <div class="item-value digital">3580.25<span class="unit">km</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">排查已完成</div>
+                  <div class="item-value">2,985.12<span class="unit">km</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box warning">
+                  <svg viewBox="0 0 24 24" class="icon-alert"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z" fill="#ffeb3b"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">超期未巡</div>
+                  <div class="item-value warning">595.13<span class="unit">km</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">完成率</div>
+                  <div class="item-value highlight">83.38<span class="unit">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 设区市数据统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">设区市数据统计</span>
+            </div>
+            <!-- 页签 -->
+            <div class="ops2-view-tabs">
+              <div 
+                class="ops2-view-tab" 
+                :class="{ active: hazardRoadView === 'chart' }" 
+                @click="hazardRoadView = 'chart'"
+              >图表</div>
+              <div 
+                class="ops2-view-tab" 
+                :class="{ active: hazardRoadView === 'list' }" 
+                @click="hazardRoadView = 'list'"
+              >列表</div>
+            </div>
+            <!-- 图表视图 -->
+            <div v-show="hazardRoadView === 'chart'" class="ops2-chart-wrapper">
+              <div class="bar-chart-container">
+                <div v-for="(item, index) in roadHazardData" :key="index" class="bar-row">
+                  <div class="bar-label">{{ item.city }}</div>
+                  <div class="bar-group">
+                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
+                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
+                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
+                  </div>
+                  <div class="bar-value">{{ item.total }}</div>
+                </div>
+              </div>
+              <div class="bar-legend">
+                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
+                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
+                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
+              </div>
+            </div>
+            <!-- 列表视图 -->
+            <div v-show="hazardRoadView === 'list'" class="ops2-table-wrapper">
+              <table class="ops2-table">
+                <thead>
+                  <tr>
+                    <th>设区市</th>
+                    <th>排查总数<br/>(km)</th>
+                    <th>排查已完成<br/>(km)</th>
+                    <th>排查未完成<br/>(km)</th>
+                    <th>超期未巡<br/>(km)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>杭州市</td><td>1095</td><td>912</td><td>183</td><td>180</td></tr>
+                  <tr><td>宁波市</td><td>560</td><td>468</td><td>92</td><td>90</td></tr>
+                  <tr><td>温州市</td><td>248</td><td>207</td><td>41</td><td>40</td></tr>
+                  <tr><td>嘉兴市</td><td>76</td><td>63</td><td>13</td><td>13</td></tr>
+                  <tr><td>湖州市</td><td>228</td><td>190</td><td>38</td><td>37</td></tr>
+                  <tr><td>绍兴市</td><td>378</td><td>315</td><td>63</td><td>62</td></tr>
+                  <tr><td>金华市</td><td>404</td><td>337</td><td>67</td><td>66</td></tr>
+                  <tr><td>衢州市</td><td>188</td><td>157</td><td>31</td><td>30</td></tr>
+                  <tr><td>舟山市</td><td>102</td><td>85</td><td>17</td><td>17</td></tr>
+                  <tr><td>台州市</td><td>344</td><td>287</td><td>57</td><td>56</td></tr>
+                  <tr><td>丽水市</td><td>211</td><td>176</td><td>35</td><td>34</td></tr>
+                  <tr class="total-row"><td>合计</td><td>3834</td><td>3197</td><td>637</td><td>625</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 城市桥梁 -->
+      <div class="ops2-card bridge-card">
+        <div class="ops2-card-header">
+          <span class="header-icon">▌</span>
+          <span class="header-title">城市桥梁</span>
+          <span class="header-icon">▌</span>
+        </div>
+        <div class="ops2-card-content">
+          <!-- 排查指标 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">排查情况</span>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-bridge"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">排查总数</div>
+                  <div class="item-value digital">05520<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">排查已完成</div>
+                  <div class="item-value digital">04598<span class="unit">座</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box warning">
+                  <svg viewBox="0 0 24 24" class="icon-alert"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z" fill="#ffeb3b"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">超期未巡</div>
+                  <div class="item-value warning">00922<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">完成率</div>
+                  <div class="item-value highlight">83.30<span class="unit">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 设区市数据统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">设区市数据统计</span>
+            </div>
+            <!-- 页签 -->
+            <div class="ops2-view-tabs">
+              <div 
+                class="ops2-view-tab" 
+                :class="{ active: hazardBridgeView === 'chart' }" 
+                @click="hazardBridgeView = 'chart'"
+              >图表</div>
+              <div 
+                class="ops2-view-tab" 
+                :class="{ active: hazardBridgeView === 'list' }" 
+                @click="hazardBridgeView = 'list'"
+              >列表</div>
+            </div>
+            <!-- 图表视图 -->
+            <div v-show="hazardBridgeView === 'chart'" class="ops2-chart-wrapper">
+              <div class="bar-chart-container">
+                <div v-for="(item, index) in bridgeHazardData" :key="index" class="bar-row">
+                  <div class="bar-label">{{ item.city }}</div>
+                  <div class="bar-group">
+                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
+                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
+                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
+                  </div>
+                  <div class="bar-value">{{ item.total }}</div>
+                </div>
+              </div>
+              <div class="bar-legend">
+                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
+                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
+                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
+              </div>
+            </div>
+            <!-- 列表视图 -->
+            <div v-show="hazardBridgeView === 'list'" class="ops2-table-wrapper">
+              <table class="ops2-table">
+                <thead>
+                  <tr>
+                    <th>设区市</th>
+                    <th>排查总数<br/>(座)</th>
+                    <th>排查已完成<br/>(座)</th>
+                    <th>排查未完成<br/>(座)</th>
+                    <th>超期未巡<br/>(座)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>杭州市</td><td>538</td><td>448</td><td>90</td><td>88</td></tr>
+                  <tr><td>宁波市</td><td>452</td><td>377</td><td>75</td><td>73</td></tr>
+                  <tr><td>温州市</td><td>430</td><td>359</td><td>71</td><td>70</td></tr>
+                  <tr><td>嘉兴市</td><td>668</td><td>557</td><td>111</td><td>109</td></tr>
+                  <tr><td>湖州市</td><td>323</td><td>270</td><td>53</td><td>52</td></tr>
+                  <tr><td>绍兴市</td><td>538</td><td>449</td><td>89</td><td>87</td></tr>
+                  <tr><td>金华市</td><td>495</td><td>413</td><td>82</td><td>80</td></tr>
+                  <tr><td>衢州市</td><td>258</td><td>215</td><td>43</td><td>42</td></tr>
+                  <tr><td>舟山市</td><td>194</td><td>162</td><td>32</td><td>31</td></tr>
+                  <tr><td>台州市</td><td>463</td><td>386</td><td>77</td><td>75</td></tr>
+                  <tr><td>丽水市</td><td>301</td><td>251</td><td>50</td><td>49</td></tr>
+                  <tr class="total-row"><td>合计</td><td>4660</td><td>3887</td><td>773</td><td>756</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 城市隧道 -->
+      <div class="ops2-card tunnel-card">
+        <div class="ops2-card-header">
+          <span class="header-icon">▌</span>
+          <span class="header-title">城市隧道</span>
+          <span class="header-icon">▌</span>
+        </div>
+        <div class="ops2-card-content">
+          <!-- 排查指标 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-arrow">▶</span>
+              <span class="section-name">排查情况</span>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-tunnel"><path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">排查总数</div>
+                  <div class="item-value digital">00242<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-chart"><path d="M3 13h2v8H3zm4-6h2v14H7zm4 4h2v10h-2zm4-8h2v18h-2zm4 6h2v12h-2z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">排查已完成</div>
+                  <div class="item-value digital">00201<span class="unit">座</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="inspection-row">
+              <div class="inspection-item">
+                <div class="item-icon-box warning">
+                  <svg viewBox="0 0 24 24" class="icon-alert"><path d="M12 2L1 21h22L12 2zm0 4l7.53 13H4.47L12 6zm-1 5v4h2v-4h-2zm0 6v2h2v-2h-2z" fill="#ffeb3b"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">超期未巡</div>
+                  <div class="item-value digital">00041<span class="unit">座</span></div>
+                </div>
+              </div>
+              <div class="inspection-item">
+                <div class="item-icon-box">
+                  <svg viewBox="0 0 24 24" class="icon-check"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" fill="#00e5ff"/></svg>
+                </div>
+                <div class="item-content">
+                  <div class="item-label">完成率</div>
+                  <div class="item-value highlight">83.06<span class="unit">%</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 设区市数据统计 -->
+          <div class="ops2-section">
+            <div class="section-header">
+              <span class="section-diamond">◆</span>
+              <span class="section-name">设区市数据统计</span>
+            </div>
+            <!-- 页签 -->
+            <div class="ops2-view-tabs">
+              <div 
+                class="ops2-view-tab" 
+                :class="{ active: hazardTunnelView === 'chart' }" 
+                @click="hazardTunnelView = 'chart'"
+              >图表</div>
+              <div 
+                class="ops2-view-tab" 
+                :class="{ active: hazardTunnelView === 'list' }" 
+                @click="hazardTunnelView = 'list'"
+              >列表</div>
+            </div>
+            <!-- 图表视图 -->
+            <div v-show="hazardTunnelView === 'chart'" class="ops2-chart-wrapper">
+              <div class="bar-chart-container">
+                <div v-for="(item, index) in tunnelHazardData" :key="index" class="bar-row">
+                  <div class="bar-label">{{ item.city }}</div>
+                  <div class="bar-group">
+                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
+                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
+                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
+                  </div>
+                  <div class="bar-value">{{ item.total }}</div>
+                </div>
+              </div>
+              <div class="bar-legend">
+                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
+                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
+                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
+              </div>
+            </div>
+            <!-- 列表视图 -->
+            <div v-show="hazardTunnelView === 'list'" class="ops2-table-wrapper">
+              <table class="ops2-table">
+                <thead>
+                  <tr>
+                    <th>设区市</th>
+                    <th>排查总数<br/>(座)</th>
+                    <th>排查已完成<br/>(座)</th>
+                    <th>排查未完成<br/>(座)</th>
+                    <th>超期未巡<br/>(座)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>杭州市</td><td>27</td><td>22</td><td>5</td><td>5</td></tr>
+                  <tr><td>宁波市</td><td>22</td><td>18</td><td>4</td><td>4</td></tr>
+                  <tr><td>温州市</td><td>13</td><td>11</td><td>2</td><td>2</td></tr>
+                  <tr><td>嘉兴市</td><td>4</td><td>3</td><td>1</td><td>1</td></tr>
+                  <tr><td>湖州市</td><td>4</td><td>3</td><td>1</td><td>1</td></tr>
+                  <tr><td>绍兴市</td><td>6</td><td>5</td><td>1</td><td>1</td></tr>
+                  <tr><td>金华市</td><td>13</td><td>11</td><td>2</td><td>2</td></tr>
+                  <tr><td>衢州市</td><td>5</td><td>4</td><td>1</td><td>1</td></tr>
+                  <tr><td>舟山市</td><td>3</td><td>3</td><td>0</td><td>0</td></tr>
+                  <tr><td>台州市</td><td>9</td><td>7</td><td>2</td><td>2</td></tr>
+                  <tr><td>丽水市</td><td>5</td><td>4</td><td>1</td><td>1</td></tr>
+                  <tr class="total-row"><td>合计</td><td>111</td><td>91</td><td>20</td><td>20</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 病害处理 -->
+    <div class="cockpit-body ops2-body disease-body" v-show="cockpitTab === 'ops2' && ops2SubTab === '病害处理'">
+      <!-- 城市道路 -->
+      <div class="ops2-card disease-card">
+        <div class="disease-card-header">
+          <span class="header-deco">▌</span>
+          <span class="header-title">城市道路</span>
+          <span class="header-deco">▌▌</span>
+        </div>
+        <!-- 子页签 -->
+        <div class="disease-sub-tabs">
+          <div class="sub-tab" :class="{ active: diseaseRoadSubTab === '隐患排查' }" @click="diseaseRoadSubTab = '隐患排查'">隐患排查</div>
+          <div class="sub-tab" :class="{ active: diseaseRoadSubTab === '设施检测' }" @click="diseaseRoadSubTab = '设施检测'">设施检测</div>
+          <div class="sub-tab" :class="{ active: diseaseRoadSubTab === '设备监控' }" @click="diseaseRoadSubTab = '设备监控'">设备监控</div>
+          <div class="sub-tab" :class="{ active: diseaseRoadSubTab === '安全评估' }" @click="diseaseRoadSubTab = '安全评估'">安全评估</div>
+        </div>
+        <div class="disease-card-content">
+          <template v-if="diseaseRoadSubTab === '隐患排查'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">隐患总数</div>
+                  <div class="metric-value large"><span class="num">512</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已整改</div>
+                  <div class="metric-value rate"><span class="num">447</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">87.36</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in roadHazardRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>隐患分级统计图</span>
+                <span class="title-deco">▌▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item general"><span class="risk-label">一般隐患</span><span class="risk-count">168</span></div>
+                <div class="risk-level-item larger"><span class="risk-label">较大隐患</span><span class="risk-count">21</span></div>
+                <div class="risk-level-item major"><span class="risk-label">重大隐患</span><span class="risk-count">17</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment general" style="width:81.55%"></div>
+                <div class="risk-bar-segment larger" style="width:10.19%"></div>
+                <div class="risk-bar-segment major" style="width:8.25%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">隐患列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: diseaseRoadCaseFilter === '未整改' }" @click="diseaseRoadCaseFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: diseaseRoadCaseFilter === '已整改' }" @click="diseaseRoadCaseFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: diseaseRoadCaseFilter === '全部' }" @click="diseaseRoadCaseFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in roadHazardList" :key="ci" class="case-item hazard-item">
+                  <div class="case-info hazard-info">
+                    <div class="case-info-row"><span class="info-label">检查对象：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检查项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报时间：</span><span>{{ c.time }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报内容：</span><span>{{ c.content }}</span></div>
+                    <div class="case-info-row"><span class="info-label">隐患等级：</span><span class="hazard-level" :class="'level-' + c.level">{{ c.level }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="隐患照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openHazardDetail(c, 'road')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseRoadSubTab === '设施检测'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">D级道路数</div>
+                  <div class="metric-value large"><span class="num">28</span><span class="unit">条</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已维修整治</div>
+                  <div class="metric-value rate"><span class="num">18</span><span class="unit">条</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已拆除或完全封控</div>
+                  <div class="metric-value timely"><span class="num">5</span><span class="unit">条</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">82.14</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in roadInspectRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>问题分级统计图</span>
+                <span class="title-deco">▌</span>
+              </div>
+              <div class="risk-levels-row inspect-levels">
+                <div class="risk-level-item d-level"><span class="risk-label">D级道路</span><span class="risk-count">28</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment d-level" style="width:100%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">问题列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: roadInspectFilter === '未整改' }" @click="roadInspectFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: roadInspectFilter === '已整改' }" @click="roadInspectFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: roadInspectFilter === '全部' }" @click="roadInspectFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in roadInspectList" :key="ci" class="case-item inspect-item">
+                  <div class="case-info inspect-info">
+                    <div class="case-info-row"><span class="info-label">道路名称：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检测项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检测时间：</span><span>{{ c.checkTime }}</span></div>
+                    <div class="case-info-row"><span class="info-label">综合评价等级：</span><span class="inspect-grade" :class="'grade-' + c.grade">{{ c.grade }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改类型：</span><span>{{ c.rectifyType }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="问题照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openInspectDetail(c, 'road')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseRoadSubTab === '设备监控'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">风险总数</div>
+                  <div class="metric-value large"><span class="num">156</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已处置</div>
+                  <div class="metric-value rate"><span class="num">128</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">处置率</div>
+                  <div class="metric-value rate"><span class="num">82.05</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">处置率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in roadMonitorRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>风险分级统计图</span>
+                <span class="title-deco">▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item level1"><span class="risk-label">一级预警</span><span class="risk-count">45</span></div>
+                <div class="risk-level-item level2"><span class="risk-label">二级预警</span><span class="risk-count">68</span></div>
+                <div class="risk-level-item level3"><span class="risk-label">三级预警</span><span class="risk-count">43</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment level1" style="width:29%"></div>
+                <div class="risk-bar-segment level2" style="width:44%"></div>
+                <div class="risk-bar-segment level3" style="width:27%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">预警列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: roadMonitorFilter === '未完成' }" @click="roadMonitorFilter = '未完成'">▶ 未完成</div>
+                  <div class="case-filter-tab" :class="{ active: roadMonitorFilter === '已完成' }" @click="roadMonitorFilter = '已完成'">▶ 已完成</div>
+                  <div class="case-filter-tab" :class="{ active: roadMonitorFilter === '全部' }" @click="roadMonitorFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in roadMonitorList" :key="ci" class="case-item monitor-item">
+                  <div class="case-info monitor-info">
+                    <div class="case-info-row"><span class="info-label">设施名称：</span><span>{{ c.facilityName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">设备名称：</span><span>{{ c.deviceName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">点位名称：</span><span>{{ c.pointName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">监测项：</span><span>{{ c.monitorItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">预警等级：</span><span class="alert-level" :class="'level-' + c.alertLevel">{{ c.alertLevel }}</span></div>
+                    <div class="case-info-row"><span class="info-label">处置状态：</span><span class="status-pending">{{ c.handleStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="监测照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openDeviceMonitorDetail(c, 'road')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseRoadSubTab === '安全评估'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">隐患总数</div>
+                  <div class="metric-value large"><span class="num">512</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已整改</div>
+                  <div class="metric-value rate"><span class="num">447</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">87.36</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in roadHazardRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>隐患分级统计图</span>
+                <span class="title-deco">▌▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item general"><span class="risk-label">一般隐患</span><span class="risk-count">168</span></div>
+                <div class="risk-level-item larger"><span class="risk-label">较大隐患</span><span class="risk-count">21</span></div>
+                <div class="risk-level-item major"><span class="risk-label">重大隐患</span><span class="risk-count">17</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment general" style="width:81.55%"></div>
+                <div class="risk-bar-segment larger" style="width:10.19%"></div>
+                <div class="risk-bar-segment major" style="width:8.25%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">隐患列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: roadAssessFilter === '未整改' }" @click="roadAssessFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: roadAssessFilter === '已整改' }" @click="roadAssessFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: roadAssessFilter === '全部' }" @click="roadAssessFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in roadHazardList" :key="ci" class="case-item hazard-item">
+                  <div class="case-info hazard-info">
+                    <div class="case-info-row"><span class="info-label">评估单元：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检查项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报时间：</span><span>{{ c.time }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报内容：</span><span>{{ c.content }}</span></div>
+                    <div class="case-info-row"><span class="info-label">隐患等级：</span><span class="hazard-level" :class="'level-' + c.level">{{ c.level }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="隐患照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openHazardDetail(c, 'road', 'assess')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div v-else class="sub-tab-placeholder"><div class="placeholder-text">{{ diseaseRoadSubTab }}模块开发中...</div></div>
+        </div>
+      </div>
+
+      <!-- 城市桥梁 -->
+      <div class="ops2-card disease-card">
+        <div class="disease-card-header">
+          <span class="header-deco">▌▌</span>
+          <span class="header-title">城市桥梁</span>
+          <span class="header-deco">▌▌</span>
+        </div>
+        <div class="disease-sub-tabs">
+          <div class="sub-tab" :class="{ active: diseaseBridgeSubTab === '隐患排查' }" @click="diseaseBridgeSubTab = '隐患排查'">隐患排查</div>
+          <div class="sub-tab" :class="{ active: diseaseBridgeSubTab === '设施检测' }" @click="diseaseBridgeSubTab = '设施检测'">设施检测</div>
+          <div class="sub-tab" :class="{ active: diseaseBridgeSubTab === '设备监控' }" @click="diseaseBridgeSubTab = '设备监控'">设备监控</div>
+          <div class="sub-tab" :class="{ active: diseaseBridgeSubTab === '安全评估' }" @click="diseaseBridgeSubTab = '安全评估'">安全评估</div>
+        </div>
+        <div class="disease-card-content">
+          <template v-if="diseaseBridgeSubTab === '隐患排查'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">隐患总数</div>
+                  <div class="metric-value large"><span class="num">356</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已整改</div>
+                  <div class="metric-value rate"><span class="num">306</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">85.95</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in bridgeHazardRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>隐患分级统计图</span>
+                <span class="title-deco">▌▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item general"><span class="risk-label">一般隐患</span><span class="risk-count">85</span></div>
+                <div class="risk-level-item larger"><span class="risk-label">较大隐患</span><span class="risk-count">37</span></div>
+                <div class="risk-level-item major"><span class="risk-label">重大隐患</span><span class="risk-count">33</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment general" style="width:54.84%"></div>
+                <div class="risk-bar-segment larger" style="width:23.87%"></div>
+                <div class="risk-bar-segment major" style="width:21.29%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">隐患列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: diseaseBridgeCaseFilter === '未整改' }" @click="diseaseBridgeCaseFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: diseaseBridgeCaseFilter === '已整改' }" @click="diseaseBridgeCaseFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: diseaseBridgeCaseFilter === '全部' }" @click="diseaseBridgeCaseFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in bridgeHazardList" :key="ci" class="case-item hazard-item">
+                  <div class="case-info hazard-info">
+                    <div class="case-info-row"><span class="info-label">检查对象：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检查项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报时间：</span><span>{{ c.time }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报内容：</span><span>{{ c.content }}</span></div>
+                    <div class="case-info-row"><span class="info-label">隐患等级：</span><span class="hazard-level" :class="'level-' + c.level">{{ c.level }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="隐患照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openHazardDetail(c, 'bridge')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseBridgeSubTab === '设施检测'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">D、E级桥梁数</div>
+                  <div class="metric-value large"><span class="num">45</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">不合格桥梁数</div>
+                  <div class="metric-value large"><span class="num">12</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已维修整治</div>
+                  <div class="metric-value rate"><span class="num">30</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已拆除或完全封控</div>
+                  <div class="metric-value timely"><span class="num">8</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">75.56</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in bridgeInspectRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>问题分级统计图</span>
+                <span class="title-deco">▌</span>
+              </div>
+              <div class="risk-levels-row inspect-levels three-level">
+                <div class="risk-level-item d-level"><span class="risk-label">D级桥梁</span><span class="risk-count">25</span></div>
+                <div class="risk-level-item e-level"><span class="risk-label">E级桥梁</span><span class="risk-count">20</span></div>
+                <div class="risk-level-item unqualified"><span class="risk-label">不合格桥梁</span><span class="risk-count">12</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment d-level" style="width:43%"></div>
+                <div class="risk-bar-segment e-level" style="width:34%"></div>
+                <div class="risk-bar-segment unqualified" style="width:23%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">问题列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: bridgeInspectFilter === '未整改' }" @click="bridgeInspectFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: bridgeInspectFilter === '已整改' }" @click="bridgeInspectFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: bridgeInspectFilter === '全部' }" @click="bridgeInspectFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in bridgeInspectList" :key="ci" class="case-item inspect-item">
+                  <div class="case-info inspect-info">
+                    <div class="case-info-row"><span class="info-label">桥梁名称：</span><span>{{ c.bridgeName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检测项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检测时间：</span><span>{{ c.checkTime }}</span></div>
+                    <div class="case-info-row"><span class="info-label">综合评价等级：</span><span class="inspect-grade" :class="'grade-' + c.grade">{{ c.grade }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改类型：</span><span>{{ c.rectifyType }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="问题照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openInspectDetail(c, 'bridge')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseBridgeSubTab === '设备监控'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">风险总数</div>
+                  <div class="metric-value large"><span class="num">203</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已处置</div>
+                  <div class="metric-value rate"><span class="num">175</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">处置率</div>
+                  <div class="metric-value rate"><span class="num">86.21</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">处置率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in bridgeMonitorRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>风险分级统计图</span>
+                <span class="title-deco">▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item level1"><span class="risk-label">一级预警</span><span class="risk-count">58</span></div>
+                <div class="risk-level-item level2"><span class="risk-label">二级预警</span><span class="risk-count">89</span></div>
+                <div class="risk-level-item level3"><span class="risk-label">三级预警</span><span class="risk-count">56</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment level1" style="width:29%"></div>
+                <div class="risk-bar-segment level2" style="width:44%"></div>
+                <div class="risk-bar-segment level3" style="width:27%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">预警列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: bridgeMonitorFilter === '未完成' }" @click="bridgeMonitorFilter = '未完成'">▶ 未完成</div>
+                  <div class="case-filter-tab" :class="{ active: bridgeMonitorFilter === '已完成' }" @click="bridgeMonitorFilter = '已完成'">▶ 已完成</div>
+                  <div class="case-filter-tab" :class="{ active: bridgeMonitorFilter === '全部' }" @click="bridgeMonitorFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in bridgeMonitorList" :key="ci" class="case-item monitor-item">
+                  <div class="case-info monitor-info">
+                    <div class="case-info-row"><span class="info-label">设施名称：</span><span>{{ c.facilityName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">设备名称：</span><span>{{ c.deviceName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">点位名称：</span><span>{{ c.pointName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">监测项：</span><span>{{ c.monitorItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">预警等级：</span><span class="alert-level" :class="'level-' + c.alertLevel">{{ c.alertLevel }}</span></div>
+                    <div class="case-info-row"><span class="info-label">处置状态：</span><span class="status-pending">{{ c.handleStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="监测照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openDeviceMonitorDetail(c, 'bridge')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseBridgeSubTab === '安全评估'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">隐患总数</div>
+                  <div class="metric-value large"><span class="num">356</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已整改</div>
+                  <div class="metric-value rate"><span class="num">306</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">85.95</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in bridgeHazardRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>隐患分级统计图</span>
+                <span class="title-deco">▌▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item general"><span class="risk-label">一般隐患</span><span class="risk-count">85</span></div>
+                <div class="risk-level-item larger"><span class="risk-label">较大隐患</span><span class="risk-count">37</span></div>
+                <div class="risk-level-item major"><span class="risk-label">重大隐患</span><span class="risk-count">33</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment general" style="width:54.84%"></div>
+                <div class="risk-bar-segment larger" style="width:23.87%"></div>
+                <div class="risk-bar-segment major" style="width:21.29%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">隐患列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: bridgeAssessFilter === '未整改' }" @click="bridgeAssessFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: bridgeAssessFilter === '已整改' }" @click="bridgeAssessFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: bridgeAssessFilter === '全部' }" @click="bridgeAssessFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in bridgeHazardList" :key="ci" class="case-item hazard-item">
+                  <div class="case-info hazard-info">
+                    <div class="case-info-row"><span class="info-label">评估单元：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检查项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报时间：</span><span>{{ c.time }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报内容：</span><span>{{ c.content }}</span></div>
+                    <div class="case-info-row"><span class="info-label">隐患等级：</span><span class="hazard-level" :class="'level-' + c.level">{{ c.level }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="隐患照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openHazardDetail(c, 'bridge', 'assess')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div v-else class="sub-tab-placeholder"><div class="placeholder-text">{{ diseaseBridgeSubTab }}模块开发中...</div></div>
+        </div>
+      </div>
+
+      <!-- 城市隧道 -->
+      <div class="ops2-card disease-card">
+        <div class="disease-card-header">
+          <span class="header-deco">▌▌</span>
+          <span class="header-title">城市隧道</span>
+          <span class="header-deco">▌▌</span>
+        </div>
+        <div class="disease-sub-tabs">
+          <div class="sub-tab" :class="{ active: diseaseTunnelSubTab === '隐患排查' }" @click="diseaseTunnelSubTab = '隐患排查'">隐患排查</div>
+          <div class="sub-tab" :class="{ active: diseaseTunnelSubTab === '设施检测' }" @click="diseaseTunnelSubTab = '设施检测'">设施检测</div>
+          <div class="sub-tab" :class="{ active: diseaseTunnelSubTab === '设备监控' }" @click="diseaseTunnelSubTab = '设备监控'">设备监控</div>
+          <div class="sub-tab" :class="{ active: diseaseTunnelSubTab === '安全评估' }" @click="diseaseTunnelSubTab = '安全评估'">安全评估</div>
+        </div>
+        <div class="disease-card-content">
+          <template v-if="diseaseTunnelSubTab === '隐患排查'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">隐患总数</div>
+                  <div class="metric-value large"><span class="num">414</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已整改</div>
+                  <div class="metric-value rate"><span class="num">360</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">86.95</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in tunnelHazardRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>隐患分级统计图</span>
+                <span class="title-deco">▌▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item general"><span class="risk-label">一般隐患</span><span class="risk-count">94</span></div>
+                <div class="risk-level-item larger"><span class="risk-label">较大隐患</span><span class="risk-count">38</span></div>
+                <div class="risk-level-item major"><span class="risk-label">重大隐患</span><span class="risk-count">26</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment general" style="width:59.49%"></div>
+                <div class="risk-bar-segment larger" style="width:24.05%"></div>
+                <div class="risk-bar-segment major" style="width:16.46%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">隐患列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: diseaseTunnelCaseFilter === '未整改' }" @click="diseaseTunnelCaseFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: diseaseTunnelCaseFilter === '已整改' }" @click="diseaseTunnelCaseFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: diseaseTunnelCaseFilter === '全部' }" @click="diseaseTunnelCaseFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in tunnelHazardList" :key="ci" class="case-item hazard-item">
+                  <div class="case-info hazard-info">
+                    <div class="case-info-row"><span class="info-label">检查对象：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检查项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报时间：</span><span>{{ c.time }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报内容：</span><span>{{ c.content }}</span></div>
+                    <div class="case-info-row"><span class="info-label">隐患等级：</span><span class="hazard-level" :class="'level-' + c.level">{{ c.level }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="隐患照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openHazardDetail(c, 'tunnel')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseTunnelSubTab === '设施检测'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">D、E级隧道数</div>
+                  <div class="metric-value large"><span class="num">18</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已维修整治</div>
+                  <div class="metric-value rate"><span class="num">12</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已拆除或完全封控</div>
+                  <div class="metric-value timely"><span class="num">3</span><span class="unit">座</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">83.33</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in tunnelInspectRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>问题分级统计图</span>
+                <span class="title-deco">▌</span>
+              </div>
+              <div class="risk-levels-row inspect-levels two-level">
+                <div class="risk-level-item d-level"><span class="risk-label">D级隧道</span><span class="risk-count">10</span></div>
+                <div class="risk-level-item e-level"><span class="risk-label">E级隧道</span><span class="risk-count">8</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment d-level" style="width:56%"></div>
+                <div class="risk-bar-segment e-level" style="width:44%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">问题列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: tunnelInspectFilter === '未整改' }" @click="tunnelInspectFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: tunnelInspectFilter === '已整改' }" @click="tunnelInspectFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: tunnelInspectFilter === '全部' }" @click="tunnelInspectFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in tunnelInspectList" :key="ci" class="case-item inspect-item">
+                  <div class="case-info inspect-info">
+                    <div class="case-info-row"><span class="info-label">隧道名称：</span><span>{{ c.tunnelName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检测项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检测时间：</span><span>{{ c.checkTime }}</span></div>
+                    <div class="case-info-row"><span class="info-label">综合评价等级：</span><span class="inspect-grade" :class="'grade-' + c.grade">{{ c.grade }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改类型：</span><span>{{ c.rectifyType }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="问题照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openInspectDetail(c, 'tunnel')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseTunnelSubTab === '设备监控'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">风险总数</div>
+                  <div class="metric-value large"><span class="num">98</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已处置</div>
+                  <div class="metric-value rate"><span class="num">82</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">处置率</div>
+                  <div class="metric-value rate"><span class="num">83.67</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">处置率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in tunnelMonitorRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>风险分级统计图</span>
+                <span class="title-deco">▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item level1"><span class="risk-label">一级预警</span><span class="risk-count">28</span></div>
+                <div class="risk-level-item level2"><span class="risk-label">二级预警</span><span class="risk-count">42</span></div>
+                <div class="risk-level-item level3"><span class="risk-label">三级预警</span><span class="risk-count">28</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment level1" style="width:29%"></div>
+                <div class="risk-bar-segment level2" style="width:43%"></div>
+                <div class="risk-bar-segment level3" style="width:28%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">预警列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: tunnelMonitorFilter === '未完成' }" @click="tunnelMonitorFilter = '未完成'">▶ 未完成</div>
+                  <div class="case-filter-tab" :class="{ active: tunnelMonitorFilter === '已完成' }" @click="tunnelMonitorFilter = '已完成'">▶ 已完成</div>
+                  <div class="case-filter-tab" :class="{ active: tunnelMonitorFilter === '全部' }" @click="tunnelMonitorFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in tunnelMonitorList" :key="ci" class="case-item monitor-item">
+                  <div class="case-info monitor-info">
+                    <div class="case-info-row"><span class="info-label">设施名称：</span><span>{{ c.facilityName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">设备名称：</span><span>{{ c.deviceName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">点位名称：</span><span>{{ c.pointName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">监测项：</span><span>{{ c.monitorItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">预警等级：</span><span class="alert-level" :class="'level-' + c.alertLevel">{{ c.alertLevel }}</span></div>
+                    <div class="case-info-row"><span class="info-label">处置状态：</span><span class="status-pending">{{ c.handleStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="监测照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openDeviceMonitorDetail(c, 'tunnel')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template v-else-if="diseaseTunnelSubTab === '安全评估'">
+            <div class="disease-top-row">
+              <div class="disease-metrics">
+                <div class="metric-item">
+                  <div class="metric-label">隐患总数</div>
+                  <div class="metric-value large"><span class="num">414</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">已整改</div>
+                  <div class="metric-value rate"><span class="num">360</span><span class="unit">项</span></div>
+                </div>
+                <div class="metric-item">
+                  <div class="metric-label">整改率</div>
+                  <div class="metric-value rate"><span class="num">86.95</span><span class="unit">%</span></div>
+                </div>
+              </div>
+              <div class="disease-ranking">
+                <div class="ranking-title">整改率排名：</div>
+                <div class="ranking-grid">
+                  <div v-for="(item, idx) in tunnelHazardRanking" :key="idx" class="ranking-item">
+                    <span class="rank-badge" :class="'rank-' + (idx+1)">no.{{ idx+1 }}</span>
+                    <span class="rank-city">{{ item.city }}</span>
+                    <span class="rank-rate">{{ item.rate }}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="disease-risk-section">
+              <div class="risk-section-title">
+                <span class="title-deco">▌▌</span>
+                <span>隐患分级统计图</span>
+                <span class="title-deco">▌▌</span>
+              </div>
+              <div class="risk-levels-row three-level">
+                <div class="risk-level-item general"><span class="risk-label">一般隐患</span><span class="risk-count">94</span></div>
+                <div class="risk-level-item larger"><span class="risk-label">较大隐患</span><span class="risk-count">38</span></div>
+                <div class="risk-level-item major"><span class="risk-label">重大隐患</span><span class="risk-count">26</span></div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-segment general" style="width:59.49%"></div>
+                <div class="risk-bar-segment larger" style="width:24.05%"></div>
+                <div class="risk-bar-segment major" style="width:16.46%"></div>
+              </div>
+            </div>
+            <div class="disease-case-section">
+              <div class="case-section-header">
+                <div class="case-title-row">
+                  <span class="case-diamond">◆</span>
+                  <span class="case-title-text">隐患列表</span>
+                </div>
+                <div class="case-filters">
+                  <div class="case-filter-tab" :class="{ active: tunnelAssessFilter === '未整改' }" @click="tunnelAssessFilter = '未整改'">▶ 未整改</div>
+                  <div class="case-filter-tab" :class="{ active: tunnelAssessFilter === '已整改' }" @click="tunnelAssessFilter = '已整改'">▶ 已整改</div>
+                  <div class="case-filter-tab" :class="{ active: tunnelAssessFilter === '全部' }" @click="tunnelAssessFilter = '全部'">▶ 全部</div>
+                  <select class="case-province-select"><option>浙江省</option></select>
+                </div>
+              </div>
+              <div class="case-list">
+                <div v-for="(c, ci) in tunnelHazardList" :key="ci" class="case-item hazard-item">
+                  <div class="case-info hazard-info">
+                    <div class="case-info-row"><span class="info-label">评估单元：</span><span>{{ c.roadName }}</span></div>
+                    <div class="case-info-row"><span class="info-label">检查项目：</span><span>{{ c.checkItem }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报时间：</span><span>{{ c.time }}</span></div>
+                    <div class="case-info-row"><span class="info-label">上报内容：</span><span>{{ c.content }}</span></div>
+                    <div class="case-info-row"><span class="info-label">隐患等级：</span><span class="hazard-level" :class="'level-' + c.level">{{ c.level }}</span></div>
+                    <div class="case-info-row"><span class="info-label">整改状态：</span><span class="status-pending">{{ c.rectifyStatus }}</span></div>
+                  </div>
+                  <div class="hazard-right">
+                    <div class="hazard-photo"><img :src="c.photo" alt="隐患照片" /></div>
+                    <button class="detail-btn hazard-detail-btn" @click="openHazardDetail(c, 'tunnel', 'assess')">详情</button>
+                  </div>
+                </div>
+              </div>
+              <div class="case-pagination">
+                <span class="pagination-info">共搜索到3条数据</span>
+                <div class="pagination-btns">
+                  <button class="page-btn">&lt;</button>
+                  <button class="page-btn active">1</button>
+                  <button class="page-btn">&gt;</button>
+                </div>
+              </div>
+            </div>
+          </template>
+          <div v-else class="sub-tab-placeholder"><div class="placeholder-text">{{ diseaseTunnelSubTab }}模块开发中...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 隐患详情弹窗 -->
+    <a-modal v-model:open="showHazardDetail" :title="hazardDetailSource === 'assess' ? (hazardDetailType === 'road' ? '道路安全评估详情' : hazardDetailType === 'bridge' ? '桥梁安全评估详情' : '隧道安全评估详情') : (hazardDetailType === 'road' ? '道路隐患详情' : hazardDetailType === 'bridge' ? '桥梁隐患详情' : '隧道隐患详情')" width="900px" :footer="null" class="hazard-detail-modal" v-if="currentHazardDetail">
+      <div class="hazard-detail-body">
+        <div class="hazard-detail-top">
+          <div class="hazard-detail-photo-label">图片记录：</div>
+          <div class="hazard-detail-photo"><img :src="currentHazardDetail.photo" alt="隐患照片" /></div>
+        </div>
+        <div class="hazard-detail-fields">
+          <div class="detail-field">
+            <span class="field-label">{{ hazardDetailSource === 'assess' ? '评估单元' : '检查对象' }}：</span>
+            <span class="field-value">{{ currentHazardDetail.roadName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">所属地区：</span>
+            <span class="field-value">{{ currentHazardDetail.region }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">检查项目：</span>
+            <span class="field-value">{{ currentHazardDetail.checkItem }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">上报时间：</span>
+            <span class="field-value">{{ currentHazardDetail.time }}</span>
+          </div>
+          <div class="detail-field full-width">
+            <span class="field-label">上报内容：</span>
+            <span class="field-value">{{ currentHazardDetail.content }}</span>
+          </div>
+          <div class="detail-field" v-if="hazardDetailSource === 'assess'">
+            <span class="field-label">评估单位：</span>
+            <span class="field-value">{{ currentHazardDetail.assessUnit || '-' }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">隐患等级：</span>
+            <span class="field-value hazard-level" :class="'level-' + currentHazardDetail.level">{{ currentHazardDetail.level }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改状态：</span>
+            <span class="field-value status-pending">{{ currentHazardDetail.rectifyStatus }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改完成时间：</span>
+            <span class="field-value">{{ currentHazardDetail.rectifyTime }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改人：</span>
+            <span class="field-value">{{ currentHazardDetail.rectifyPerson }}</span>
+          </div>
+        </div>
+        <div class="hazard-detail-attachments">
+          <div class="attachments-title">相关附件</div>
+          <div class="attachments-content">
+            <span v-if="!currentHazardDetail.attachments || currentHazardDetail.attachments.length === 0" class="no-data">暂无数据</span>
+            <div v-else class="attachment-list">
+              <div v-for="(att, ai) in currentHazardDetail.attachments" :key="ai" class="attachment-item">{{ att }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- 设施检测详情弹窗 -->
+    <a-modal v-model:open="showInspectDetail" :title="inspectDetailType === 'road' ? '道路检测详情' : inspectDetailType === 'bridge' ? '桥梁检测详情' : '隧道检测详情'" width="900px" :footer="null" class="hazard-detail-modal" v-if="currentInspectDetail">
+      <div class="hazard-detail-body">
+        <div class="hazard-detail-top">
+          <div class="hazard-detail-photo-label">图片记录：</div>
+          <div class="hazard-detail-photo"><img :src="currentInspectDetail.photo" alt="检测照片" /></div>
+        </div>
+        <div class="hazard-detail-fields">
+          <div class="detail-field">
+            <span class="field-label">所属区域：</span>
+            <span class="field-value">{{ currentInspectDetail.region }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">检测名称：</span>
+            <span class="field-value">{{ currentInspectDetail.checkName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">{{ inspectDetailType === 'road' ? '道路' : inspectDetailType === 'bridge' ? '桥梁' : '隧道' }}名称：</span>
+            <span class="field-value">{{ inspectDetailType === 'road' ? currentInspectDetail.roadName : inspectDetailType === 'bridge' ? currentInspectDetail.bridgeName : currentInspectDetail.tunnelName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">检测时间：</span>
+            <span class="field-value">{{ currentInspectDetail.checkTime }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">检测类型：</span>
+            <span class="field-value">{{ currentInspectDetail.checkType }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">综合评价等级：</span>
+            <span class="field-value inspect-grade" :class="'grade-' + currentInspectDetail.grade">{{ currentInspectDetail.grade }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改类型：</span>
+            <span class="field-value">{{ currentInspectDetail.rectifyType }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改完成状态：</span>
+            <span class="field-value status-pending">{{ currentInspectDetail.rectifyStatus }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改销号日期：</span>
+            <span class="field-value">{{ currentInspectDetail.rectifyFinishDate }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">整改后评级：</span>
+            <span class="field-value">{{ currentInspectDetail.rectifyGrade }}</span>
+          </div>
+        </div>
+        <div class="hazard-detail-attachments">
+          <div class="attachments-title">相关附件</div>
+          <div class="attachments-content">
+            <span class="no-data">暂无数据</span>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- 设备监控详情弹窗 -->
+    <a-modal v-model:open="showDeviceMonitorDetail" :title="deviceMonitorDetailType === 'road' ? '道路设备监控详情' : deviceMonitorDetailType === 'bridge' ? '桥梁设备监控详情' : '隧道设备监控详情'" width="900px" :footer="null" class="hazard-detail-modal" v-if="currentDeviceMonitorDetail">
+      <div class="hazard-detail-body">
+        <div class="hazard-detail-top">
+          <div class="hazard-detail-photo-label">图片记录：</div>
+          <div class="hazard-detail-photo"><img :src="currentDeviceMonitorDetail.photo" alt="监控照片" /></div>
+        </div>
+        <div class="hazard-detail-fields">
+          <div class="detail-field">
+            <span class="field-label">所属区域：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.region }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">设施名称：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.facilityName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">设备名称：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.deviceName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">点位名称：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.pointName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">监测项：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.monitorItem }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">报警开始时间：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.alertStartTime }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">报警结束时间：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.alertEndTime }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">预警值：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.alertValue }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">预警等级：</span>
+            <span class="field-value"><span class="alert-level" :class="'level-' + currentDeviceMonitorDetail.alertLevel">{{ currentDeviceMonitorDetail.alertLevel }}</span></span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">处置状态：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.handleStatus }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">处置完成时间：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.handleFinishTime }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">处置人：</span>
+            <span class="field-value">{{ currentDeviceMonitorDetail.handlePerson }}</span>
+          </div>
+        </div>
+        <div class="hazard-detail-attachments">
+          <div class="attachments-title">相关附件</div>
+          <div class="attachments-content">
+            <span class="no-data">暂无数据</span>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- 安全评估详情弹窗 -->
+    <a-modal v-model:open="showAssessDetail" :title="assessDetailType === 'road' ? '道路安全评估详情' : assessDetailType === 'bridge' ? '桥梁安全评估详情' : '隧道安全评估详情'" width="900px" :footer="null" class="hazard-detail-modal" v-if="currentAssessDetail">
+      <div class="hazard-detail-body">
+        <div class="hazard-detail-top">
+          <div class="hazard-detail-photo-label">图片记录：</div>
+          <div class="hazard-detail-photo"><img :src="currentAssessDetail.photo" alt="评估照片" /></div>
+        </div>
+        <div class="hazard-detail-fields">
+          <div class="detail-field">
+            <span class="field-label">所属区域：</span>
+            <span class="field-value">{{ currentAssessDetail.region }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">{{ assessDetailType === 'road' ? '道路' : assessDetailType === 'bridge' ? '桥梁' : '隧道' }}名称：</span>
+            <span class="field-value">{{ assessDetailType === 'road' ? currentAssessDetail.roadName : assessDetailType === 'bridge' ? currentAssessDetail.bridgeName : currentAssessDetail.tunnelName }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">检查项目：</span>
+            <span class="field-value">{{ currentAssessDetail.checkItem }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">评估时间：</span>
+            <span class="field-value">{{ currentAssessDetail.time }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">评估内容：</span>
+            <span class="field-value">{{ currentAssessDetail.content }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">安全等级：</span>
+            <span class="field-value"><span class="hazard-level" :class="'level-' + currentAssessDetail.level">{{ currentAssessDetail.level }}</span></span>
+          </div>
+          <div class="detail-field">
+            <span class="field-label">完成状态：</span>
+            <span class="field-value">{{ currentAssessDetail.status }}</span>
+          </div>
+        </div>
+        <div class="hazard-detail-attachments">
+          <div class="attachments-title">相关附件</div>
+          <div class="attachments-content">
+            <span class="no-data">暂无数据</span>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- 安全评估占位 -->
+    <div class="ops2-placeholder" v-show="cockpitTab === 'ops2' && ops2SubTab === '安全评估'">
+      <div class="placeholder-content">安全评估模块开发中...</div>
+    </div>
+
     <!-- 运维管理-设施检测详情弹窗（同工作台检测管理详情） -->
     <a-modal v-model:open="showOpsInspectDetail" title="检测管理详情" width="900px" :footer="null" class="risk-detail-modal">
       <a-tabs v-model:activeKey="opsInspectDetailTab" class="detail-tabs">
@@ -1242,7 +3396,292 @@ let inspectBarChart: echarts.ECharts | null = null
 
 const activeLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const subLayer = ref<'type' | 'eval'>('type')
-const cockpitTab = ref<'overview' | 'monitor' | 'ops'>('overview')
+const cockpitTab = ref<'overview' | 'monitor' | 'ops' | 'ops2'>('overview')
+const ops2SubTab = ref('运维检测')
+const ops2SubTabs = ['运维检测', '隐患排查', '病害处理', '安全评估']
+
+// 隐患排查页签状态（道路、桥梁、隧道）
+const hazardRoadView = ref<'chart' | 'list'>('chart')
+const hazardBridgeView = ref<'chart' | 'list'>('chart')
+const hazardTunnelView = ref<'chart' | 'list'>('chart')
+
+// 隐患排查数据
+const roadHazardData = [
+  { city: '杭州市', total: 1095, completed: 912, incomplete: 183, overdue: 180 },
+  { city: '宁波市', total: 560, completed: 468, incomplete: 92, overdue: 90 },
+  { city: '温州市', total: 248, completed: 207, incomplete: 41, overdue: 40 },
+  { city: '嘉兴市', total: 76, completed: 63, incomplete: 13, overdue: 13 },
+  { city: '湖州市', total: 228, completed: 190, incomplete: 38, overdue: 37 },
+  { city: '绍兴市', total: 378, completed: 315, incomplete: 63, overdue: 62 },
+  { city: '金华市', total: 404, completed: 337, incomplete: 67, overdue: 66 },
+  { city: '衢州市', total: 188, completed: 157, incomplete: 31, overdue: 30 },
+  { city: '舟山市', total: 102, completed: 85, incomplete: 17, overdue: 17 },
+  { city: '台州市', total: 344, completed: 287, incomplete: 57, overdue: 56 },
+  { city: '丽水市', total: 211, completed: 176, incomplete: 35, overdue: 34 }
+]
+
+const bridgeHazardData = [
+  { city: '杭州市', total: 538, completed: 448, incomplete: 90, overdue: 88 },
+  { city: '宁波市', total: 452, completed: 377, incomplete: 75, overdue: 73 },
+  { city: '温州市', total: 430, completed: 359, incomplete: 71, overdue: 70 },
+  { city: '嘉兴市', total: 668, completed: 557, incomplete: 111, overdue: 109 },
+  { city: '湖州市', total: 323, completed: 270, incomplete: 53, overdue: 52 },
+  { city: '绍兴市', total: 538, completed: 449, incomplete: 89, overdue: 87 },
+  { city: '金华市', total: 495, completed: 413, incomplete: 82, overdue: 80 },
+  { city: '衢州市', total: 258, completed: 215, incomplete: 43, overdue: 42 },
+  { city: '舟山市', total: 194, completed: 162, incomplete: 32, overdue: 31 },
+  { city: '台州市', total: 463, completed: 386, incomplete: 77, overdue: 75 },
+  { city: '丽水市', total: 301, completed: 251, incomplete: 50, overdue: 49 }
+]
+
+const tunnelHazardData = [
+  { city: '杭州市', total: 27, completed: 22, incomplete: 5, overdue: 5 },
+  { city: '宁波市', total: 22, completed: 18, incomplete: 4, overdue: 4 },
+  { city: '温州市', total: 13, completed: 11, incomplete: 2, overdue: 2 },
+  { city: '嘉兴市', total: 4, completed: 3, incomplete: 1, overdue: 1 },
+  { city: '湖州市', total: 4, completed: 3, incomplete: 1, overdue: 1 },
+  { city: '绍兴市', total: 6, completed: 5, incomplete: 1, overdue: 1 },
+  { city: '金华市', total: 13, completed: 11, incomplete: 2, overdue: 2 },
+  { city: '衢州市', total: 5, completed: 4, incomplete: 1, overdue: 1 },
+  { city: '舟山市', total: 3, completed: 3, incomplete: 0, overdue: 0 },
+  { city: '台州市', total: 9, completed: 7, incomplete: 2, overdue: 2 },
+  { city: '丽水市', total: 5, completed: 4, incomplete: 1, overdue: 1 }
+]
+
+// 病害处理视图状态
+const diseaseRoadSubTab = ref<'隐患排查' | '设施检测' | '设备监控' | '安全评估'>('隐患排查')
+const diseaseBridgeSubTab = ref<'隐患排查' | '设施检测' | '设备监控' | '安全评估'>('隐患排查')
+const diseaseTunnelSubTab = ref<'隐患排查' | '设施检测' | '设备监控' | '安全评估'>('隐患排查')
+const diseaseRoadCaseFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+const diseaseBridgeCaseFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+const diseaseTunnelCaseFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+
+// 病害处理地市整改率排名数据
+const roadHazardRanking = [
+  { city: '温州', rate: '92.50' }, { city: '宁波', rate: '92.00' },
+  { city: '温州', rate: '90.50' }, { city: '湖州', rate: '89.00' },
+  { city: '嘉兴', rate: '87.50' }, { city: '绍兴', rate: '87.00' },
+  { city: '金华', rate: '86.00' }, { city: '衢州', rate: '86.00' },
+  { city: '舟山', rate: '85.50' }, { city: '台州', rate: '83.50' },
+  { city: '丽水', rate: '81.50' }
+]
+const bridgeHazardRanking = [
+  { city: '嘉兴', rate: '90.50' }, { city: '绍兴', rate: '88.00' },
+  { city: '金华', rate: '88.00' }, { city: '衢州', rate: '87.50' },
+  { city: '舟山', rate: '86.50' }, { city: '台州', rate: '86.50' },
+  { city: '丽水', rate: '86.50' }, { city: '杭州', rate: '86.00' },
+  { city: '宁波', rate: '83.00' }, { city: '温州', rate: '82.00' },
+  { city: '湖州', rate: '81.00' }
+]
+const tunnelHazardRanking = [
+  { city: '金华', rate: '92.50' }, { city: '衢州', rate: '92.00' },
+  { city: '舟山', rate: '89.00' }, { city: '台州', rate: '89.00' },
+  { city: '丽水', rate: '88.50' }, { city: '杭州', rate: '88.00' },
+  { city: '宁波', rate: '86.00' }, { city: '温州', rate: '84.00' },
+  { city: '湖州', rate: '84.00' }, { city: '嘉兴', rate: '82.00' },
+  { city: '绍兴', rate: '82.00' }
+]
+
+// 病害处理隐患列表数据
+const roadHazardList = [
+  { roadName: '鲲鹏路', checkItem: '路面裂缝检查', time: '2023-11-28 16:14:10', content: '路面出现多处纵向裂缝，长度约50m，宽度2-5mm', level: '一般隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/road1/200/120', region: '杭州市上城区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '浙江安盛检测有限公司' },
+  { roadName: '姚江路', checkItem: '路面裂缝检查', time: '2023-11-28 16:11:50', content: '路面出现横向裂缝，长度约30m，宽度3-8mm', level: '较大隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/road2/200/120', region: '杭州市拱墅区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '杭州市政工程检测中心' },
+  { roadName: '东教路(绍兴路-石祥路)', checkItem: '路面龟裂检查', time: '2023-11-28 15:58:07', content: '路面出现网状龟裂，面积约20㎡，深度15mm', level: '重大隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/road3/200/120', region: '杭州市拱墅区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '浙江中检工程技术有限公司' }
+]
+const bridgeHazardList = [
+  { roadName: '衍家桥', checkItem: '土建结构检查', time: '2023-11-28 14:29:15', content: '桥梁支座出现明显锈蚀，部分支座垫石开裂', level: '重大隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/bridge1/200/120', region: '杭州市西湖区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '杭州道桥检测有限公司' },
+  { roadName: '轻纺桥', checkItem: '桥面系检查', time: '2023-11-28 13:58:13', content: '人行道面层出现网裂，面积约5㎡', level: '一般隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/bridge2/200/120', region: '杭州市滨江区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '浙江省建设工程质量检测站' },
+  { roadName: '登云大桥', checkItem: '桥面系检查', time: '2023-11-28 13:56:41', content: '人行道面层出现网裂，面积约8㎡，栏杆局部破损', level: '较大隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/bridge3/200/120', region: '杭州市余杭区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '浙江安盛检测有限公司' }
+]
+const tunnelHazardList = [
+  { roadName: '五老峰隧道', checkItem: '土建结构检查', time: '2023-11-28 15:22:24', content: '隧道衬砌出现裂缝，宽度约3mm，长度约2m', level: '重大隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/tunnel1/200/120', region: '杭州市西湖区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '杭州市政工程检测中心' },
+  { roadName: '灵溪隧道', checkItem: '强电系统检查', time: '2023-11-28 15:07:07', content: '照明灯具损坏3盏，应急照明系统部分失效', level: '较大隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/tunnel2/200/120', region: '杭州市上城区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '浙江中检工程技术有限公司' },
+  { roadName: '新天地街隧道', checkItem: '土建结构检查', time: '2023-11-28 13:57:22', content: '隧道衬砌局部渗水，面积约1.5㎡', level: '一般隐患', rectifyStatus: '未整改', photo: 'https://picsum.photos/seed/tunnel3/200/120', region: '杭州市拱墅区', rectifyTime: '-', rectifyPerson: '-', attachments: [], assessUnit: '杭州道桥检测有限公司' }
+]
+
+// 设施检测页签数据
+const roadInspectFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+const bridgeInspectFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+const tunnelInspectFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+
+const roadInspectRanking = [
+  { city: '绍兴', rate: '95.00' }, { city: '金华', rate: '92.50' },
+  { city: '衢州', rate: '90.00' }, { city: '舟山', rate: '88.00' },
+  { city: '台州', rate: '87.50' }, { city: '丽水', rate: '86.00' },
+  { city: '杭州', rate: '85.00' }, { city: '宁波', rate: '84.00' },
+  { city: '温州', rate: '82.00' }, { city: '湖州', rate: '80.00' },
+  { city: '嘉兴', rate: '78.00' }
+]
+const bridgeInspectRanking = [
+  { city: '绍兴', rate: '93.00' }, { city: '金华', rate: '90.50' },
+  { city: '衢州', rate: '88.00' }, { city: '舟山', rate: '86.00' },
+  { city: '台州', rate: '85.50' }, { city: '丽水', rate: '84.00' },
+  { city: '杭州', rate: '82.00' }, { city: '宁波', rate: '80.00' },
+  { city: '温州', rate: '78.00' }, { city: '湖州', rate: '76.00' },
+  { city: '嘉兴', rate: '74.00' }
+]
+const tunnelInspectRanking = [
+  { city: '绍兴', rate: '96.00' }, { city: '金华', rate: '93.50' },
+  { city: '衢州', rate: '91.00' }, { city: '舟山', rate: '89.00' },
+  { city: '台州', rate: '88.50' }, { city: '丽水', rate: '87.00' },
+  { city: '杭州', rate: '86.00' }, { city: '宁波', rate: '85.00' },
+  { city: '温州', rate: '83.00' }, { city: '湖州', rate: '81.00' },
+  { city: '嘉兴', rate: '79.00' }
+]
+
+const roadInspectList = [
+  { roadName: '鲲鹏路', grade: 'D级', rectifyType: '维修整治', rectifyStatus: '未完成', checkItem: '路面平整度检测', checkName: '鲲鹏路常规检测', checkTime: '2023-11-20 10:30:00', checkType: '常规检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市上城区', photo: 'https://picsum.photos/seed/inspect1/200/120' },
+  { roadName: '姚江路', grade: 'D级', rectifyType: '拆除或完全封控', rectifyStatus: '未完成', checkItem: '路面结构强度检测', checkName: '姚江路结构检测', checkTime: '2023-11-21 14:20:00', checkType: '结构检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市拱墅区', photo: 'https://picsum.photos/seed/inspect2/200/120' },
+  { roadName: '东教路(绍兴路-石祥路)', grade: 'D级', rectifyType: '维修整治', rectifyStatus: '未完成', checkItem: '路基沉降检测', checkName: '东教路特殊检测', checkTime: '2023-11-22 09:15:00', checkType: '特殊检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市拱墅区', photo: 'https://picsum.photos/seed/inspect3/200/120' }
+]
+const bridgeInspectList = [
+  { bridgeName: '衍家桥', grade: 'D级', rectifyType: '维修整治', rectifyStatus: '未完成', checkItem: '桥梁支座检测', checkName: '衍家桥常规检测', checkTime: '2023-11-18 11:00:00', checkType: '常规检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市西湖区', photo: 'https://picsum.photos/seed/inspect4/200/120' },
+  { bridgeName: '轻纺桥', grade: 'E级', rectifyType: '拆除或完全封控', rectifyStatus: '未完成', checkItem: '桥梁结构检测', checkName: '轻纺桥结构检测', checkTime: '2023-11-19 15:30:00', checkType: '结构检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市滨江区', photo: 'https://picsum.photos/seed/inspect5/200/120' },
+  { bridgeName: '登云大桥', grade: '不合格', rectifyType: '拆除或完全封控', rectifyStatus: '未完成', checkItem: '桥梁荷载检测', checkName: '登云大桥特殊检测', checkTime: '2023-11-20 08:45:00', checkType: '特殊检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市余杭区', photo: 'https://picsum.photos/seed/inspect6/200/120' }
+]
+const tunnelInspectList = [
+  { tunnelName: '五老峰隧道', grade: 'D级', rectifyType: '维修整治', rectifyStatus: '未完成', checkItem: '衬砌裂缝检测', checkName: '五老峰隧道常规检测', checkTime: '2023-11-15 10:00:00', checkType: '常规检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市西湖区', photo: 'https://picsum.photos/seed/inspect7/200/120' },
+  { tunnelName: '灵溪隧道', grade: 'E级', rectifyType: '拆除或完全封控', rectifyStatus: '未完成', checkItem: '渗漏水检测', checkName: '灵溪隧道结构检测', checkTime: '2023-11-16 14:30:00', checkType: '结构检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市上城区', photo: 'https://picsum.photos/seed/inspect8/200/120' },
+  { tunnelName: '新天地街隧道', grade: 'D级', rectifyType: '维修整治', rectifyStatus: '未完成', checkItem: '通风系统检测', checkName: '新天地街隧道常规检测', checkTime: '2023-11-17 09:20:00', checkType: '常规检测', rectifyFinishDate: '-', rectifyGrade: '-', region: '杭州市拱墅区', photo: 'https://picsum.photos/seed/inspect9/200/120' }
+]
+
+// 设备监控页签数据
+const roadMonitorFilter = ref<'未完成' | '已完成' | '全部'>('未完成')
+const bridgeMonitorFilter = ref<'未完成' | '已完成' | '全部'>('未完成')
+const tunnelMonitorFilter = ref<'未完成' | '已完成' | '全部'>('未完成')
+
+const roadMonitorRanking = [
+  { city: '绍兴', rate: '95.00' }, { city: '金华', rate: '90.50' },
+  { city: '衢州', rate: '88.00' }, { city: '舟山', rate: '85.00' },
+  { city: '台州', rate: '84.50' }, { city: '丽水', rate: '82.00' },
+  { city: '杭州', rate: '80.00' }, { city: '宁波', rate: '78.00' },
+  { city: '温州', rate: '76.00' }, { city: '湖州', rate: '74.00' },
+  { city: '嘉兴', rate: '72.00' }
+]
+const bridgeMonitorRanking = [
+  { city: '绍兴', rate: '93.00' }, { city: '金华', rate: '88.50' },
+  { city: '衢州', rate: '86.00' }, { city: '舟山', rate: '84.00' },
+  { city: '台州', rate: '83.50' }, { city: '丽水', rate: '81.00' },
+  { city: '杭州', rate: '79.00' }, { city: '宁波', rate: '77.00' },
+  { city: '温州', rate: '75.00' }, { city: '湖州', rate: '73.00' },
+  { city: '嘉兴', rate: '71.00' }
+]
+const tunnelMonitorRanking = [
+  { city: '绍兴', rate: '92.00' }, { city: '金华', rate: '87.50' },
+  { city: '衢州', rate: '85.00' }, { city: '舟山', rate: '83.00' },
+  { city: '台州', rate: '82.50' }, { city: '丽水', rate: '80.00' },
+  { city: '杭州', rate: '78.00' }, { city: '宁波', rate: '76.00' },
+  { city: '温州', rate: '74.00' }, { city: '湖州', rate: '72.00' },
+  { city: '嘉兴', rate: '70.00' }
+]
+
+const roadMonitorList = [
+  { facilityName: '鲲鹏路', deviceName: '沉降监测仪-001', pointName: 'KP-K001', monitorItem: '路基沉降', alertLevel: '一级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor1/200/120', region: '杭州市上城区', alertStartTime: '2023-11-25 08:30:00', alertEndTime: '-', alertValue: '15.2mm', handleFinishTime: '-', handlePerson: '-' },
+  { facilityName: '姚江路', deviceName: '裂缝监测仪-002', pointName: 'YJ-L002', monitorItem: '路面裂缝', alertLevel: '二级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor2/200/120', region: '杭州市拱墅区', alertStartTime: '2023-11-26 10:15:00', alertEndTime: '-', alertValue: '8.5mm', handleFinishTime: '-', handlePerson: '-' },
+  { facilityName: '东教路', deviceName: '位移监测仪-003', pointName: 'DJ-W003', monitorItem: '边坡位移', alertLevel: '三级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor3/200/120', region: '杭州市拱墅区', alertStartTime: '2023-11-27 14:20:00', alertEndTime: '-', alertValue: '12.8mm', handleFinishTime: '-', handlePerson: '-' }
+]
+const bridgeMonitorList = [
+  { facilityName: '衍家桥', deviceName: '应变监测仪-001', pointName: 'YJ-S001', monitorItem: '结构应变', alertLevel: '一级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor4/200/120', region: '杭州市西湖区', alertStartTime: '2023-11-24 09:00:00', alertEndTime: '-', alertValue: '1200με', handleFinishTime: '-', handlePerson: '-' },
+  { facilityName: '轻纺桥', deviceName: '振动监测仪-002', pointName: 'QF-V002', monitorItem: '结构振动', alertLevel: '二级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor5/200/120', region: '杭州市滨江区', alertStartTime: '2023-11-25 11:30:00', alertEndTime: '-', alertValue: '0.85m/s²', handleFinishTime: '-', handlePerson: '-' },
+  { facilityName: '登云大桥', deviceName: '挠度监测仪-003', pointName: 'DY-D003', monitorItem: '桥梁挠度', alertLevel: '三级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor6/200/120', region: '杭州市余杭区', alertStartTime: '2023-11-26 16:45:00', alertEndTime: '-', alertValue: 'L/850', handleFinishTime: '-', handlePerson: '-' }
+]
+const tunnelMonitorList = [
+  { facilityName: '五老峰隧道', deviceName: '气体监测仪-001', pointName: 'WLF-G001', monitorItem: 'CO浓度', alertLevel: '一级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor7/200/120', region: '杭州市西湖区', alertStartTime: '2023-11-23 07:20:00', alertEndTime: '-', alertValue: '85ppm', handleFinishTime: '-', handlePerson: '-' },
+  { facilityName: '灵溪隧道', deviceName: '温湿度监测仪-002', pointName: 'LX-T002', monitorItem: '环境温湿度', alertLevel: '二级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor8/200/120', region: '杭州市上城区', alertStartTime: '2023-11-24 13:10:00', alertEndTime: '-', alertValue: '92%RH', handleFinishTime: '-', handlePerson: '-' },
+  { facilityName: '新天地街隧道', deviceName: '风速监测仪-003', pointName: 'XTD-W003', monitorItem: '通风风速', alertLevel: '三级预警', handleStatus: '未完成', photo: 'https://picsum.photos/seed/monitor9/200/120', region: '杭州市拱墅区', alertStartTime: '2023-11-25 15:30:00', alertEndTime: '-', alertValue: '2.8m/s', handleFinishTime: '-', handlePerson: '-' }
+]
+
+// 安全评估页签数据
+const roadAssessFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+const bridgeAssessFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+const tunnelAssessFilter = ref<'未整改' | '已整改' | '全部'>('未整改')
+
+const roadAssessRanking = [
+  { city: '绍兴', rate: '95.00' }, { city: '金华', rate: '92.50' },
+  { city: '衢州', rate: '90.00' }, { city: '舟山', rate: '88.00' },
+  { city: '台州', rate: '87.50' }, { city: '丽水', rate: '86.00' },
+  { city: '杭州', rate: '85.00' }, { city: '宁波', rate: '84.00' },
+  { city: '温州', rate: '82.00' }, { city: '湖州', rate: '80.00' },
+  { city: '嘉兴', rate: '78.00' }
+]
+const bridgeAssessRanking = [
+  { city: '绍兴', rate: '93.00' }, { city: '金华', rate: '90.50' },
+  { city: '衢州', rate: '88.00' }, { city: '舟山', rate: '86.00' },
+  { city: '台州', rate: '85.50' }, { city: '丽水', rate: '83.00' },
+  { city: '杭州', rate: '82.00' }, { city: '宁波', rate: '80.00' },
+  { city: '温州', rate: '78.00' }, { city: '湖州', rate: '76.00' },
+  { city: '嘉兴', rate: '74.00' }
+]
+const tunnelAssessRanking = [
+  { city: '绍兴', rate: '92.00' }, { city: '金华', rate: '89.50' },
+  { city: '衢州', rate: '87.00' }, { city: '舟山', rate: '85.00' },
+  { city: '台州', rate: '84.50' }, { city: '丽水', rate: '82.00' },
+  { city: '杭州', rate: '81.00' }, { city: '宁波', rate: '79.00' },
+  { city: '温州', rate: '77.00' }, { city: '湖州', rate: '75.00' },
+  { city: '嘉兴', rate: '73.00' }
+]
+
+const roadAssessList = [
+  { roadName: '鲲鹏路', checkItem: '路面安全评估', time: '2023-11-20 10:30:00', content: '路面平整度、抗滑性能综合评估', level: '优良', status: '已完成', photo: 'https://picsum.photos/seed/assess1/200/120', region: '杭州市上城区' },
+  { roadName: '姚江路', checkItem: '路基安全评估', time: '2023-11-21 14:20:00', content: '路基沉降、边坡稳定性评估', level: '合格', status: '已完成', photo: 'https://picsum.photos/seed/assess2/200/120', region: '杭州市拱墅区' },
+  { roadName: '东教路(绍兴路-石祥路)', checkItem: '交通安全评估', time: '2023-11-22 09:15:00', content: '交通标志标线、安全设施评估', level: '不合格', status: '未完成', photo: 'https://picsum.photos/seed/assess3/200/120', region: '杭州市拱墅区' }
+]
+const bridgeAssessList = [
+  { bridgeName: '衍家桥', checkItem: '结构安全评估', time: '2023-11-18 11:00:00', content: '桥梁主体结构承载能力评估', level: '优良', status: '已完成', photo: 'https://picsum.photos/seed/assess4/200/120', region: '杭州市西湖区' },
+  { bridgeName: '轻纺桥', checkItem: '耐久性评估', time: '2023-11-19 15:30:00', content: '混凝土碳化、钢筋锈蚀评估', level: '合格', status: '已完成', photo: 'https://picsum.photos/seed/assess5/200/120', region: '杭州市滨江区' },
+  { bridgeName: '登云大桥', checkItem: '抗震安全评估', time: '2023-11-20 08:45:00', content: '抗震性能、支座状态评估', level: '不合格', status: '未完成', photo: 'https://picsum.photos/seed/assess6/200/120', region: '杭州市余杭区' }
+]
+const tunnelAssessList = [
+  { tunnelName: '五老峰隧道', checkItem: '结构安全评估', time: '2023-11-15 10:00:00', content: '衬砌结构、防水系统综合评估', level: '优良', status: '已完成', photo: 'https://picsum.photos/seed/assess7/200/120', region: '杭州市西湖区' },
+  { tunnelName: '灵溪隧道', checkItem: '通风安全评估', time: '2023-11-16 14:30:00', content: '通风系统、消防系统评估', level: '合格', status: '已完成', photo: 'https://picsum.photos/seed/assess8/200/120', region: '杭州市上城区' },
+  { tunnelName: '新天地街隧道', checkItem: '电气安全评估', time: '2023-11-17 09:20:00', content: '供配电系统、应急电源评估', level: '不合格', status: '未完成', photo: 'https://picsum.photos/seed/assess9/200/120', region: '杭州市拱墅区' }
+]
+
+// 隐患详情弹窗
+const showHazardDetail = ref(false)
+const currentHazardDetail = ref<any>(null)
+const hazardDetailType = ref<'road' | 'bridge' | 'tunnel'>('road')
+const hazardDetailSource = ref<'hazard' | 'assess'>('hazard')
+
+const openHazardDetail = (item: any, type: 'road' | 'bridge' | 'tunnel', source: 'hazard' | 'assess' = 'hazard') => {
+  currentHazardDetail.value = item
+  hazardDetailType.value = type
+  hazardDetailSource.value = source
+  showHazardDetail.value = true
+}
+
+// 设施检测详情弹窗
+const showInspectDetail = ref(false)
+const currentInspectDetail = ref<any>(null)
+const inspectDetailType = ref<'road' | 'bridge' | 'tunnel'>('road')
+
+const openInspectDetail = (item: any, type: 'road' | 'bridge' | 'tunnel') => {
+  currentInspectDetail.value = item
+  inspectDetailType.value = type
+  showInspectDetail.value = true
+}
+
+// 设备监控详情弹窗
+const showDeviceMonitorDetail = ref(false)
+const currentDeviceMonitorDetail = ref<any>(null)
+const deviceMonitorDetailType = ref<'road' | 'bridge' | 'tunnel'>('road')
+
+const openDeviceMonitorDetail = (item: any, type: 'road' | 'bridge' | 'tunnel') => {
+  currentDeviceMonitorDetail.value = item
+  deviceMonitorDetailType.value = type
+  showDeviceMonitorDetail.value = true
+}
+
+// 安全评估详情弹窗
+const showAssessDetail = ref(false)
+const currentAssessDetail = ref<any>(null)
+const assessDetailType = ref<'road' | 'bridge' | 'tunnel'>('road')
+
+const openAssessDetail = (item: any, type: 'road' | 'bridge' | 'tunnel') => {
+  currentAssessDetail.value = item
+  assessDetailType.value = type
+  showAssessDetail.value = true
+}
 
 // 高德地图
 const overviewMapRef = ref<HTMLElement | null>(null)
@@ -1445,6 +3884,89 @@ const opsSubLayer = ref<'type' | 'eval'>('type')
 const showOpsInspectDetail = ref(false)
 const showOpsHiddenDetail = ref(false)
 const showOpsAssessDetail = ref(false)
+
+// 运维管理2环形图悬浮展示
+const showRingTooltip = (type: string, e?: MouseEvent) => {
+  // 关闭已有的tooltip
+  const existing = document.querySelector('.ring-tooltip')
+  if (existing) existing.remove()
+  
+  let title = ''
+  let items: any[] = []
+  
+  if (type === 'road') {
+    title = '道路分级情况统计'
+    items = [
+      { grade: 'A级', count: 1831.60, unit: 'km', percent: 49.97, color: '#5b8ff9' },
+      { grade: 'B级', count: 1754.46, unit: 'km', percent: 47.87, color: '#5ad8a6' },
+      { grade: 'C级', count: 47.80, unit: 'km', percent: 1.3, color: '#f6bd16' },
+      { grade: 'D级', count: 31.54, unit: 'km', percent: 0.86, color: '#e86452' }
+    ]
+  } else if (type === 'bridge') {
+    title = '桥梁分级情况统计'
+    items = [
+      { grade: 'A级', count: 2095, unit: '座', percent: 44.89, color: '#5b8ff9' },
+      { grade: 'B级', count: 2256, unit: '座', percent: 48.34, color: '#5ad8a6' },
+      { grade: 'C级', count: 291, unit: '座', percent: 6.23, color: '#f6bd16' },
+      { grade: 'D级', count: 25, unit: '座', percent: 0.54, color: '#e86452' },
+      { grade: 'E级', count: 0, unit: '座', percent: 0, color: '#945fb9' },
+      { grade: '合格', count: 4646, unit: '座', percent: 99.46, color: '#52c41a' },
+      { grade: '不合格', count: 25, unit: '座', percent: 0.54, color: '#ff4d4f' }
+    ]
+  } else if (type === 'tunnel') {
+    title = '隧道分级情况统计'
+    items = [
+      { grade: 'A级', count: 123, unit: '座', percent: 50.41, color: '#5b8ff9' },
+      { grade: 'B级', count: 82, unit: '座', percent: 33.61, color: '#5ad8a6' },
+      { grade: 'C级', count: 39, unit: '座', percent: 15.98, color: '#f6bd16' },
+      { grade: 'D级', count: 0, unit: '座', percent: 0, color: '#e86452' },
+      { grade: 'E级', count: 0, unit: '座', percent: 0, color: '#945fb9' }
+    ]
+  }
+  
+  // 创建悬浮提示框
+  const tooltip = document.createElement('div')
+  tooltip.className = 'ring-tooltip'
+  tooltip.innerHTML = `
+    <div class="tooltip-title">${title}</div>
+    ${items.map(item => `
+      <div class="tooltip-item">
+        <span class="tooltip-dot" style="background: ${item.color}"></span>
+        <span class="tooltip-label">${item.grade}</span>
+        <span class="tooltip-value">${item.count}${item.unit} (${item.percent}%)</span>
+      </div>
+    `).join('')}
+  `
+  
+  // 添加到页面
+  document.body.appendChild(tooltip)
+  
+  // 定位到点击位置附近
+  if (e) {
+    const x = e.clientX
+    const y = e.clientY
+    tooltip.style.left = `${x + 15}px`
+    tooltip.style.top = `${y - 10}px`
+  }
+  
+  // 点击其他区域关闭
+  const closeHandler = (ev: MouseEvent) => {
+    if (!tooltip.contains(ev.target as Node)) {
+      tooltip.remove()
+      document.removeEventListener('click', closeHandler)
+    }
+  }
+  setTimeout(() => {
+    document.addEventListener('click', closeHandler)
+  }, 100)
+  
+  // 5秒后自动关闭
+  setTimeout(() => {
+    if (document.body.contains(tooltip)) {
+      tooltip.remove()
+    }
+  }, 5000)
+}
 
 // 风险隐患表和提示单弹窗
 const showRiskHintModal = ref(false)
@@ -2799,8 +5321,9 @@ const facilityNameTitle = computed(() => {
 const riskDetailColumns = computed(() => ({
   hidden: [
     { title: '所属区域', dataIndex: 'area', width: 100 },
-    { title: facilityNameTitle.value, dataIndex: 'road', width: 160 },
+    { title: '检查对象', dataIndex: 'road', width: 160 },
     { title: '检查项目', dataIndex: 'project', width: 130 },
+    { title: '上报时间', dataIndex: 'reportTime', width: 150 },
     { title: '上报内容', dataIndex: 'content', width: 150 },
     { title: '隐患等级', dataIndex: 'levelText', width: 100 },
     { title: '整改状态', dataIndex: 'status', width: 100 },
@@ -2841,9 +5364,11 @@ const riskDetailColumns = computed(() => ({
   ],
   assess: [
     { title: '所属区域', dataIndex: 'area', width: 100 },
-    { title: facilityNameTitle.value, dataIndex: 'road', width: 160 },
-    { title: '评估项目', dataIndex: 'project', width: 130 },
-    { title: '评估主体', dataIndex: 'entity', width: 200 },
+    { title: '评估单元', dataIndex: 'road', width: 160 },
+    { title: '检查项目', dataIndex: 'project', width: 130 },
+    { title: '上报时间', dataIndex: 'reportTime', width: 150 },
+    { title: '上报内容', dataIndex: 'reportContent', width: 150 },
+    { title: '评估单位', dataIndex: 'entity', width: 200 },
     { title: '隐患等级', dataIndex: 'levelText', width: 100 },
     { title: '整改状态', dataIndex: 'status', width: 100 },
     { title: '整改完成时间', dataIndex: 'doneTime', width: 150 },
@@ -2852,21 +5377,21 @@ const riskDetailColumns = computed(() => ({
 }))
 
 const hiddenDetailBase = [
-  { area: '上城区', road: '石贯子巷', project: '道路设施', content: '路面破损严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
-  { area: '上城区', road: '中山中路', project: '道路照明设施', content: '路灯不亮多处', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '拱墅区', road: '环城北路', project: '道路设施', content: '路面沉降严重', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '文三路', project: '道路照明设施', content: '灯杆倾斜危险', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-02', handler: '李明' },
-  { area: '滨江区', road: '江南大道', project: '道路设施', content: '路面裂缝扩展', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-20', handler: '王芳' },
-  { area: '上城区', road: '解放路', project: '道路照明设施', content: '线路老化故障', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '拱墅区', road: '莫干山路', project: '道路设施', content: '路基塌陷风险', levelText: '重大隐患', status: '已整改', doneTime: '2026-05-10', handler: '陈强' },
-  { area: '西湖区', road: '天目山路', project: '道路照明设施', content: '灯具缺失严重', levelText: '一般隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '滨江区', road: '时代大道', project: '道路设施', content: '人行道砖松动', levelText: '较大隐患', status: '已整改', doneTime: '2026-01-25', handler: '赵军' },
-  { area: '上城区', road: '延安路', project: '道路照明设施', content: '配电箱损坏', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '萧山区', road: '市心路', project: '道路设施', content: '路面坑洼严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-08', handler: '刘洋' },
-  { area: '余杭区', road: '文一西路', project: '道路照明设施', content: '电缆破损漏电', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-15', handler: '周伟' },
-  { area: '上城区', road: '清泰路', project: '道路设施', content: '井盖缺失破损', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-18', handler: '吴静' },
-  { area: '拱墅区', road: '大关路', project: '道路照明设施', content: '灯臂锈蚀断裂', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '古翠路', project: '道路设施', content: '路面沥青剥落', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-22', handler: '孙磊' },
+  { area: '上城区', road: '石贯子巷', project: '道路设施', reportTime: '2026-01-10 09:30:00', content: '路面破损严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
+  { area: '上城区', road: '中山中路', project: '道路照明设施', reportTime: '2026-01-15 14:20:00', content: '路灯不亮多处', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '环城北路', project: '道路设施', reportTime: '2026-01-22 10:45:00', content: '路面沉降严重', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '文三路', project: '道路照明设施', reportTime: '2026-02-05 16:10:00', content: '灯杆倾斜危险', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-02', handler: '李明' },
+  { area: '滨江区', road: '江南大道', project: '道路设施', reportTime: '2026-02-12 08:55:00', content: '路面裂缝扩展', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-20', handler: '王芳' },
+  { area: '上城区', road: '解放路', project: '道路照明设施', reportTime: '2026-02-18 11:30:00', content: '线路老化故障', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '莫干山路', project: '道路设施', reportTime: '2026-03-01 09:15:00', content: '路基塌陷风险', levelText: '重大隐患', status: '已整改', doneTime: '2026-05-10', handler: '陈强' },
+  { area: '西湖区', road: '天目山路', project: '道路照明设施', reportTime: '2026-03-08 15:40:00', content: '灯具缺失严重', levelText: '一般隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '滨江区', road: '时代大道', project: '道路设施', reportTime: '2026-03-15 10:20:00', content: '人行道砖松动', levelText: '较大隐患', status: '已整改', doneTime: '2026-01-25', handler: '赵军' },
+  { area: '上城区', road: '延安路', project: '道路照明设施', reportTime: '2026-03-22 14:05:00', content: '配电箱损坏', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '萧山区', road: '市心路', project: '道路设施', reportTime: '2026-04-02 08:30:00', content: '路面坑洼严重', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-08', handler: '刘洋' },
+  { area: '余杭区', road: '文一西路', project: '道路照明设施', reportTime: '2026-04-10 16:45:00', content: '电缆破损漏电', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-15', handler: '周伟' },
+  { area: '上城区', road: '清泰路', project: '道路设施', reportTime: '2026-04-18 09:50:00', content: '井盖缺失破损', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-18', handler: '吴静' },
+  { area: '拱墅区', road: '大关路', project: '道路照明设施', reportTime: '2026-04-25 13:25:00', content: '灯臂锈蚀断裂', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '古翠路', project: '道路设施', reportTime: '2026-05-05 10:10:00', content: '路面沥青剥落', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-22', handler: '孙磊' },
 ]
 const deviceDetailBase = [
   { area: '上城区', road: '石贯子巷', deviceName: '石贯子巷变形监测仪', point: 'K1+200', item: '变形', alarmStartTime: '2026-04-20 08:30:00', alarmEndTime: '-', alarmValue: -633.8, levelText: '一级预警', status: '未完成', doneTime: '-', handler: '-' },
@@ -2903,21 +5428,21 @@ const inspectDetailBase = [
   { area: '西湖区', road: '古翠路', grade: 'D', rectype: '维修整治', status: '已完成', doneTime: '2026-03-10', afterGrade: 'B' },
 ]
 const assessDetailBase = [
-  { area: '上城区', road: '石贯子巷', project: '道路设施', entity: '浙江安盛检测有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
-  { area: '上城区', road: '中山中路', project: '道路照明设施', entity: '杭州市政工程检测中心', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '拱墅区', road: '环城北路', project: '道路设施', entity: '浙江中检工程技术有限公司', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '文三路', project: '道路照明设施', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-10', handler: '李明' },
-  { area: '滨江区', road: '江南大道', project: '道路设施', entity: '浙江省建设工程质量检测站', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-25', handler: '王芳' },
-  { area: '上城区', road: '解放路', project: '道路照明设施', entity: '浙江安盛检测有限公司', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '拱墅区', road: '莫干山路', project: '道路设施', entity: '杭州市政工程检测中心', levelText: '重大隐患', status: '已整改', doneTime: '2026-05-12', handler: '陈强' },
-  { area: '西湖区', road: '天目山路', project: '道路照明设施', entity: '浙江中检工程技术有限公司', levelText: '一般隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '滨江区', road: '时代大道', project: '道路设施', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '已整改', doneTime: '2026-01-28', handler: '赵军' },
-  { area: '上城区', road: '延安路', project: '道路照明设施', entity: '浙江省建设工程质量检测站', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '萧山区', road: '市心路', project: '道路设施', entity: '浙江安盛检测有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-22', handler: '刘洋' },
-  { area: '余杭区', road: '文一西路', project: '道路照明设施', entity: '杭州市政工程检测中心', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-18', handler: '周伟' },
-  { area: '上城区', road: '清泰路', project: '道路设施', entity: '浙江中检工程技术有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-15', handler: '吴静' },
-  { area: '拱墅区', road: '大关路', project: '道路照明设施', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
-  { area: '西湖区', road: '古翠路', project: '道路设施', entity: '浙江省建设工程质量检测站', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-28', handler: '孙磊' },
+  { area: '上城区', road: '石贯子巷', project: '道路设施', reportContent: '路面破损严重，影响行车安全', reportTime: '2026-01-10 09:30:00', entity: '浙江安盛检测有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-15', handler: '张伟' },
+  { area: '上城区', road: '中山中路', project: '道路照明设施', reportContent: '路灯不亮多处，夜间照明不足', reportTime: '2026-01-15 14:20:00', entity: '杭州市政工程检测中心', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '环城北路', project: '道路设施', reportContent: '路面沉降严重，存在安全隐患', reportTime: '2026-01-22 10:45:00', entity: '浙江中检工程技术有限公司', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '文三路', project: '道路照明设施', reportContent: '灯杆倾斜危险，存在倒伏风险', reportTime: '2026-02-05 16:10:00', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-10', handler: '李明' },
+  { area: '滨江区', road: '江南大道', project: '道路设施', reportContent: '路面裂缝扩展，需紧急处理', reportTime: '2026-02-12 08:55:00', entity: '浙江省建设工程质量检测站', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-25', handler: '王芳' },
+  { area: '上城区', road: '解放路', project: '道路照明设施', reportContent: '线路老化故障，存在短路风险', reportTime: '2026-02-18 11:30:00', entity: '浙江安盛检测有限公司', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '拱墅区', road: '莫干山路', project: '道路设施', reportContent: '路基塌陷风险，影响通行安全', reportTime: '2026-03-01 09:15:00', entity: '杭州市政工程检测中心', levelText: '重大隐患', status: '已整改', doneTime: '2026-05-12', handler: '陈强' },
+  { area: '西湖区', road: '天目山路', project: '道路照明设施', reportContent: '灯具缺失严重，照明效果差', reportTime: '2026-03-08 15:40:00', entity: '浙江中检工程技术有限公司', levelText: '一般隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '滨江区', road: '时代大道', project: '道路设施', reportContent: '人行道砖松动，行人通行不便', reportTime: '2026-03-15 10:20:00', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '已整改', doneTime: '2026-01-28', handler: '赵军' },
+  { area: '上城区', road: '延安路', project: '道路照明设施', reportContent: '配电箱损坏，存在漏电隐患', reportTime: '2026-03-22 14:05:00', entity: '浙江省建设工程质量检测站', levelText: '重大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '萧山区', road: '市心路', project: '道路设施', reportContent: '路面坑洼严重，车辆通行困难', reportTime: '2026-04-02 08:30:00', entity: '浙江安盛检测有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-03-22', handler: '刘洋' },
+  { area: '余杭区', road: '文一西路', project: '道路照明设施', reportContent: '电缆破损漏电，存在安全风险', reportTime: '2026-04-10 16:45:00', entity: '杭州市政工程检测中心', levelText: '较大隐患', status: '已整改', doneTime: '2026-04-18', handler: '周伟' },
+  { area: '上城区', road: '清泰路', project: '道路设施', reportContent: '井盖缺失破损，行人安全隐患', reportTime: '2026-04-18 09:50:00', entity: '浙江中检工程技术有限公司', levelText: '一般隐患', status: '已整改', doneTime: '2026-02-15', handler: '吴静' },
+  { area: '拱墅区', road: '大关路', project: '道路照明设施', reportContent: '灯臂锈蚀断裂，灯具脱落风险', reportTime: '2026-04-25 13:25:00', entity: '杭州道桥检测有限公司', levelText: '较大隐患', status: '待整改', doneTime: '-', handler: '-' },
+  { area: '西湖区', road: '古翠路', project: '道路设施', reportContent: '路面沥青剥落，影响行车舒适', reportTime: '2026-05-05 10:10:00', entity: '浙江省建设工程质量检测站', levelText: '一般隐患', status: '已整改', doneTime: '2026-05-28', handler: '孙磊' },
 ]
 
 const riskDetailData = {
@@ -3540,6 +6065,755 @@ watch(riskType, (val) => {
 }
 .cockpit-nav { display: flex; gap: 20px;
   .nav-link { font-size: 13px; color: rgba(255,255,255,0.6); cursor: pointer; &:hover { color: #5b8ff9; } }
+}
+
+// 运维管理2子页签
+.ops2-sub-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 16px;
+  background: linear-gradient(90deg, #0d1f3c, #152d50, #0d1f3c);
+  border-bottom: 1px solid rgba(100, 160, 255, 0.15);
+  flex-shrink: 0;
+}
+
+.ops2-sub-tab {
+  padding: 5px 24px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  
+  &.active {
+    background: rgba(91,143,249,0.2);
+    color: #5b8ff9;
+    font-weight: 600;
+    border-color: rgba(91,143,249,0.4);
+    box-shadow: 0 0 8px rgba(91,143,249,0.2);
+  }
+  
+  &:hover:not(.active) {
+    color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.05);
+  }
+}
+
+.ops2-placeholder {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  
+  .placeholder-content {
+    font-size: 18px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 2px;
+  }
+}
+
+// ===== 病害处理页面样式 =====
+.disease-body {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  height: calc(100vh - 100px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.disease-card {
+  flex: 1;
+  min-width: 0;
+  width: 33.333%;
+  max-width: 33.333%;
+  background: linear-gradient(180deg, rgba(10,25,50,0.98) 0%, rgba(5,15,35,0.98) 100%);
+  border: 2px solid rgba(0,180,255,0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00b4ff, transparent);
+  }
+}
+
+.disease-card-header {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(0,180,255,0.15) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0,180,255,0.3);
+  
+  .header-deco {
+    color: #00e5ff;
+    font-size: 14px;
+    text-shadow: 0 0 8px rgba(0,229,255,0.6);
+  }
+  
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0,180,255,0.5);
+  }
+}
+
+.disease-sub-tabs {
+  display: flex;
+  padding: 0 8px;
+  background: rgba(0,20,40,0.6);
+  border-bottom: 1px solid rgba(0,180,255,0.2);
+  
+  .sub-tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    transition: all 0.3s;
+    border-bottom: 2px solid transparent;
+    
+    &:hover {
+      color: rgba(255,255,255,0.85);
+      background: rgba(0,180,255,0.05);
+    }
+    
+    &.active {
+      color: #00e5ff;
+      border-bottom-color: #00e5ff;
+      background: rgba(0,180,255,0.1);
+      font-weight: 600;
+    }
+  }
+}
+
+.sub-tab-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  
+  .placeholder-text {
+    color: rgba(255,255,255,0.4);
+    font-size: 14px;
+  }
+}
+
+.hazard-item {
+  flex-direction: row;
+  align-items: flex-start;
+  
+  .hazard-info {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .hazard-right {
+    flex-shrink: 0;
+    width: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin-left: 10px;
+  }
+  
+  .hazard-photo {
+    height: 90px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(0,180,255,0.3);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+}
+
+.hazard-detail-btn {
+  display: block;
+  width: 100%;
+  padding: 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(90deg, #1565c0, #0d47a1);
+  border: 1px solid rgba(33,150,243,0.5);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-sizing: border-box;
+  
+  &:hover {
+    background: linear-gradient(90deg, #1976d2, #1565c0);
+    box-shadow: 0 0 8px rgba(33,150,243,0.4);
+  }
+}
+
+.hazard-level {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  
+  &.level-一般隐患 {
+    color: #52c41a;
+    background: rgba(82,196,26,0.15);
+    border: 1px solid rgba(82,196,26,0.3);
+  }
+  
+  &.level-较大隐患 {
+    color: #faad14;
+    background: rgba(250,173,20,0.15);
+    border: 1px solid rgba(250,173,20,0.3);
+  }
+  
+  &.level-重大隐患 {
+    color: #ff4d4f;
+    background: rgba(255,77,79,0.15);
+    border: 1px solid rgba(255,77,79,0.3);
+  }
+  
+  &.level-优良 {
+    color: #52c41a;
+    background: rgba(82,196,26,0.15);
+    border: 1px solid rgba(82,196,26,0.3);
+  }
+  
+  &.level-合格 {
+    color: #faad14;
+    background: rgba(250,173,20,0.15);
+    border: 1px solid rgba(250,173,20,0.3);
+  }
+  
+  &.level-不合格 {
+    color: #ff4d4f;
+    background: rgba(255,77,79,0.15);
+    border: 1px solid rgba(255,77,79,0.3);
+  }
+}
+
+.risk-levels-row.three-level {
+  .risk-level-item {
+    flex: 1;
+  }
+}
+
+.risk-levels-row.inspect-levels {
+  .risk-level-item {
+    flex: 1;
+    padding: 6px 8px;
+    border-radius: 4px;
+    text-align: center;
+    
+    &.d-level {
+      background: rgba(255,77,79,0.12);
+      border: 1px solid rgba(255,77,79,0.3);
+      .risk-count { color: #ff4d4f; }
+    }
+    &.e-level {
+      background: rgba(250,173,20,0.12);
+      border: 1px solid rgba(250,173,20,0.3);
+      .risk-count { color: #faad14; }
+    }
+    &.unqualified {
+      background: rgba(232,100,82,0.12);
+      border: 1px solid rgba(232,100,82,0.3);
+      .risk-count { color: #e86452; }
+    }
+  }
+}
+
+.risk-levels-row.two-level {
+  .risk-level-item {
+    flex: 1;
+  }
+}
+
+.risk-bar-segment {
+  &.d-level { background: linear-gradient(180deg, #ff4d4f, #cf1322); }
+  &.e-level { background: linear-gradient(180deg, #faad14, #d48806); }
+  &.unqualified { background: linear-gradient(180deg, #e86452, #b33b2e); }
+  &.level1 { background: linear-gradient(180deg, #ff4d4f, #cf1322); }
+  &.level2 { background: linear-gradient(180deg, #faad14, #d48806); }
+  &.level3 { background: linear-gradient(180deg, #52c41a, #389e0d); }
+}
+
+.risk-level-item {
+  &.level1 {
+    background: rgba(255,77,79,0.12);
+    border: 1px solid rgba(255,77,79,0.3);
+    .risk-count { color: #ff4d4f; }
+  }
+  &.level2 {
+    background: rgba(250,173,20,0.12);
+    border: 1px solid rgba(250,173,20,0.3);
+    .risk-count { color: #faad14; }
+  }
+  &.level3 {
+    background: rgba(82,196,26,0.12);
+    border: 1px solid rgba(82,196,26,0.3);
+    .risk-count { color: #52c41a; }
+  }
+}
+
+.alert-level {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  
+  &.level-一级预警 {
+    color: #ff4d4f;
+    background: rgba(255,77,79,0.15);
+    border: 1px solid rgba(255,77,79,0.3);
+  }
+  &.level-二级预警 {
+    color: #faad14;
+    background: rgba(250,173,20,0.15);
+    border: 1px solid rgba(250,173,20,0.3);
+  }
+  &.level-三级预警 {
+    color: #52c41a;
+    background: rgba(82,196,26,0.15);
+    border: 1px solid rgba(82,196,26,0.3);
+  }
+}
+
+.monitor-item {
+  flex-direction: row;
+  align-items: flex-start;
+  
+  .monitor-info {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.inspect-grade {
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  
+  &.grade-D级 {
+    color: #ff4d4f;
+    background: rgba(255,77,79,0.15);
+    border: 1px solid rgba(255,77,79,0.3);
+  }
+  &.grade-E级 {
+    color: #faad14;
+    background: rgba(250,173,20,0.15);
+    border: 1px solid rgba(250,173,20,0.3);
+  }
+  &.grade-不合格 {
+    color: #e86452;
+    background: rgba(232,100,82,0.15);
+    border: 1px solid rgba(232,100,82,0.3);
+  }
+}
+
+.inspect-item {
+  .inspect-info {
+    flex: 1;
+  }
+  .case-action {
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+  }
+}
+
+.disease-card-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  
+  /* 隐藏滚动条 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome Safari */
+  }
+}
+
+// 顶部指标+排名行
+.disease-top-row {
+  display: flex;
+  gap: 12px;
+}
+
+.disease-metrics {
+  min-width: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-item {
+  .metric-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 2px;
+  }
+  
+  .metric-value {
+    .num {
+      font-size: 22px;
+      font-weight: 700;
+      color: #00e5ff;
+      font-family: 'DIN', 'Arial', sans-serif;
+    }
+    .unit {
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      margin-left: 2px;
+    }
+  }
+  
+  .metric-value.large .num {
+    font-size: 26px;
+    color: #00e5ff;
+  }
+  
+  .metric-value.rate .num {
+    color: #00e676;
+  }
+  
+  .metric-value.timely .num {
+    color: #ff9800;
+  }
+}
+
+// 地市排名
+.disease-ranking {
+  flex: 1;
+  min-width: 0;
+  
+  .ranking-title {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 6px;
+  }
+  
+  .ranking-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px 12px;
+  }
+  
+  .ranking-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    
+    .rank-badge {
+      display: inline-block;
+      min-width: 42px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      text-align: center;
+      background: rgba(0,180,255,0.3);
+      
+      &.rank-1 { background: #f44336; }
+      &.rank-2 { background: #ff9800; }
+      &.rank-3 { background: #2196f3; }
+    }
+    
+    .rank-city {
+      color: rgba(255,255,255,0.8);
+      flex: 1;
+    }
+    
+    .rank-rate {
+      color: #00e5ff;
+      font-weight: 600;
+    }
+  }
+}
+
+// 风险分析统计图
+.disease-risk-section {
+  border: 1px solid rgba(0,180,255,0.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(0,20,40,0.5);
+}
+
+.risk-section-title {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+  
+  .title-deco {
+    color: #00e5ff;
+    font-size: 12px;
+    margin: 0 8px;
+  }
+}
+
+.risk-levels-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.risk-level-item {
+  text-align: center;
+  
+  .risk-label {
+    display: block;
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+  
+  .risk-count {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+  }
+  
+  &.major .risk-label { color: #f44336; }
+  &.larger .risk-label { color: #ff9800; }
+  &.general .risk-label { color: #ffc107; }
+  &.minor .risk-label { color: #4caf50; }
+}
+
+.risk-bar-track {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+}
+
+.risk-bar-segment {
+  height: 100%;
+  transition: width 0.3s;
+  
+  &.major { background: #f44336; }
+  &.larger { background: #ff9800; }
+  &.general { background: #ffc107; }
+  &.minor { background: #4caf50; }
+}
+
+// 重大案卷列表
+.disease-case-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.case-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.case-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  .case-diamond {
+    color: #00e5ff;
+    font-size: 14px;
+  }
+  
+  .case-title-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+  }
+}
+
+.case-filters {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  .case-filter-tab {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    transition: all 0.2s;
+    
+    &.active {
+      color: #fff;
+      background: rgba(0,180,255,0.3);
+      border-color: rgba(0,180,255,0.5);
+    }
+  }
+  
+  .case-province-select {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    background: rgba(0,180,255,0.2);
+    color: #fff;
+    border: 1px solid rgba(0,180,255,0.4);
+    outline: none;
+    
+    option {
+      background: #0a1929;
+      color: #fff;
+    }
+  }
+}
+
+.case-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.case-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 10px;
+  background: rgba(0,30,60,0.6);
+  border: 1px solid rgba(0,180,255,0.2);
+  border-radius: 6px;
+}
+
+.case-thumb {
+  width: 80px;
+  height: 60px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.3);
+  
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: linear-gradient(135deg, rgba(0,60,120,0.5), rgba(0,30,60,0.8));
+  }
+}
+
+.case-info {
+  flex: 1;
+  min-width: 0;
+  
+  .case-info-row {
+    font-size: 11px;
+    line-height: 1.6;
+    color: rgba(255,255,255,0.7);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    .info-label {
+      color: rgba(255,255,255,0.4);
+    }
+  }
+}
+
+.status-pending {
+  color: #ff9800;
+}
+
+.case-action {
+  flex-shrink: 0;
+  align-self: center;
+  
+  .detail-btn {
+    padding: 4px 16px;
+    font-size: 12px;
+    color: #fff;
+    background: linear-gradient(90deg, #1565c0, #0d47a1);
+    border: 1px solid rgba(33,150,243,0.5);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      background: linear-gradient(90deg, #1976d2, #1565c0);
+    }
+  }
+}
+
+.case-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  
+  .pagination-info {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+  }
+  
+  .pagination-btns {
+    display: flex;
+    gap: 4px;
+    
+    .page-btn {
+      width: 24px;
+      height: 24px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &.active {
+        color: #fff;
+        background: rgba(0,180,255,0.3);
+        border-color: rgba(0,180,255,0.5);
+      }
+    }
+  }
 }
 
 .cockpit-body {
@@ -4486,6 +7760,754 @@ watch(riskType, (val) => {
   .text-orange { color: #f6bd16; }
   .text-green { color: #5ad8a6; }
 }
+
+// ===== 运维管理2样式 =====
+.cockpit-body.ops2-body {
+  display: flex;
+  grid-template-columns: none;
+  gap: 12px;
+  padding: 10px 12px;
+  height: calc(100vh - 100px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ops2-card {
+  flex: 1;
+  min-width: 0;
+  width: 33.333%;
+  max-width: 33.333%;
+  background: linear-gradient(180deg, rgba(10,25,50,0.98) 0%, rgba(5,15,35,0.98) 100%);
+  border: 2px solid rgba(0,180,255,0.4);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #00b4ff, transparent);
+  }
+}
+
+.ops2-card-header {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(0,180,255,0.15) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(0,180,255,0.3);
+  position: relative;
+  
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00b4ff);
+  }
+  
+  &::before {
+    left: 20px;
+  }
+  
+  &::after {
+    right: 20px;
+    transform: scaleX(-1);
+  }
+  
+  .header-icon {
+    color: #00e5ff;
+    font-size: 16px;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(0,229,255,0.6);
+  }
+  
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0,180,255,0.5);
+  }
+}
+
+.ops2-card-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ops2-header {
+  padding: 10px 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, rgba(91,143,249,0.25) 0%, transparent 100%);
+  border-bottom: 2px solid rgba(91,143,249,0.4);
+  text-align: center;
+  letter-spacing: 2px;
+}
+
+.ops2-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.ops2-section {
+  margin-bottom: 8px;
+  min-width: 0;
+  &:last-child { margin-bottom: 0; }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, rgba(0,180,255,0.1) 0%, transparent 100%);
+  border-left: 3px solid #00b4ff;
+  position: relative;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0,180,255,0.3), transparent);
+  }
+  
+  .section-arrow {
+    color: #00e5ff;
+    font-size: 12px;
+    text-shadow: 0 0 6px rgba(0,229,255,0.5);
+  }
+  
+  .section-diamond {
+    color: #f6bd16;
+    font-size: 14px;
+    text-shadow: 0 0 6px rgba(246,189,22,0.5);
+  }
+  
+  .section-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+}
+
+.ops2-table-wrapper {
+  width: 100%;
+  overflow: hidden;
+  min-width: 0;
+  background: rgba(0,20,40,0.3);
+  border-radius: 6px;
+}
+
+// 隐患排查页签样式
+.ops2-view-tabs {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.ops2-view-tab {
+  padding: 4px 16px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  
+  &.active {
+    background: rgba(91,143,249,0.2);
+    color: #5b8ff9;
+    font-weight: 600;
+    border-color: rgba(91,143,249,0.4);
+  }
+  
+  &:hover:not(.active) {
+    color: rgba(255,255,255,0.8);
+    background: rgba(255,255,255,0.05);
+  }
+}
+
+// 横向柱状图样式
+.ops2-chart-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+.bar-chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+}
+
+.bar-label {
+  width: 50px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+}
+
+.bar-group {
+  flex: 1;
+  display: flex;
+  height: 18px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bar-item {
+  height: 100%;
+  transition: width 0.3s ease;
+  
+  &.completed {
+    background: linear-gradient(90deg, #52c41a, #73d13d);
+  }
+  
+  &.incomplete {
+    background: linear-gradient(90deg, #5b8ff9, #7caaf7);
+  }
+  
+  &.overdue {
+    background: linear-gradient(90deg, #ffeb3b, #fff176);
+  }
+}
+
+.bar-value {
+  width: 40px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 600;
+  text-align: left;
+}
+
+.bar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  
+  &.completed {
+    background: linear-gradient(90deg, #52c41a, #73d13d);
+  }
+  
+  &.incomplete {
+    background: linear-gradient(90deg, #5b8ff9, #7caaf7);
+  }
+  
+  &.overdue {
+    background: linear-gradient(90deg, #ffeb3b, #fff176);
+  }
+}
+
+.ops2-table-wrapper {
+  border: 1px solid rgba(0,180,255,0.2);
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5b8ff9;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  border-left: 3px solid #5b8ff9;
+}
+
+.inspection-row {
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+  
+  &.single {
+    .inspection-item {
+      flex: none;
+      width: 100%;
+    }
+  }
+}
+
+.inspection-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, rgba(0,180,255,0.08) 0%, rgba(0,180,255,0.03) 100%);
+  border-radius: 8px;
+  border: 1px solid rgba(0,180,255,0.2);
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00b4ff, transparent);
+  }
+}
+
+.item-icon-box {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0,180,255,0.2) 0%, rgba(0,180,255,0.1) 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(0,229,255,0.4);
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(0,180,255,0.3), inset 0 0 8px rgba(0,180,255,0.1);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    right: -1px;
+    bottom: -1px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0,229,255,0.3), transparent);
+    z-index: -1;
+  }
+  
+  &.warning {
+    background: linear-gradient(135deg, rgba(246,189,22,0.2) 0%, rgba(246,189,22,0.1) 100%);
+    border-color: rgba(255,235,59,0.4);
+    box-shadow: 0 0 12px rgba(246,189,22,0.3), inset 0 0 8px rgba(246,189,22,0.1);
+    
+    &::before {
+      background: linear-gradient(135deg, rgba(255,235,59,0.3), transparent);
+    }
+  }
+  
+  svg {
+    width: 32px;
+    height: 32px;
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+}
+
+.item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.item-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 6px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.item-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  &.highlight { 
+    color: #00e5ff;
+    text-shadow: 0 0 8px rgba(0,229,255,0.5);
+  }
+  &.warning { 
+    color: #f6bd16;
+    text-shadow: 0 0 8px rgba(246,189,22,0.5);
+  }
+  &.digital {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 6px;
+    color: #00e5ff;
+    text-shadow: 0 0 10px rgba(0,229,255,0.6);
+    background: linear-gradient(180deg, rgba(0,180,255,0.15) 0%, rgba(0,180,255,0.05) 100%);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(0,180,255,0.3);
+    display: inline-block;
+  }
+  .unit {
+    font-size: 13px;
+    margin-left: 6px;
+    opacity: 0.85;
+    font-weight: 500;
+  }
+}
+
+.grade-stats {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.ring-chart-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.ring-chart {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: conic-gradient(#5b8ff9 0% 49.97%, #5ad8a6 49.97% 97.84%, #f6bd16 97.84% 99.14%, rgba(255,255,255,0.3) 99.14% 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(0,180,255,0.3), inset 0 0 15px rgba(0,180,255,0.2);
+  cursor: pointer;
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: scale(1.05);
+  }
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    border: 2px solid rgba(0,180,255,0.4);
+    box-shadow: 0 0 10px rgba(0,180,255,0.3);
+  }
+  
+  .ring-center {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(10,25,50,0.98) 0%, rgba(5,15,35,0.98) 100%);
+    border: 2px solid rgba(0,180,255,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.4;
+    font-weight: 600;
+    box-shadow: inset 0 0 10px rgba(0,180,255,0.2);
+  }
+}
+
+// 道路环形图 - ABCD四色
+.road-ring {
+  background: conic-gradient(
+    #5b8ff9 0% 49.97%,
+    #5ad8a6 49.97% 97.84%,
+    #f6bd16 97.84% 99.14%,
+    #e86452 99.14% 100%
+  );
+}
+
+// 桥梁环形图 - ABCDE五色
+.bridge-ring {
+  background: conic-gradient(
+    #5b8ff9 0% 44.89%,
+    #5ad8a6 44.89% 93.23%,
+    #f6bd16 93.23% 99.46%,
+    #e86452 99.46% 100%,
+    #945fb9 100% 100%
+  );
+}
+
+// 隧道环形图 - ABCDE五色
+.tunnel-ring {
+  background: conic-gradient(
+    #5b8ff9 0% 50.41%,
+    #5ad8a6 50.41% 84.02%,
+    #f6bd16 84.02% 100%,
+    #e86452 100% 100%
+  );
+}
+
+.ring-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  
+  .label-item {
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    
+    .label-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      box-shadow: 0 0 4px currentColor;
+      &.a { background: #5b8ff9; }
+      &.b { background: #5ad8a6; }
+      &.c { background: #f6bd16; }
+      &.d { background: #e86452; }
+      &.e { background: #945fb9; }
+      &.pass { background: #52c41a; }
+      &.fail { background: #ff4d4f; }
+      &.i { background: #5b8ff9; }
+      &.ii { background: #5ad8a6; }
+      &.iii { background: #f6bd16; }
+    }
+  }
+}
+
+.ring-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legend-item {
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    box-shadow: 0 0 4px currentColor;
+    &.a { background: #5b8ff9; }
+    &.b { background: #5ad8a6; }
+    &.c { background: #f6bd16; }
+    &.i { background: #5b8ff9; }
+    &.ii { background: #5ad8a6; }
+    &.iii { background: #f6bd16; }
+  }
+}
+
+.grade-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.grade-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, rgba(0,180,255,0.08) 0%, transparent 100%);
+  border-radius: 4px;
+  border-left: 2px solid rgba(0,180,255,0.3);
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+  
+  .grade-label {
+    font-weight: 600;
+    color: #fff;
+  }
+  
+  .grade-value {
+    color: #00e5ff;
+    font-weight: 700;
+    text-shadow: 0 0 4px rgba(0,229,255,0.4);
+  }
+}
+
+// 环形图悬浮提示框
+.ring-tooltip {
+  position: fixed;
+  z-index: 9999;
+  background: linear-gradient(135deg, rgba(10,30,60,0.96) 0%, rgba(5,15,40,0.96) 100%);
+  border: 1px solid rgba(0,180,255,0.5);
+  border-radius: 8px;
+  padding: 14px 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 15px rgba(0,180,255,0.2);
+  backdrop-filter: blur(10px);
+  min-width: 220px;
+  pointer-events: auto;
+  animation: tooltipFadeIn 0.2s ease;
+  
+  .tooltip-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00e5ff;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,180,255,0.3);
+    text-shadow: 0 0 6px rgba(0,229,255,0.4);
+  }
+  
+  .tooltip-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    
+    .tooltip-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+      box-shadow: 0 0 4px currentColor;
+    }
+    
+    .tooltip-label {
+      flex: 1;
+      font-weight: 600;
+    }
+    
+    .tooltip-value {
+      color: #00e5ff;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+  }
+}
+
+@keyframes tooltipFadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ops2-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  table-layout: fixed;
+  min-width: 0;
+  
+  thead {
+    th {
+      padding: 6px 4px;
+      background: linear-gradient(180deg, rgba(0,180,255,0.2) 0%, rgba(0,180,255,0.1) 100%);
+      color: #fff;
+      font-weight: 700;
+      border: 1px solid rgba(0,180,255,0.3);
+      text-align: center;
+      white-space: normal;
+      word-break: break-all;
+      line-height: 1.2;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-shadow: 0 0 4px rgba(0,180,255,0.3);
+    }
+  }
+  
+  tbody {
+    td {
+      padding: 5px 4px;
+      text-align: center;
+      border: 1px solid rgba(0,180,255,0.15);
+      color: rgba(255,255,255,0.9);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: rgba(0,30,60,0.2);
+    }
+    
+    tr:nth-child(even) {
+      td {
+        background: rgba(0,40,80,0.25);
+      }
+    }
+    
+    .total-row {
+      td {
+        background: linear-gradient(90deg, rgba(0,180,255,0.15) 0%, rgba(0,180,255,0.05) 100%);
+        font-weight: 700;
+        color: #fff;
+        text-shadow: 0 0 4px rgba(0,180,255,0.3);
+      }
+    }
+  }
+}
+
+// 滚动条样式
+.ops2-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.ops2-content::-webkit-scrollbar-track {
+  background: rgba(91,143,249,0.1);
+  border-radius: 3px;
+}
+
+.ops2-content::-webkit-scrollbar-thumb {
+  background: rgba(91,143,249,0.3);
+  border-radius: 3px;
+  
+  &:hover {
+    background: rgba(91,143,249,0.5);
+  }
+}
 </style>
 
 <style lang="scss">
@@ -4499,6 +8521,133 @@ watch(riskType, (val) => {
 .tunnel-device-detail-modal {
   .ant-form-item-label > label {
     color: #fff !important;
+  }
+}
+
+.hazard-detail-modal {
+  .ant-modal-content {
+    background: linear-gradient(180deg, #0d1f3c, #0a1628);
+    border: 1px solid rgba(100,160,255,0.15);
+    border-radius: 10px;
+  }
+  .ant-modal-header {
+    background: linear-gradient(90deg, rgba(0,100,200,0.4), rgba(0,60,120,0.2));
+    border-bottom: 1px solid rgba(0,180,255,0.3);
+    .ant-modal-title {
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+  .ant-modal-close {
+    .ant-modal-close-x {
+      color: rgba(255,255,255,0.6);
+      &:hover { color: #fff; }
+    }
+  }
+}
+
+.hazard-detail-body {
+  padding: 16px 20px;
+}
+
+.hazard-detail-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+  
+  .hazard-detail-photo-label {
+    color: #00e5ff;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding-top: 8px;
+  }
+  
+  .hazard-detail-photo {
+    width: 160px;
+    height: 110px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(0,180,255,0.3);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+}
+
+.hazard-detail-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 24px;
+  margin-bottom: 20px;
+  
+  .detail-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+    
+    .field-label {
+      color: #00e5ff;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    
+    .field-value {
+      color: #fff;
+      font-size: 13px;
+    }
+  }
+}
+
+.hazard-detail-attachments {
+  border-top: 1px solid rgba(0,180,255,0.2);
+  padding-top: 12px;
+  
+  .attachments-title {
+    text-align: center;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    background: rgba(0,100,200,0.15);
+    border: 1px solid rgba(0,180,255,0.2);
+    border-radius: 4px;
+  }
+  
+  .attachments-content {
+    min-height: 40px;
+    
+    .no-data {
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+    }
+    
+    .attachment-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .attachment-item {
+        padding: 4px 12px;
+        background: rgba(0,180,255,0.1);
+        border: 1px solid rgba(0,180,255,0.3);
+        border-radius: 4px;
+        color: #fff;
+        font-size: 12px;
+      }
+    }
   }
 }
 </style>

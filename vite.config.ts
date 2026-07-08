@@ -7,6 +7,9 @@ import { fileURLToPath } from 'url'
 export default defineConfig({
   base: '/stdqs/',
   plugins: [vue()],
+  server: {
+    port: 5173,
+  },
   resolve: {
     alias: {
       '@': resolve(fileURLToPath(new URL('.', import.meta.url)), 'src'),
