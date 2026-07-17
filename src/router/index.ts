@@ -24,6 +24,68 @@ const routes = [
         },
       },
       {
+        path: 'online-projects',
+        name: 'OnlineProjects',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: {
+          title: '在线项目',
+        },
+      },
+      {
+        path: 'online-projects/risk-road',
+        name: 'OpRiskRoad',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '问题道路', category: 'risk-facility', type: '问题道路' },
+      },
+      {
+        path: 'online-projects/risk-bridge',
+        name: 'OpRiskBridge',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '问题桥梁', category: 'risk-facility', type: '问题桥梁' },
+      },
+      {
+        path: 'online-projects/risk-tunnel',
+        name: 'OpRiskTunnel',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '问题隧道', category: 'risk-facility', type: '问题隧道' },
+      },
+      {
+        path: 'online-projects/renovation-road',
+        name: 'OpRenovationRoad',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '问题道路改造项目', category: 'risk-renovation', type: '问题道路改造' },
+      },
+      {
+        path: 'online-projects/renovation-bridge',
+        name: 'OpRenovationBridge',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '问题桥梁改造项目', category: 'risk-renovation', type: '问题桥梁改造' },
+      },
+      {
+        path: 'online-projects/renovation-tunnel',
+        name: 'OpRenovationTunnel',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '问题隧道改造项目', category: 'risk-renovation', type: '问题隧道改造' },
+      },
+      {
+        path: 'online-projects/new-road',
+        name: 'OpNewRoad',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '新建道路项目', category: 'new-project', type: '新建道路' },
+      },
+      {
+        path: 'online-projects/new-bridge',
+        name: 'OpNewBridge',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '新建桥梁项目', category: 'new-project', type: '新建桥梁' },
+      },
+      {
+        path: 'online-projects/new-tunnel',
+        name: 'OpNewTunnel',
+        component: () => import('@/views/OnlineProjects.vue'),
+        meta: { title: '新建隧道项目', category: 'new-project', type: '新建隧道' },
+      },
+      {
         path: 'bridge-info',
         name: 'BridgeInfo',
         component: () => import('@/views/BridgeInfo.vue'),
@@ -272,6 +334,12 @@ const routes = [
     name: 'Cockpit',
     component: () => import('@/views/Cockpit.vue'),
     meta: { title: '驾驶舱' },
+  },
+  {
+    path: '/construction-projects',
+    name: 'ConstructionProjects',
+    component: () => import('@/views/ConstructionCockpit.vue'),
+    meta: { title: '在建项目' },
   },
   {
     path: '/bridge-point-monitor',

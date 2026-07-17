@@ -1,4 +1,4 @@
-<template>
+z<template>
   <a-layout class="app-layout">
     <!-- 顶部导航栏 -->
     <a-layout-header class="header">
@@ -114,11 +114,46 @@ const workspaceMenuItems = ref<MenuProps['items']>([
   { key: 'todo', label: '待办事项' },
 ])
 
+// 在线项目侧边栏菜单
+const onlineProjectsMenuItems = ref<MenuProps['items']>([
+  {
+    key: 'risk-facility',
+    label: '问题设施',
+    children: [
+      { key: 'op-risk-road', label: '问题道路' },
+      { key: 'op-risk-bridge', label: '问题桥梁' },
+      { key: 'op-risk-tunnel', label: '问题隧道' },
+    ],
+  },
+  {
+    key: 'risk-renovation',
+    label: '问题设施改造项目',
+    children: [
+      { key: 'op-renovation-road', label: '问题道路改造项目' },
+      { key: 'op-renovation-bridge', label: '问题桥梁改造项目' },
+      { key: 'op-renovation-tunnel', label: '问题隧道改造项目' },
+    ],
+  },
+  {
+    key: 'new-project',
+    label: '新建设施项目',
+    children: [
+      { key: 'op-new-road', label: '新建道路项目' },
+      { key: 'op-new-bridge', label: '新建桥梁项目' },
+      { key: 'op-new-tunnel', label: '新建隧道项目' },
+    ],
+  },
+
+])
+
 // 当前使用的侧边栏菜单
 const currentSiderMenuItems = computed(() => {
   const path = route.path
   if (path === '/dashboard' || path === '/todo') {
     return workspaceMenuItems.value
+  }
+  if (path.includes('online-projects') || path.includes('op-')) {
+    return onlineProjectsMenuItems.value
   }
   if (path.includes('monitor-') || path.includes('weigh-monitor') || path.includes('flood-') || path.includes('camera-')) {
     return iotMenuItems.value
@@ -147,6 +182,8 @@ watch(
     // 顶部菜单
     if (path === '/dashboard') {
       selectedKeys.value = ['dashboard']
+    } else if (path === '/online-projects') {
+      selectedKeys.value = ['online-projects']
     } else if (path.includes('bridge-info') || path.includes('tunnel-info') || path.includes('road-info')) {
       selectedKeys.value = ['1']
     } else if (path.includes('hazard-')) {
@@ -164,6 +201,36 @@ watch(
       siderSelectedKeys.value = ['dashboard']
     } else if (path === '/todo') {
       siderSelectedKeys.value = ['todo']
+    } else if (path.includes('op-risk-road')) {
+      siderSelectedKeys.value = ['op-risk-road']
+      openKeys.value = ['risk-facility']
+    } else if (path.includes('op-risk-bridge')) {
+      siderSelectedKeys.value = ['op-risk-bridge']
+      openKeys.value = ['risk-facility']
+    } else if (path.includes('op-risk-tunnel')) {
+      siderSelectedKeys.value = ['op-risk-tunnel']
+      openKeys.value = ['risk-facility']
+    } else if (path.includes('op-renovation-road')) {
+      siderSelectedKeys.value = ['op-renovation-road']
+      openKeys.value = ['risk-renovation']
+    } else if (path.includes('op-renovation-bridge')) {
+      siderSelectedKeys.value = ['op-renovation-bridge']
+      openKeys.value = ['risk-renovation']
+    } else if (path.includes('op-renovation-tunnel')) {
+      siderSelectedKeys.value = ['op-renovation-tunnel']
+      openKeys.value = ['risk-renovation']
+    } else if (path.includes('op-new-road')) {
+      siderSelectedKeys.value = ['op-new-road']
+      openKeys.value = ['new-project']
+    } else if (path.includes('op-new-bridge')) {
+      siderSelectedKeys.value = ['op-new-bridge']
+      openKeys.value = ['new-project']
+    } else if (path.includes('op-new-tunnel')) {
+      siderSelectedKeys.value = ['op-new-tunnel']
+      openKeys.value = ['new-project']
+    } else if (path === '/online-projects') {
+      siderSelectedKeys.value = ['op-risk-road']
+      openKeys.value = ['risk-facility']
     } else if (path.includes('hazard-checklist-config')) {
       siderSelectedKeys.value = ['hazard-checklist-config']
       openKeys.value = ['hazard-basic']
@@ -280,6 +347,7 @@ const menuItems = ref<MenuProps['items']>([
   { key: '5', label: '隐患排查' },
   { key: '2', label: '检测管理' },
   { key: '3', label: '物联监管' },
+  { key: 'online-projects', label: '在线项目' },
   { key: '4', label: '机构人员管理' },
 ])
 
@@ -414,6 +482,8 @@ const orgPersonnelMenuItems = ref<MenuProps['items']>([
 const handleMenuClick: MenuProps['onClick'] = (info) => {
   if (info.key === 'dashboard') {
     router.push('/dashboard')
+  } else if (info.key === 'online-projects') {
+    router.push('/online-projects/risk-road')
   } else if (info.key === '1') {
     router.push('/bridge-info')
   } else if (info.key === '5') {
@@ -441,6 +511,24 @@ const handleSiderMenuClick: MenuProps['onClick'] = (info) => {
     router.push('/dashboard')
   } else if (info.key === 'todo') {
     router.push('/todo')
+  } else if (info.key === 'op-risk-road') {
+    router.push('/online-projects/risk-road')
+  } else if (info.key === 'op-risk-bridge') {
+    router.push('/online-projects/risk-bridge')
+  } else if (info.key === 'op-risk-tunnel') {
+    router.push('/online-projects/risk-tunnel')
+  } else if (info.key === 'op-renovation-road') {
+    router.push('/online-projects/renovation-road')
+  } else if (info.key === 'op-renovation-bridge') {
+    router.push('/online-projects/renovation-bridge')
+  } else if (info.key === 'op-renovation-tunnel') {
+    router.push('/online-projects/renovation-tunnel')
+  } else if (info.key === 'op-new-road') {
+    router.push('/online-projects/new-road')
+  } else if (info.key === 'op-new-bridge') {
+    router.push('/online-projects/new-bridge')
+  } else if (info.key === 'op-new-tunnel') {
+    router.push('/online-projects/new-tunnel')
   } else if (info.key === 'bridge-info') {
     router.push('/bridge-info')
   } else if (info.key === 'tunnel-info') {
