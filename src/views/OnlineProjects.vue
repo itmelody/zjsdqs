@@ -7,7 +7,7 @@
           <HomeOutlined />
           <span>首页</span>
         </a-breadcrumb-item>
-        <a-breadcrumb-item>在线项目</a-breadcrumb-item>
+        <a-breadcrumb-item>项目管理</a-breadcrumb-item>
         <a-breadcrumb-item v-if="currentTitle">{{ currentTitle }}</a-breadcrumb-item>
       </a-breadcrumb>
     </div>

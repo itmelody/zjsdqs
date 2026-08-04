@@ -347,7 +347,7 @@ const menuItems = ref<MenuProps['items']>([
   { key: '5', label: '隐患排查' },
   { key: '2', label: '检测管理' },
   { key: '3', label: '物联监管' },
-  { key: 'online-projects', label: '在线项目' },
+  { key: 'online-projects', label: '项目管理' },
   { key: '4', label: '机构人员管理' },
 ])
 
