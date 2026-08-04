@@ -20,6 +20,9 @@
     <a-table :data-source="filteredData" :columns="columns" :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条`, showSizeChanger: true }" size="middle" bordered row-key="id" :scroll="{ x: 'max-content' }" :row-selection="{ selectedRowKeys, onChange: onSelectChange }">
       <template #bodyCell="{ column, record, index }">
         <template v-if="column.key === 'index'">{{ index + 1 }}</template>
+        <template v-if="column.key === 'verifyStatus'">
+          <span :style="{ color: getRowVerifyColor(record as PersonnelRow), fontWeight: 500, fontSize: '13px' }">{{ getRowVerifyLabel(record as PersonnelRow) }}</span>
+        </template>
         <template v-if="column.key === 'status'">
           <a-switch v-model:checked="(record as PersonnelRow).status" checked-children="启用" un-checked-children="停用" :checkedValue="'启用'" :unCheckedValue="'停用'" />
         </template>
@@ -47,6 +50,69 @@
           <a-col :span="12">
             <a-form-item label="身份证号码" required><a-input v-model:value="formData.idCard" placeholder="请输入身份证号码" :disabled="formMode === 'view'" /></a-form-item>
           </a-col>
+        </a-row>
+        <!-- 人员资质证书区域 -->
+        <a-row v-if="showCerts">
+          <a-col :span="24">
+            <div class="cert-section">
+              <div class="cert-section-header">
+                <span class="cert-section-title">人员资质证书</span>
+                <a-button v-if="formMode !== 'view'" type="dashed" size="small" @click="addCertificate"><PlusOutlined />新增证书</a-button>
+              </div>
+              <div v-if="noCertConfirmed" class="cert-confirmed">已确认人员无资质证书</div>
+              <div v-else-if="certificates.length === 0" class="cert-empty">暂无资质证书，请点击“新增证书”添加</div>
+              <div v-for="(cert, idx) in certificates" :key="idx" class="cert-item">
+                <div class="cert-item-header">
+                  <span class="cert-item-index">证书 {{ idx + 1 }}</span>
+                  <div class="cert-item-actions">
+                    <a-button v-if="formMode !== 'view'" type="link" size="small" :loading="cert.verifyStatus === 'verifying'" :disabled="cert.verifyStatus === 'verifying'" @click="verifyCertificate(idx)"><CheckOutlined />校验</a-button>
+                    <span v-if="cert.verifyStatus === 'verifying'" class="cert-verify-status verifying">四库一平台校验中</span>
+                    <span v-else-if="cert.verifyStatus === 'success'" class="cert-verify-status success">四库一平台校验成功</span>
+                    <span v-else-if="cert.verifyStatus === 'fail'" class="cert-verify-status fail">四库一平台校验失败</span>
+                    <span v-else class="cert-verify-status unverified">四库一平台未校验</span>
+                    <a-button v-if="formMode !== 'view'" type="link" danger size="small" @click="removeCertificate(idx)"><DeleteOutlined />删除</a-button>
+                  </div>
+                </div>
+                <a-row :gutter="12">
+                  <a-col :span="8">
+                    <a-form-item label="资质证书类型" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-select v-model:value="cert.certType" placeholder="请选择证书类型" :disabled="formMode === 'view'" allowClear>
+                        <a-select-option value="注册土木工程师(道路工程)">注册土木工程师(道路工程)</a-select-option>
+                        <a-select-option value="注册土木工程师(岩土工程)">注册土木工程师(岩土工程)</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="8">
+                    <a-form-item label="证书编号" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-input v-model:value="cert.certNo" placeholder="请输入证书编号" :disabled="formMode === 'view'" />
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="8">
+                    <a-form-item label="证书图片" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-upload v-if="formMode !== 'view'" :show-upload-list="false" :before-upload="(file: File) => { cert.certImage = file.name; return false }">
+                        <a-button size="small"><PlusOutlined />上传图片</a-button>
+                      </a-upload>
+                      <span v-else>{{ cert.certImage || '未上传' }}</span>
+                      <span v-if="cert.certImage && formMode !== 'view'" style="margin-left: 8px; color: #52c41a; font-size: 12px">{{ cert.certImage }}</span>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+                <a-row :gutter="12">
+                  <a-col :span="8">
+                    <a-form-item label="职称等级" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-select v-model:value="cert.certLevel" placeholder="请选择职称等级" :disabled="formMode === 'view'" allowClear>
+                        <a-select-option value="初级">初级</a-select-option>
+                        <a-select-option value="中级">中级</a-select-option>
+                        <a-select-option value="高级">高级</a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-col>
+                </a-row>
+              </div>
+            </div>
+          </a-col>
+        </a-row>
+        <a-row :gutter="16">
           <a-col :span="12">
             <a-form-item label="联系电话" required><a-input v-model:value="formData.phone" placeholder="手机号码作为登录账号，请输入正确手机号" :disabled="formMode === 'view'" /></a-form-item>
           </a-col>
@@ -99,10 +165,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons-vue'
+import { ref, computed, watch } from 'vue'
+import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons-vue'
+import { Modal } from 'ant-design-vue'
 
-interface PersonnelRow { id: number; unitName: string; creditCode: string; region: string; name: string; idCard: string; phone: string; gender: string; education: string; role: string; status: string }
+interface CertItem { certType: string; certLevel: string; certNo: string; certImage: string; verifyStatus?: '' | 'verifying' | 'success' | 'fail' }
+interface PersonnelRow { id: number; unitName: string; creditCode: string; region: string; name: string; idCard: string; phone: string; gender: string; education: string; role: string; status: string; certificates?: CertItem[]; noCertConfirmed?: boolean }
 
 const searchForm = ref({ unitName: '', creditCode: '', region: undefined as string | undefined, name: '', idCard: '', education: undefined as string | undefined, role: undefined as string | undefined, status: undefined as string | undefined })
 const regionOptions = ['杭州市', '宁波市', '温州市', '绍兴市', '湖州市', '嘉兴市', '金华市', '衢州市', '台州市', '丽水市', '舟山市']
@@ -120,6 +188,7 @@ const columns = [
   { title: '性别', dataIndex: 'gender', key: 'gender', width: 70 },
   { title: '学历', dataIndex: 'education', key: 'education', width: 80 },
   { title: '角色', dataIndex: 'role', key: 'role', width: 100 },
+  { title: '校验状态', key: 'verifyStatus', width: 120 },
   { title: '账号状态', dataIndex: 'status', key: 'status', width: 100 },
   { title: '操作', key: 'action', width: 220, fixed: 'right' as const },
 ]
@@ -148,6 +217,23 @@ function handleReset() { searchForm.value = { unitName: '', creditCode: '', regi
 function handleResetPwd(r: PersonnelRow) { console.log('重置密码', r) }
 function handleDelete(r: PersonnelRow) { console.log('删除', r) }
 function handleBatchDelete() { console.log('批量删除', selectedRowKeys.value) }
+function getRowVerifyStatus(record: PersonnelRow): 'noNeed' | 'unverified' | 'verifying' | 'success' | 'fail' {
+  if (record.noCertConfirmed) return 'noNeed'
+  const certs = record.certificates || []
+  if (certs.length === 0) return 'unverified'
+  if (certs.some(c => c.verifyStatus === 'verifying')) return 'verifying'
+  if (certs.every(c => c.verifyStatus === 'success')) return 'success'
+  if (certs.some(c => c.verifyStatus === 'fail')) return 'fail'
+  return 'unverified'
+}
+function getRowVerifyLabel(record: PersonnelRow): string {
+  const map = { noNeed: '无需校验', unverified: '未校验', verifying: '校验中', success: '校验成功', fail: '校验失败' }
+  return map[getRowVerifyStatus(record)]
+}
+function getRowVerifyColor(record: PersonnelRow): string {
+  const map = { noNeed: '#999', unverified: '#999', verifying: '#faad14', success: '#52c41a', fail: '#ff4d4f' }
+  return map[getRowVerifyStatus(record)]
+}
 
 const selectedRowKeys = ref<number[]>([])
 function onSelectChange(keys: number[]) { selectedRowKeys.value = keys }
@@ -161,6 +247,42 @@ const formData = ref({
   unitName: '', creditCode: '', name: '', idCard: '', phone: '', gender: undefined as string | undefined,
   education: undefined as string | undefined, status: '启用', roles: [] as string[],
 })
+const certificates = ref<CertItem[]>([])
+const noCertConfirmed = ref(false)
+const showCerts = computed(() => formData.value.idCard.trim().length > 0)
+watch(showCerts, (val) => {
+  if (val && certificates.value.length === 0 && !noCertConfirmed.value) {
+    addCertificate()
+  }
+})
+function addCertificate() { noCertConfirmed.value = false; certificates.value.push({ certType: '', certLevel: '', certNo: '', certImage: '', verifyStatus: '' }) }
+function removeCertificate(idx: number) {
+  if (certificates.value.length === 1) {
+    Modal.confirm({
+      title: '确认操作',
+      content: '是否确认该人员无资质证书？',
+      okText: '是',
+      cancelText: '否',
+      onOk() {
+        certificates.value.splice(idx, 1)
+        noCertConfirmed.value = true
+      },
+      onCancel() {
+        // 取消时保留一条空数据
+      }
+    })
+  } else {
+    certificates.value.splice(idx, 1)
+  }
+}
+function verifyCertificate(idx: number) {
+  const cert = certificates.value[idx]
+  cert.verifyStatus = 'verifying'
+  setTimeout(() => {
+    // 模拟校验：证书类型和编号都不为空时校验成功，否则失败
+    cert.verifyStatus = (cert.certType && cert.certNo) ? 'success' : 'fail'
+  }, 1500)
+}
 
 const modalTitle = computed(() => {
   if (formMode.value === 'add') return '新增安全评估单位从业人员'
@@ -173,6 +295,8 @@ function openModal(mode: 'add' | 'view' | 'edit', record?: PersonnelRow) {
   if (mode === 'add') {
     editingId.value = null
     formData.value = { unitName: '', creditCode: '', name: '', idCard: '', phone: '', gender: undefined, education: undefined, status: '启用', roles: [] }
+    certificates.value = []
+    noCertConfirmed.value = false
   } else if (record) {
     editingId.value = record.id
     formData.value = {
@@ -180,6 +304,8 @@ function openModal(mode: 'add' | 'view' | 'edit', record?: PersonnelRow) {
       gender: record.gender, education: record.education, status: record.status,
       roles: record.role.split('、').map(s => s.trim()),
     }
+    certificates.value = record.certificates ? [...record.certificates] : []
+    noCertConfirmed.value = record.noCertConfirmed || (certificates.value.length === 0 && record.idCard.trim().length > 0)
   }
   modalVisible.value = true
 }
@@ -190,7 +316,7 @@ function submitForm() {
     tableData.value.push({
       id: newId, unitName: formData.value.unitName, creditCode: formData.value.creditCode, region: '', name: formData.value.name,
       idCard: formData.value.idCard, phone: formData.value.phone, gender: formData.value.gender || '', education: formData.value.education || '',
-      role: formData.value.roles.join('、'), status: formData.value.status,
+      role: formData.value.roles.join('、'), status: formData.value.status, certificates: [...certificates.value], noCertConfirmed: noCertConfirmed.value,
     })
   } else if (formMode.value === 'edit' && editingId.value) {
     const row = tableData.value.find(r => r.id === editingId.value)
@@ -198,7 +324,7 @@ function submitForm() {
       Object.assign(row, {
         unitName: formData.value.unitName, creditCode: formData.value.creditCode, name: formData.value.name, idCard: formData.value.idCard,
         phone: formData.value.phone, gender: formData.value.gender || '', education: formData.value.education || '',
-        role: formData.value.roles.join('、'), status: formData.value.status,
+        role: formData.value.roles.join('、'), status: formData.value.status, certificates: [...certificates.value], noCertConfirmed: noCertConfirmed.value,
       })
     }
   }
@@ -207,6 +333,8 @@ function submitForm() {
 
 function resetForm() {
   formData.value = { unitName: '', creditCode: '', name: '', idCard: '', phone: '', gender: undefined, education: undefined, status: '启用', roles: [] }
+  certificates.value = []
+  noCertConfirmed.value = false
 }
 </script>
 
@@ -214,4 +342,14 @@ function resetForm() {
 .personnel-page { background: #fff; padding: 20px; border-radius: 8px; }
 .search-bar { margin-bottom: 16px; padding: 16px; background: #fafafa; border-radius: 4px; .search-label { font-size: 14px; color: rgba(0, 0, 0, 0.85); } }
 .action-bar { margin-bottom: 16px; }
+.cert-section { margin: 8px 0 16px; padding: 16px; background: #f6f8fa; border: 1px solid #e8ecf0; border-radius: 6px; }
+.cert-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cert-section-title { font-weight: 600; font-size: 14px; color: rgba(0, 0, 0, 0.85); }
+.cert-empty { text-align: center; color: #b0b8c4; padding: 20px 0; font-size: 13px; }
+.cert-confirmed { text-align: center; color: #52c41a; font-weight: 600; padding: 20px 0; font-size: 14px; }
+.cert-item { background: #fff; border: 1px solid #e8ecf0; border-radius: 4px; padding: 12px 16px 4px; margin-bottom: 12px; }
+.cert-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.cert-item-actions { display: flex; align-items: center; gap: 8px; }
+.cert-item-index { font-weight: 500; font-size: 13px; color: #1890ff; }
+.cert-verify-status { font-size: 12px; font-weight: 500; &.verifying { color: #faad14; } &.success { color: #52c41a; } &.fail { color: #ff4d4f; } &.unverified { color: #999; } }
 </style>
