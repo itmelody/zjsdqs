@@ -51,15 +51,15 @@
             <a-form-item label="身份证号码" required><a-input v-model:value="formData.idCard" placeholder="请输入身份证号码" :disabled="formMode === 'view'" /></a-form-item>
           </a-col>
         </a-row>
-        <!-- 人员资质证书区域 -->
+        <!-- 人员职称区域 -->
         <a-row v-if="showCerts">
           <a-col :span="24">
             <div class="cert-section">
               <div class="cert-section-header">
-                <span class="cert-section-title">人员资质证书</span>
+                <span class="cert-section-title">人员职称</span>
                 <a-button v-if="formMode !== 'view'" type="dashed" size="small" @click="addCertificate"><PlusOutlined />新增证书</a-button>
               </div>
-              <div v-if="noCertConfirmed" class="cert-confirmed">已确认人员无资质证书</div>
+              <div v-if="noCertConfirmed" class="cert-confirmed">已确认人员无职称</div>
               <div v-else-if="certificates.length === 0" class="cert-empty">暂无资质证书，请点击“新增证书”添加</div>
               <div v-for="(cert, idx) in certificates" :key="idx" class="cert-item">
                 <div class="cert-item-header">
@@ -75,29 +75,10 @@
                 </div>
                 <a-row :gutter="12">
                   <a-col :span="8">
-                    <a-form-item label="资质证书类型" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
-                      <a-select v-model:value="cert.certType" placeholder="请选择证书类型" :disabled="formMode === 'view'" allowClear>
-                        <a-select-option value="注册土木工程师(道路工程)">注册土木工程师(道路工程)</a-select-option>
-                        <a-select-option value="注册土木工程师(岩土工程)">注册土木工程师(岩土工程)</a-select-option>
-                      </a-select>
+                    <a-form-item label="职称专业" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-input v-model:value="cert.certMajor" placeholder="请输入职称专业" :disabled="formMode === 'view'" />
                     </a-form-item>
                   </a-col>
-                  <a-col :span="8">
-                    <a-form-item label="证书编号" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
-                      <a-input v-model:value="cert.certNo" placeholder="请输入证书编号" :disabled="formMode === 'view'" />
-                    </a-form-item>
-                  </a-col>
-                  <a-col :span="8">
-                    <a-form-item label="证书图片" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
-                      <a-upload v-if="formMode !== 'view'" :show-upload-list="false" :before-upload="(file: File) => { cert.certImage = file.name; return false }">
-                        <a-button size="small"><PlusOutlined />上传图片</a-button>
-                      </a-upload>
-                      <span v-else>{{ cert.certImage || '未上传' }}</span>
-                      <span v-if="cert.certImage && formMode !== 'view'" style="margin-left: 8px; color: #52c41a; font-size: 12px">{{ cert.certImage }}</span>
-                    </a-form-item>
-                  </a-col>
-                </a-row>
-                <a-row :gutter="12">
                   <a-col :span="8">
                     <a-form-item label="职称等级" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
                       <a-select v-model:value="cert.certLevel" placeholder="请选择职称等级" :disabled="formMode === 'view'" allowClear>
@@ -105,6 +86,15 @@
                         <a-select-option value="中级">中级</a-select-option>
                         <a-select-option value="高级">高级</a-select-option>
                       </a-select>
+                    </a-form-item>
+                  </a-col>
+                  <a-col :span="8">
+                    <a-form-item label="职称证书图片" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-upload v-if="formMode !== 'view'" :show-upload-list="false" :before-upload="(file: File) => { cert.certImage = file.name; return false }">
+                        <a-button size="small"><PlusOutlined />上传图片</a-button>
+                      </a-upload>
+                      <span v-else>{{ cert.certImage || '未上传' }}</span>
+                      <span v-if="cert.certImage && formMode !== 'view'" style="margin-left: 8px; color: #52c41a; font-size: 12px">{{ cert.certImage }}</span>
                     </a-form-item>
                   </a-col>
                 </a-row>
@@ -169,7 +159,7 @@ import { ref, computed, watch } from 'vue'
 import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
 
-interface CertItem { certType: string; certLevel: string; certNo: string; certImage: string; verifyStatus?: '' | 'verifying' | 'success' | 'fail' }
+interface CertItem { certMajor: string; certLevel: string; certImage: string; verifyStatus?: '' | 'verifying' | 'success' | 'fail' }
 interface PersonnelRow { id: number; unitName: string; creditCode: string; region: string; name: string; idCard: string; phone: string; gender: string; education: string; role: string; status: string; certificates?: CertItem[]; noCertConfirmed?: boolean }
 
 const searchForm = ref({ unitName: '', creditCode: '', region: undefined as string | undefined, name: '', idCard: '', education: undefined as string | undefined, role: undefined as string | undefined, status: undefined as string | undefined })
@@ -255,12 +245,12 @@ watch(showCerts, (val) => {
     addCertificate()
   }
 })
-function addCertificate() { noCertConfirmed.value = false; certificates.value.push({ certType: '', certLevel: '', certNo: '', certImage: '', verifyStatus: '' }) }
+function addCertificate() { noCertConfirmed.value = false; certificates.value.push({ certMajor: '', certLevel: '', certImage: '', verifyStatus: '' }) }
 function removeCertificate(idx: number) {
   if (certificates.value.length === 1) {
     Modal.confirm({
       title: '确认操作',
-      content: '是否确认该人员无资质证书？',
+      content: '是否确认该人员无职称？',
       okText: '是',
       cancelText: '否',
       onOk() {
@@ -279,8 +269,8 @@ function verifyCertificate(idx: number) {
   const cert = certificates.value[idx]
   cert.verifyStatus = 'verifying'
   setTimeout(() => {
-    // 模拟校验：证书类型和编号都不为空时校验成功，否则失败
-    cert.verifyStatus = (cert.certType && cert.certNo) ? 'success' : 'fail'
+    // 模拟校验：职称专业和职称等级都不为空时校验成功，否则失败
+    cert.verifyStatus = (cert.certMajor && cert.certLevel) ? 'success' : 'fail'
   }, 1500)
 }
 

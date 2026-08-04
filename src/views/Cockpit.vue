@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="cockpit-page">
     <!-- 顶部子导航 -->
     <div class="cockpit-header">
@@ -1108,40 +1108,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardRoadView === 'chart' }" 
-                @click="hazardRoadView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardRoadView === 'list' }" 
-                @click="hazardRoadView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="hazardRoadView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in roadHazardData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="hazardRoadView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -1233,40 +1201,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardBridgeView === 'chart' }" 
-                @click="hazardBridgeView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardBridgeView === 'list' }" 
-                @click="hazardBridgeView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="hazardBridgeView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in bridgeHazardData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="hazardBridgeView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -1358,40 +1294,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardTunnelView === 'chart' }" 
-                @click="hazardTunnelView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardTunnelView === 'list' }" 
-                @click="hazardTunnelView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="hazardTunnelView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in tunnelHazardData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="hazardTunnelView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -2797,40 +2701,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessRoadView === 'chart' }" 
-                @click="assessRoadView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessRoadView === 'list' }" 
-                @click="assessRoadView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="assessRoadView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in roadAssessData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>评估已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>评估未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未评</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="assessRoadView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -2934,40 +2806,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessBridgeView === 'chart' }" 
-                @click="assessBridgeView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessBridgeView === 'list' }" 
-                @click="assessBridgeView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="assessBridgeView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in bridgeAssessData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>评估已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>评估未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未评</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="assessBridgeView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -3071,40 +2911,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessTunnelView === 'chart' }" 
-                @click="assessTunnelView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessTunnelView === 'list' }" 
-                @click="assessTunnelView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="assessTunnelView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in tunnelAssessData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>评估已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>评估未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未评</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="assessTunnelView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -3657,40 +3465,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardRoadView === 'chart' }" 
-                @click="hazardRoadView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardRoadView === 'list' }" 
-                @click="hazardRoadView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="hazardRoadView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in roadHazardData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="hazardRoadView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -3782,40 +3558,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardBridgeView === 'chart' }" 
-                @click="hazardBridgeView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardBridgeView === 'list' }" 
-                @click="hazardBridgeView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="hazardBridgeView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in bridgeHazardData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="hazardBridgeView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -3907,40 +3651,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardTunnelView === 'chart' }" 
-                @click="hazardTunnelView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: hazardTunnelView === 'list' }" 
-                @click="hazardTunnelView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="hazardTunnelView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in tunnelHazardData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>排查已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>排查未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未巡</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="hazardTunnelView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -5346,40 +5058,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessRoadView === 'chart' }" 
-                @click="assessRoadView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessRoadView === 'list' }" 
-                @click="assessRoadView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="assessRoadView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in roadAssessData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>评估已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>评估未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未评</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="assessRoadView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -5483,40 +5163,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessBridgeView === 'chart' }" 
-                @click="assessBridgeView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessBridgeView === 'list' }" 
-                @click="assessBridgeView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="assessBridgeView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in bridgeAssessData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>评估已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>评估未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未评</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="assessBridgeView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -5620,40 +5268,8 @@
               <span class="section-diamond">◆</span>
               <span class="section-name">设区市数据统计</span>
             </div>
-            <!-- 页签 -->
-            <div class="ops2-view-tabs">
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessTunnelView === 'chart' }" 
-                @click="assessTunnelView = 'chart'"
-              >图表</div>
-              <div 
-                class="ops2-view-tab" 
-                :class="{ active: assessTunnelView === 'list' }" 
-                @click="assessTunnelView = 'list'"
-              >列表</div>
-            </div>
-            <!-- 图表视图 -->
-            <div v-show="assessTunnelView === 'chart'" class="ops2-chart-wrapper">
-              <div class="bar-chart-container">
-                <div v-for="(item, index) in tunnelAssessData" :key="index" class="bar-row">
-                  <div class="bar-label">{{ item.city }}</div>
-                  <div class="bar-group">
-                    <div class="bar-item completed" :style="{ width: (item.completed / item.total * 100) + '%' }"></div>
-                    <div class="bar-item incomplete" :style="{ width: (item.incomplete / item.total * 100) + '%' }"></div>
-                    <div class="bar-item overdue" :style="{ width: (item.overdue / item.total * 100) + '%' }"></div>
-                  </div>
-                  <div class="bar-value">{{ item.total }}</div>
-                </div>
-              </div>
-              <div class="bar-legend">
-                <div class="legend-item"><span class="legend-dot completed"></span>评估已完成</div>
-                <div class="legend-item"><span class="legend-dot incomplete"></span>评估未完成</div>
-                <div class="legend-item"><span class="legend-dot overdue"></span>超期未评</div>
-              </div>
-            </div>
             <!-- 列表视图 -->
-            <div v-show="assessTunnelView === 'list'" class="ops2-table-wrapper">
+            <div class="ops2-table-wrapper">
               <table class="ops2-table">
                 <thead>
                   <tr>
@@ -11767,3 +11383,4 @@ watch(riskType, (val) => {
   }
 }
 </style>
+

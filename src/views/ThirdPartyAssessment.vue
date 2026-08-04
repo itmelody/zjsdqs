@@ -54,8 +54,8 @@
                 </div>
                 <a-row :gutter="12">
                   <a-col :span="8">
-                    <a-form-item label="行业名称" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
-                      <a-input v-model:value="cert.industryName" placeholder="请输入行业名称" :disabled="formMode === 'view'" />
+                    <a-form-item label="资质资格序列" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-input v-model:value="cert.certSequence" placeholder="请输入资质资格序列" :disabled="formMode === 'view'" />
                     </a-form-item>
                   </a-col>
                   <a-col :span="8">
@@ -64,8 +64,8 @@
                     </a-form-item>
                   </a-col>
                   <a-col :span="8">
-                    <a-form-item label="资质等级" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
-                      <a-select v-model:value="cert.qualificationLevel" placeholder="请选择资质等级" :disabled="formMode === 'view'" allowClear>
+                    <a-form-item label="资质资格等级" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-select v-model:value="cert.qualificationLevel" placeholder="请选择资质资格等级" :disabled="formMode === 'view'" allowClear>
                         <a-select-option value="甲级">甲级</a-select-option>
                         <a-select-option value="乙级">乙级</a-select-option>
                         <a-select-option value="丙级">丙级</a-select-option>
@@ -74,6 +74,11 @@
                   </a-col>
                 </a-row>
                 <a-row :gutter="12">
+                  <a-col :span="8">
+                    <a-form-item label="资质明细" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
+                      <a-input v-model:value="cert.certDetail" placeholder="请输入资质明细" :disabled="formMode === 'view'" />
+                    </a-form-item>
+                  </a-col>
                   <a-col :span="8">
                     <a-form-item label="证书编号" :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }">
                       <a-input v-model:value="cert.certNo" placeholder="请输入证书编号" :disabled="formMode === 'view'" />
@@ -118,7 +123,7 @@
 import { ref, computed, watch } from 'vue'
 import { PlusOutlined, DeleteOutlined, CheckOutlined } from '@ant-design/icons-vue'
 import { Modal } from 'ant-design-vue'
-interface CertItem { industryName: string; specialtyName: string; qualificationLevel: string; certNo: string; certImage: string; verifyStatus?: '' | 'verifying' | 'success' | 'fail' }
+interface CertItem { certSequence: string; specialtyName: string; qualificationLevel: string; certDetail: string; certNo: string; certImage: string; verifyStatus?: '' | 'verifying' | 'success' | 'fail' }
 interface UnitRow { id: number; name: string; creditCode: string; region: string; address: string; legalPerson: string; legalPhone: string; unitHead: string; headPhone: string; dailyContact: string; contactPhone: string; status: string; supervisor: string; remark: string; certificates?: CertItem[]; noCertConfirmed?: boolean }
 const searchForm = ref({ name: '', creditCode: '', region: undefined as string | undefined, status: undefined as string | undefined })
 const regionOptions = ['杭州市', '宁波市', '温州市', '绍兴市', '湖州市', '嘉兴市', '金华市', '衢州市', '台州市', '丽水市', '舟山市']
@@ -170,7 +175,7 @@ watch(showCerts, (val) => {
     addCertificate()
   }
 })
-function addCertificate() { noCertConfirmed.value = false; certificates.value.push({ industryName: '', specialtyName: '', qualificationLevel: '', certNo: '', certImage: '', verifyStatus: '' }) }
+function addCertificate() { noCertConfirmed.value = false; certificates.value.push({ certSequence: '', specialtyName: '', qualificationLevel: '', certDetail: '', certNo: '', certImage: '', verifyStatus: '' }) }
 function removeCertificate(idx: number) {
   if (certificates.value.length === 1) {
     Modal.confirm({
@@ -194,8 +199,8 @@ function verifyCertificate(idx: number) {
   const cert = certificates.value[idx]
   cert.verifyStatus = 'verifying'
   setTimeout(() => {
-    // 模拟校验：行业名称、专业名称和编号都不为空时校验成功，否则失败
-    cert.verifyStatus = (cert.industryName && cert.specialtyName && cert.certNo) ? 'success' : 'fail'
+    // 模拟校验：资质资格序列、专业名称和编号都不为空时校验成功，否则失败
+    cert.verifyStatus = (cert.certSequence && cert.specialtyName && cert.certNo) ? 'success' : 'fail'
   }, 1500)
 }
 const modalTitle = computed(() => { if (formMode.value === 'add') return '新增安全评估单位'; if (formMode.value === 'view') return '查看安全评估单位'; return '编辑安全评估单位' })
