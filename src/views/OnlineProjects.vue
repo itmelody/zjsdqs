@@ -339,7 +339,7 @@
                 <a-input-number v-model:value="yearRecord.renovationLength" size="small" :min="0" style="width: 100%" @change="validateYearRenovationLength(facilityRecord)" :disabled="renovationModalMode === 'view'" />
               </template>
               <template v-else-if="column.key === 'completedLength'">
-                <a-input-number v-model:value="yearRecord.completedLength" size="small" :min="0" style="width: 100%" :disabled="renovationModalMode === 'view'" />
+                <a-input-number v-model:value="yearRecord.completedLength" size="small" :min="0" style="width: 100%" @change="validateYearCompletedLength(facilityRecord)" :disabled="renovationModalMode === 'view'" />
               </template>
               <template v-else-if="column.key === 'progress'">
                 <a-input v-model:value="yearRecord.progress" size="small" placeholder="如：66.7%" :disabled="renovationModalMode === 'view'" />
@@ -1778,11 +1778,18 @@ const yearDataColumns = computed(() => {
   const cols: any[] = [
     { title: '年份', dataIndex: 'year', key: 'year', width: 80 },
   ]
-  if (isRoad && !isNewProject) {
-    cols.push(
-      { title: '需改造长度(m)', dataIndex: 'renovationLength', key: 'renovationLength', width: 130 },
-      { title: '已改造长度(m)', dataIndex: 'completedLength', key: 'completedLength', width: 130 },
-    )
+  if (isRoad) {
+    if (isNewProject) {
+      cols.push(
+        { title: '目标建设长度(m)', dataIndex: 'renovationLength', key: 'renovationLength', width: 130 },
+        { title: '已建设长度(m)', dataIndex: 'completedLength', key: 'completedLength', width: 130 },
+      )
+    } else {
+      cols.push(
+        { title: '需改造长度(m)', dataIndex: 'renovationLength', key: 'renovationLength', width: 130 },
+        { title: '已改造长度(m)', dataIndex: 'completedLength', key: 'completedLength', width: 130 },
+      )
+    }
   }
   cols.push(
     { title: '形象进度', dataIndex: 'progress', key: 'progress', width: 100 },
@@ -1812,6 +1819,15 @@ function validateYearRenovationLength(facilityRecord: FacilityProgressGroup) {
   if (totalYearRenovation > facilityRecord.totalRenovationLength) {
     const label = isNewProject ? '目标建设长度' : '需改造长度'
     message.warning(`各年度${label}之和(${totalYearRenovation}m)不可大于总${label}(${facilityRecord.totalRenovationLength}m)`)
+  }
+}
+
+// 校验年份已建设长度之和等于总已建设长度
+function validateYearCompletedLength(facilityRecord: FacilityProgressGroup) {
+  const totalYearCompleted = facilityRecord.yearData.reduce((sum, y) => sum + (y.completedLength || 0), 0)
+  // 只有当总已建设长度大于0时才进行校验
+  if (facilityRecord.totalCompletedLength > 0 && totalYearCompleted > facilityRecord.totalCompletedLength) {
+    message.warning(`各年度已建设长度之和(${totalYearCompleted}m)不可大于总已建设长度(${facilityRecord.totalCompletedLength}m)`)
   }
 }
 
