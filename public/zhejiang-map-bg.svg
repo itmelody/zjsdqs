@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a1628;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2a4a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  
+  <!-- 简化的浙江省轮廓 -->
+  <path d="M 200,150 Q 250,100 350,120 Q 450,100 550,150 Q 600,200 580,280 Q 600,350 550,400 Q 500,450 400,420 Q 300,450 250,400 Q 200,350 180,280 Q 150,200 200,150 Z" 
+        fill="rgba(91,143,249,0.1)" stroke="#5b8ff9" stroke-width="2"/>
+  
+  <!-- 网格线 -->
+  <g stroke="rgba(91,143,249,0.1)" stroke-width="1">
+    <line x1="100" y1="100" x2="700" y2="100"/>
+    <line x1="100" y1="200" x2="700" y2="200"/>
+    <line x1="100" y1="300" x2="700" y2="300"/>
+    <line x1="100" y1="400" x2="700" y2="400"/>
+    <line x1="100" y1="500" x2="700" y2="500"/>
+    <line x1="150" y1="50" x2="150" y2="550"/>
+    <line x1="250" y1="50" x2="250" y2="550"/>
+    <line x1="350" y1="50" x2="350" y2="550"/>
+    <line x1="450" y1="50" x2="450" y2="550"/>
+    <line x1="550" y1="50" x2="550" y2="550"/>
+    <line x1="650" y1="50" x2="650" y2="550"/>
+  </g>
+  
+  <!-- 标题 -->
+  <text x="400" y="50" text-anchor="middle" fill="#8ab4f8" font-size="24" font-family="Arial">浙江省地图</text>
+</svg>

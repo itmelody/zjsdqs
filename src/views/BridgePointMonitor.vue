@@ -75,9 +75,9 @@
           <div ref="vehicleTimeRef" class="vehicle-time-chart"></div>
         </div>
 
-        <!-- 超限监测 -->
+        <!-- 超重监测 -->
         <div class="pm-card overlimit-card">
-          <div class="pm-card-title">超限监测</div>
+          <div class="pm-card-title">超重监测</div>
           <div class="device-stats-row">
             <div class="ds-item"><span class="ds-val blue">3422</span><span class="ds-lbl">车流总量(辆)</span></div>
             <div class="ds-item"><span class="ds-val red">1</span><span class="ds-lbl">超限量(辆)</span></div>
@@ -346,7 +346,7 @@ let tileLayer: any = null
 const weekDays = ['6/2', '6/3', '6/4', '6/5', '6/6', '6/7', '6/8']
 const hours = Array.from({ length: 24 }, (_, i) => `${i}:00`)
 
-// 超限监测列表
+// 超重监测列表
 const overlimitList = ref([
   { id: 1, plate: '浙A07781F', time: '2026-06-08 08:32', weight: 46.14, overWeight: 6.14, overRate: '15.35%', status: '超重' },
   { id: 2, plate: '浙A02780F', time: '2026-06-08 10:15', weight: 46.14, overWeight: 6.14, overRate: '15.35%', status: '超重' },

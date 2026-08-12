@@ -16,5 +16,32 @@
   <body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      // 诊断：3秒后检查页面上的遮挡元素
+      setTimeout(function() {
+        var header = document.querySelector('.cockpit-header');
+        if (header) {
+          var rect = header.getBoundingClientRect();
+          var centerX = rect.left + rect.width / 2;
+          var centerY = rect.top + rect.height / 2;
+          var el = document.elementFromPoint(centerX, centerY);
+          console.log('[DIAG] Header center element:', el ? el.tagName + '.' + el.className : 'null');
+          if (el !== header && !header.contains(el)) {
+            console.log('[DIAG] BLOCKED! Element blocking header:', el.outerHTML.substring(0, 200));
+          }
+        }
+        // 检查全屏覆盖层
+        var allEls = document.querySelectorAll('body > *');
+        allEls.forEach(function(e) {
+          var s = getComputedStyle(e);
+          if (s.position === 'fixed' || s.position === 'absolute') {
+            var r = e.getBoundingClientRect();
+            if (r.width >= window.innerWidth * 0.9 && r.height >= window.innerHeight * 0.9) {
+              console.log('[DIAG] Full-screen overlay found:', e.tagName + '.' + e.className, 'z-index:', s.zIndex, 'pointer-events:', s.pointerEvents);
+            }
+          }
+        });
+      }, 5000);
+    </script>
   </body>
 </html>

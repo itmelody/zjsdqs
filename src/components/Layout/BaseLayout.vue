@@ -26,7 +26,8 @@ z<template>
           </a-button>
           <template #overlay>
             <a-menu @click="handleSystemSwitch">
-              <a-menu-item key="cockpit">驾驶舱</a-menu-item>
+              <a-menu-item key="cockpit">驾驶舱1</a-menu-item>
+              <a-menu-item key="cockpit2">驾驶舱2</a-menu-item>
             </a-menu>
           </template>
         </a-dropdown>
@@ -501,8 +502,11 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
 // 系统切换下拉菜单点击处理
 const handleSystemSwitch = (info: any) => {
   if (info.key === 'cockpit') {
-    // 驾驶舱在当前页面打开
+    // 驾驶舱1在当前页面打开
     router.push('/cockpit')
+  } else if (info.key === 'cockpit2') {
+    // 驾驶舱2在当前页面打开
+    router.push('/cockpit2')
   }
 }
 

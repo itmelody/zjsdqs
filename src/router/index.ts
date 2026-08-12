@@ -333,7 +333,13 @@ const routes = [
     path: '/cockpit',
     name: 'Cockpit',
     component: () => import('@/views/Cockpit.vue'),
-    meta: { title: '驾驶舱' },
+    meta: { title: '驾驶舱1' },
+  },
+  {
+    path: '/cockpit2',
+    name: 'Cockpit2',
+    component: () => import('@/views/Cockpit2.vue'),
+    meta: { title: '驾驶舱2' },
   },
   {
     path: '/construction-projects',
