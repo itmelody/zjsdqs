@@ -10,7 +10,7 @@
       </div>
       <div class="cockpit-title">浙江省城市道桥隧安全监管</div>
       <div class="cockpit-nav">
-        <span class="nav-link active-nav">项目管理</span>
+        <span class="nav-link active-nav">运维项目</span>
         <span class="nav-link" @click="handleGoToDashboard">工作台</span>
       </div>
     </div>

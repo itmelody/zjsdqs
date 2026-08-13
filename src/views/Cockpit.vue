@@ -5,12 +5,11 @@
       <div class="cockpit-tabs">
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'trend' }" @click="cockpitTab = 'trend'">总体态势</div>
         <div class="cockpit-tab" :class="{ active: cockpitTab === 'overview' }" @click="cockpitTab = 'overview'">行业概况</div>
-        <div class="cockpit-tab" :class="{ active: cockpitTab === 'monitor' }" @click="cockpitTab = 'monitor'">在线监测</div>
-        <div class="cockpit-tab" :class="{ active: cockpitTab === 'ops2' }" @click="cockpitTab = 'ops2'">安全隐患排查整治</div>
+        <div class="cockpit-tab" :class="{ active: cockpitTab === 'monitor' }" @click="cockpitTab = 'monitor'">安全隐患排查整治</div>
+        <div class="cockpit-tab" :class="{ active: cockpitTab === 'project' }" @click="cockpitTab = 'project'">项目管理</div>
       </div>
       <div class="cockpit-title">浙江省城市道桥隧安全监管</div>
       <div class="cockpit-nav">
-        <span class="nav-link" @click="router.push('/construction-projects')">项目管理</span>
         <span class="nav-link" @click="handleGoToDashboard">工作台</span>
       </div>
     </div>
@@ -19,146 +18,102 @@
     <div class="cockpit-body" v-show="cockpitTab === 'overview' || cockpitTab === 'trend'">
       <!-- 左侧面板 -->
       <div class="panel panel-left">
-        <!-- ===== 总体态势：行业概况 + 隐患排查 ===== -->
+        <!-- ===== 总体态势：安全隐患排查整治 ===== -->
         <template v-if="cockpitTab === 'trend'">
-          <!-- 行业概况卡片 -->
-          <div class="card dark-card stat-card-compact">
+          <!-- 安全隐患排查整治卡片 -->
+          <div class="card dark-card stat-card-compact trend-clickable-card" :class="{ 'trend-card-highlighted': trendActiveModule === 'hazard' }" @click="trendActiveModule = trendActiveModule === 'hazard' ? null : 'hazard'">
             <div class="card-title-row">
-              <div class="card-title">行业概况</div>
-            </div>
-            <div class="road-stats compact">
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">道路里程</div>
-                  <div class="stat-value blue">1,256.8<span class="stat-unit"> km</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">桥梁总数</div>
-                  <div class="stat-value cyan">3,908<span class="stat-unit"> 座</span></div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">隧道总数</div>
-                  <div class="stat-value green">436<span class="stat-unit"> 座</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">企业总数</div>
-                  <div class="stat-value yellow">286<span class="stat-unit"> 家</span></div>
-                </div>
-              </div>
-              <div class="stat-block sub">
-                <div class="stat-label">企业从业人员总数</div>
-                <div class="stat-value orange">12,580<span class="stat-unit"> 人</span></div>
-              </div>
-            </div>
-          </div>
-          <!-- 隐患排查卡片 -->
-          <div class="card dark-card stat-card-compact">
-            <div class="card-title-row">
-              <div class="card-title">隐患排查</div>
-              <span class="risk-alert-btn" @click.stop="showTrendRiskModal = true" title="风险提醒">
-                <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zm0 10.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5zM8.75 4.5v4a.75.75 0 0 1-1.5 0v-4a.75.75 0 0 1 1.5 0z"/></svg>
-              </span>
+              <div class="card-title">安全隐患排查整治</div>
             </div>
             <div class="trend-hazard-tabs">
-              <span class="hazard-tab" :class="{ active: trendHazardTab === 'road' }" @click="trendHazardTab = 'road'">道路</span>
-              <span class="hazard-tab" :class="{ active: trendHazardTab === 'bridge' }" @click="trendHazardTab = 'bridge'">桥梁</span>
-              <span class="hazard-tab" :class="{ active: trendHazardTab === 'tunnel' }" @click="trendHazardTab = 'tunnel'">隧道</span>
+              <span class="hazard-tab active">桥梁</span>
+              <span class="hazard-tab static">道路</span>
+              <span class="hazard-tab static">隧道</span>
             </div>
-            <div class="road-stats compact" v-show="trendHazardTab === 'road'">
+            <!-- 桥梁内容始终显示 -->
+            <div class="road-stats compact">
+              <!-- 物联监管 -->
+              <div class="hazard-module-title">物联监管</div>
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">隐患总数</div>
-                  <div class="stat-value blue">3,834</div>
+                  <div class="stat-label">接入桥梁数</div>
+                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已整改</div>
-                  <div class="stat-value green">3,195</div>
+                  <div class="stat-label">预警总数</div>
+                  <div class="stat-value yellow">526<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已处置数</div>
+                  <div class="stat-value cyan">481<span class="stat-unit"> 个</span></div>
                 </div>
               </div>
+              <!-- 设施检测 -->
+              <div class="hazard-module-title">设施检测</div>
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">监测预警总数</div>
-                  <div class="stat-value yellow">458</div>
+                  <div class="stat-label">应检数</div>
+                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已处置</div>
-                  <div class="stat-value cyan">412</div>
+                  <div class="stat-label">已检数</div>
+                  <div class="stat-value green">3,878<span class="stat-unit"> 座</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">风险总数</div>
+                  <div class="stat-value yellow">128<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已处置数</div>
+                  <div class="stat-value cyan">95<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">D/E级、不合格桥梁数</div>
+                  <div class="stat-value red">128<span class="stat-unit"> 座</span></div>
                 </div>
               </div>
+              <!-- 日常巡检 -->
+              <div class="hazard-module-title">日常巡检</div>
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">D级道路</div>
-                  <div class="stat-value red">86</div>
+                  <div class="stat-label">排查总数</div>
+                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已整治</div>
-                  <div class="stat-value green">72</div>
+                  <div class="stat-label">排查已完成</div>
+                  <div class="stat-value green">3,878<span class="stat-unit"> 座</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">整改中重大隐患数</div>
+                  <div class="stat-value orange">15<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">整改中隐患数</div>
+                  <div class="stat-value yellow">33<span class="stat-unit"> 个</span></div>
                 </div>
               </div>
-            </div>
-            <div class="road-stats compact" v-show="trendHazardTab === 'bridge'">
+              <!-- 安全评估 -->
+              <div class="hazard-module-title">安全评估</div>
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">隐患总数</div>
-                  <div class="stat-value blue">4,652</div>
+                  <div class="stat-label">应评单元数</div>
+                  <div class="stat-value blue">3,908<span class="stat-unit"> 个</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已整改</div>
-                  <div class="stat-value green">3,878</div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">监测预警总数</div>
-                  <div class="stat-value yellow">526</div>
+                  <div class="stat-label">已评单元数</div>
+                  <div class="stat-value green">3,878<span class="stat-unit"> 个</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已处置</div>
-                  <div class="stat-value cyan">481</div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">D、E级桥梁</div>
-                  <div class="stat-value red">128</div>
+                  <div class="stat-label">重要风险源</div>
+                  <div class="stat-value orange">128<span class="stat-unit"> 处</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已整治</div>
-                  <div class="stat-value green">95</div>
-                </div>
-              </div>
-            </div>
-            <div class="road-stats compact" v-show="trendHazardTab === 'tunnel'">
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">隐患总数</div>
-                  <div class="stat-value blue">111</div>
+                  <div class="stat-label">整改中重大隐患数</div>
+                  <div class="stat-value red">15<span class="stat-unit"> 个</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">已整改</div>
-                  <div class="stat-value green">92</div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">监测预警总数</div>
-                  <div class="stat-value yellow">15</div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已处置</div>
-                  <div class="stat-value cyan">12</div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">D、E级隧道</div>
-                  <div class="stat-value red">8</div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已整治</div>
-                  <div class="stat-value green">6</div>
+                  <div class="stat-label">整改中隐患数</div>
+                  <div class="stat-value yellow">33<span class="stat-unit"> 个</span></div>
                 </div>
               </div>
             </div>
@@ -248,6 +203,19 @@
       <!-- 中间地图区 -->
       <div class="panel panel-center">
         <div class="card dark-card map-card">
+          <!-- 地图上方指标模块（仅总体态势显示） -->
+          <div v-if="cockpitTab === 'trend'" class="map-indicator-modules">
+            <div class="indicator-module" :class="{ 'indicator-active': trendActiveModule === 'industry' }" @click="trendActiveModule = trendActiveModule === 'industry' ? null : 'industry'">
+              <div class="module-title">行业概况</div>
+              <div class="module-stats">
+                <div class="stat-item"><div class="stat-label">道路总长</div><div class="stat-value blue">{{ totalRoadMileage }}<span class="stat-unit"> km</span></div></div>
+                <div class="stat-item"><div class="stat-label">城市桥梁总数</div><div class="stat-value cyan">{{ totalBridgeCount }}<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-item"><div class="stat-label">城市隧道总数</div><div class="stat-value green">{{ totalTunnelCount }}<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-item"><div class="stat-label">企业总数</div><div class="stat-value blue">{{ totalEnterpriseCount }}<span class="stat-unit"> 家</span></div></div>
+                <div class="stat-item"><div class="stat-label">从业人员总数</div><div class="stat-value cyan">{{ totalPersonnelCount }}<span class="stat-unit"> 人</span></div></div>
+              </div>
+            </div>
+          </div>
           <!-- 地图标题 -->
           <div v-if="cockpitTab === 'overview' && activeLayer === 'road' && !activeEnterpriseCard" class="map-title">道路概览</div>
           <div v-if="cockpitTab === 'overview' && activeLayer === 'bridge' && !activeEnterpriseCard" class="map-title">桥梁概览</div>
@@ -400,29 +368,109 @@
       <div class="panel panel-right">
         <!-- ===== 总体态势：项目管理 ===== -->
         <template v-if="cockpitTab === 'trend'">
-          <div class="card dark-card stat-card-compact">
+          <div class="card dark-card stat-card-compact trend-clickable-card" :class="{ 'trend-card-highlighted': trendActiveModule === 'project' }" @click="trendActiveModule = trendActiveModule === 'project' ? null : 'project'">
             <div class="card-title-row">
               <div class="card-title">项目管理</div>
             </div>
+            <!-- 道路项目 -->
+            <div class="hazard-module-title">道路</div>
             <div class="road-stats compact">
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">项目总数</div>
-                  <div class="stat-value blue">{{ trendProjectData.total }}<span class="stat-unit"> 个</span></div>
+                  <div class="stat-label">计划改造道路长度</div>
+                  <div class="stat-value blue">{{ trendProjectData.road.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">在建项目</div>
-                  <div class="stat-value cyan">{{ trendProjectData.ongoing }}<span class="stat-unit"> 个</span></div>
+                  <div class="stat-label">已完成改造道路长度</div>
+                  <div class="stat-value green">{{ trendProjectData.road.completedRebuildLength }}<span class="stat-unit"> 公里</span></div>
                 </div>
               </div>
               <div class="stat-grid">
                 <div class="stat-block">
-                  <div class="stat-label">已完工</div>
-                  <div class="stat-value green">{{ trendProjectData.completed }}<span class="stat-unit"> 个</span></div>
+                  <div class="stat-label">计划新建道路长度</div>
+                  <div class="stat-value cyan">{{ trendProjectData.road.planNewLength }}<span class="stat-unit"> 公里</span></div>
                 </div>
                 <div class="stat-block">
-                  <div class="stat-label">前期项目</div>
-                  <div class="stat-value yellow">{{ trendProjectData.planning }}<span class="stat-unit"> 个</span></div>
+                  <div class="stat-label">已完成新建道路长度</div>
+                  <div class="stat-value yellow">{{ trendProjectData.road.completedNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">项目总投资</div>
+                  <div class="stat-value orange">{{ trendProjectData.road.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">累计完成投资</div>
+                  <div class="stat-value red">{{ trendProjectData.road.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- 桥梁项目 -->
+            <div class="hazard-module-title">桥梁</div>
+            <div class="road-stats compact">
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">计划改造桥梁长度</div>
+                  <div class="stat-value blue">{{ trendProjectData.bridge.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完成改造桥梁长度</div>
+                  <div class="stat-value green">{{ trendProjectData.bridge.completedRebuildLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">计划新建桥梁长度</div>
+                  <div class="stat-value cyan">{{ trendProjectData.bridge.planNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完成新建桥梁长度</div>
+                  <div class="stat-value yellow">{{ trendProjectData.bridge.completedNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">项目总投资</div>
+                  <div class="stat-value orange">{{ trendProjectData.bridge.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">累计完成投资</div>
+                  <div class="stat-value red">{{ trendProjectData.bridge.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- 隧道项目 -->
+            <div class="hazard-module-title">隧道</div>
+            <div class="road-stats compact">
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">计划改造隧道长度</div>
+                  <div class="stat-value blue">{{ trendProjectData.tunnel.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完成改造隧道长度</div>
+                  <div class="stat-value green">{{ trendProjectData.tunnel.completedRebuildLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">计划新建隧道长度</div>
+                  <div class="stat-value cyan">{{ trendProjectData.tunnel.planNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完成新建隧道长度</div>
+                  <div class="stat-value yellow">{{ trendProjectData.tunnel.completedNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">项目总投资</div>
+                  <div class="stat-value orange">{{ trendProjectData.tunnel.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">累计完成投资</div>
+                  <div class="stat-value red">{{ trendProjectData.tunnel.completedInvestment }}<span class="stat-unit"> 万元</span></div>
                 </div>
               </div>
             </div>
@@ -484,68 +532,94 @@
 
     <!-- 在线监测主体内容区 -->
 
+    <!-- 安全隐患排查整治主体内容区 -->
     <div class="cockpit-body monitor-body" v-show="cockpitTab === 'monitor'">
-      <!-- 左侧：设备列表 + 超限报警统计 -->
+      <!-- 左侧：物联监管 + 设施检测 -->
       <div class="panel monitor-left">
-        <div class="dark-card monitor-device-card">
+        <!-- 物联监管模块 -->
+        <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'monitor' }" @click="highlightModule('monitor')">
           <div class="card-title-row">
-            <div class="card-title">设备列表</div>
+            <div class="card-title">物联监管</div>
           </div>
-          <div class="device-list">
-            <table class="dark-table">
-              <thead>
-                <tr>
-                  <th>市区县</th>
-                  <th style="width:36px">序号</th>
-                  <th>设施名称</th>
-                  <th>设备名称</th>
-                  <th>监测项</th>
-                  <th>在线状态</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="d in monitorDevices" :key="d.key">
-                  <td>{{ d.district }}</td>
-                  <td>{{ d.key }}</td>
-                  <td>{{ d.name }}</td>
-                  <td>{{ d.name }}{{ deviceSuffix }}</td>
-                  <td>{{ monitorItemLabel }}</td>
-                  <td><span class="online-tag" :class="d.online === '在线' ? 'online' : 'offline'">{{ d.online }}</span></td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">接入桥梁数</div>
+            <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
           </div>
-          <div class="device-footer">
-            <span>共 <b>9099</b> 条数据</span>
-            <a class="link-btn" @click="showDeviceDetailModal = true">查看设备详情 &gt;</a>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">设备总数</div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">结构安全设备数</div>
+                <div class="stat-value cyan">1,286<span class="stat-unit"> 台</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">超重设备数</div>
+                <div class="stat-value yellow">428<span class="stat-unit"> 台</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">监测预警</div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">预警总数</div>
+                <div class="stat-value orange">526<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">已处置数</div>
+                <div class="stat-value green">481<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">处置率</div>
+                <div class="stat-value blue">91.4%</div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="dark-card alarm-stats-card">
+        
+        <!-- 设施检测模块 -->
+        <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'inspect' }" @click="highlightModule('inspect')">
           <div class="card-title-row">
-            <div class="card-title">超限报警统计</div>
+            <div class="card-title">设施检测</div>
           </div>
-          <div class="alarm-cards">
-            <div class="alarm-card">
-              <div class="alarm-label">预警总数</div>
-              <div class="alarm-value blue">65</div>
-            </div>
-            <div class="alarm-card">
-              <div class="alarm-label">处置总数</div>
-              <div class="alarm-value cyan">57</div>
-            </div>
-            <div class="alarm-card">
-              <div class="alarm-label">处置率</div>
-              <div class="alarm-value green">87.7%</div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">应检数</div>
+            <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">已检数</div>
+            <div class="stat-value green">3,878<span class="stat-unit"> 座</span></div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">检测完成率</div>
+            <div class="stat-value cyan">99.2%</div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">风险整改</div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">风险总数</div>
+                <div class="stat-value orange">128<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">已处置数</div>
+                <div class="stat-value green">95<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">处置率</div>
+                <div class="stat-value blue">74.2%</div>
+              </div>
             </div>
           </div>
-          <div class="alarm-chart-legend">
-            <span class="legend-dot red"></span>一级预警
-            <span class="legend-dot orange"></span>二级预警
-            <span class="legend-dot green"></span>三级预警
-          </div>
-          <div ref="alarmTrendChartRef" class="alarm-trend-chart"></div>
-          <div class="alarm-footer">
-            <a class="link-btn" @click="showAlarmDetailModal = true">报警详情 &gt;</a>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">检测等级分布</div>
+            <div class="inspection-level-list">
+              <div class="level-item" v-for="(item, index) in inspectionLevelData" :key="index">
+                <span class="level-dot" :style="{ backgroundColor: item.color }"></span>
+                <span class="level-name">{{ item.name }}</span>
+                <span class="level-value">{{ item.value }}<span class="level-unit"> 座</span></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -556,8 +630,8 @@
           <div class="monitor-map-toolbar">
             <div class="map-layer-tabs">
               <span class="layer-tab" :class="{ active: monitorLayer === 'bridge' }" @click="monitorLayer = 'bridge'">桥梁</span>
-              <span class="layer-tab" :class="{ active: monitorLayer === 'road' }" @click="monitorLayer = 'road'">道路</span>
-              <span class="layer-tab" :class="{ active: monitorLayer === 'tunnel' }" @click="monitorLayer = 'tunnel'">隧道</span>
+              <span class="layer-tab disabled">道路</span>
+              <span class="layer-tab disabled">隧道</span>
             </div>
             <div class="map-type-toggle" @click="toggleMapType">
               <span :class="{ active: mapStyle === 'standard' }">标准地图</span>
@@ -574,211 +648,274 @@
               </div>
             </div>
           </div>
-          <!-- 道路图层指标模块 -->
-          <div v-if="monitorLayer === 'road'" class="bridge-monitor-stats">
-            <div class="bridge-stats-card">
-              <div class="bridge-stats-grid">
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">设备总数</div>
-                  <div class="bridge-stat-value blue">2,865<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">在线数</div>
-                  <div class="bridge-stat-value cyan">2,706<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">在线率</div>
-                  <div class="bridge-stat-value green">94.5%</div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">接入道路数</div>
-                  <div class="bridge-stat-value blue">2,288<span class="bridge-stat-unit"> 条</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">接入率</div>
-                  <div class="bridge-stat-value cyan">84.3%</div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">道路边坡监测设备</div>
-                  <div class="bridge-stat-value blue">2,865<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-              </div>
-              <div class="bridge-stats-footer">
-                <a class="bridge-detail-btn" @click="showRoadDeviceDetail = true">查看详情 &gt;</a>
-              </div>
-            </div>
-          </div>
-          <!-- 桥梁图层指标模块 -->
-          <div v-if="monitorLayer === 'bridge'" class="bridge-monitor-stats">
-            <div class="bridge-stats-card">
-              <div class="bridge-stats-grid">
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">设备总数</div>
-                  <div class="bridge-stat-value blue">1,286<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">在线数</div>
-                  <div class="bridge-stat-value cyan">1,158<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">在线率</div>
-                  <div class="bridge-stat-value green">90.0%</div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">接入桥梁数</div>
-                  <div class="bridge-stat-value blue">856<span class="bridge-stat-unit"> 座</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">接入率</div>
-                  <div class="bridge-stat-value cyan">21.9%</div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">桥梁环境监测设备</div>
-                  <div class="bridge-stat-value blue">428<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">桥梁作业监测设备</div>
-                  <div class="bridge-stat-value cyan">386<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">桥梁结构监测设备</div>
-                  <div class="bridge-stat-value green">472<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-              </div>
-              <div class="bridge-stats-footer">
-                <a class="bridge-detail-btn" @click="showBridgeDeviceDetail = true">查看详情 &gt;</a>
-              </div>
-            </div>
-          </div>
-          <!-- 隧道图层指标模块 -->
-          <div v-if="monitorLayer === 'tunnel'" class="bridge-monitor-stats">
-            <div class="bridge-stats-card">
-              <div class="bridge-stats-grid">
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">设备总数</div>
-                  <div class="bridge-stat-value blue">3,248<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">在线数</div>
-                  <div class="bridge-stat-value cyan">3,142<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">在线率</div>
-                  <div class="bridge-stat-value green">96.7%</div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">接入隧道数</div>
-                  <div class="bridge-stat-value blue">2,356<span class="bridge-stat-unit"> 座</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">接入率</div>
-                  <div class="bridge-stat-value cyan">72.5%</div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">隧道环境监测设备</div>
-                  <div class="bridge-stat-value blue">1,128<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">隧道机电监测设备</div>
-                  <div class="bridge-stat-value cyan">1,234<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-                <div class="bridge-stat-item">
-                  <div class="bridge-stat-label">隧道结构监测设备</div>
-                  <div class="bridge-stat-value green">886<span class="bridge-stat-unit"> 台</span></div>
-                </div>
-              </div>
-              <div class="bridge-stats-footer">
-                <a class="bridge-detail-btn" @click="showTunnelDeviceDetail = true">查看详情 &gt;</a>
-              </div>
-            </div>
+          <!-- 地图标题（放在页签下面） -->
+          <div class="map-title-bar" v-if="highlightedModule === 'monitor' || highlightedModule === 'inspect' || highlightedModule === 'patrol' || highlightedModule === 'assess'">
+            <span class="map-title-text">{{ highlightedModule === 'monitor' ? '物联监管' : highlightedModule === 'inspect' ? '设施检测' : highlightedModule === 'patrol' ? '日常巡检' : '安全评估' }}</span>
           </div>
           <div class="map-placeholder">
-            <div ref="monitorMapRef" class="amap-container"></div>
-          </div>
-          <!-- 底部图例控制面板 -->
-          <div class="map-legend">
-            <div class="legend-checkbox-panel">
-              <template v-if="monitorSubLayer === 'type'">
-                <label class="checkbox-item" v-for="rt in monitorTypeLegend" :key="rt.key">
-                  <span class="custom-checkbox" :class="{ checked: (monitorTypeChecked as any)[rt.key] }" @click="(monitorTypeChecked as any)[rt.key] = !(monitorTypeChecked as any)[rt.key]">
-                    <svg v-if="(monitorTypeChecked as any)[rt.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
-                  </span>
-                  <span class="legend-line" :style="{ background: rt.color }"></span>
-                  <span class="checkbox-label">{{ rt.name }}</span>
-                </label>
-              </template>
-              <template v-else>
-                <label class="checkbox-item" v-for="re in monitorEvalLegend" :key="re.key">
-                  <span class="custom-checkbox" :class="{ checked: (monitorEvalChecked as any)[re.key] }" @click="(monitorEvalChecked as any)[re.key] = !(monitorEvalChecked as any)[re.key]">
-                    <svg v-if="(monitorEvalChecked as any)[re.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
-                  </span>
-                  <span class="legend-line" :style="{ background: re.color }"></span>
-                  <span class="checkbox-label">{{ re.name }}</span>
-                </label>
-              </template>
-            </div>
-            <div class="legend-control-panel">
-              <div class="sub-layer-btns">
-                <span class="radio-item" :class="{ selected: monitorSubLayer === 'type' }" @click="monitorSubLayer = 'type'"><span class="radio-dot"></span>{{ layerNameMap[monitorLayer] }}类型</span>
-                <span class="radio-item" :class="{ selected: monitorSubLayer === 'eval' }" @click="monitorSubLayer = 'eval'"><span class="radio-dot"></span>{{ layerNameMap[monitorLayer] }}评价</span>
+            <!-- 物联监管：显示浙江省静态地图+各市桥梁数量 -->
+            <div v-show="highlightedModule === 'monitor'" class="static-map-container">
+              <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+              <div class="city-mileage-overlay">
+                <div v-for="(data, cityName) in cityBridgeCountForMonitor" :key="cityName" 
+                     class="city-mileage-item"
+                     :style="{ left: getCityPosition(cityName).x + '%', top: getCityPosition(cityName).y + '%' }"
+                     @click="showCityBridgeList(cityName)">
+                  <div class="mileage-box">
+                    <div class="mileage-value">{{ data.count }}<span class="mileage-unit">座</span></div>
+                  </div>
+                  <div class="city-label">{{ cityName.replace('市', '') }}</div>
+                </div>
               </div>
             </div>
+            <!-- 设施检测：显示浙江省静态地图+柱状图 -->
+            <div v-show="highlightedModule === 'inspect'" class="static-map-container static-map-with-bars">
+              <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+              <div class="city-bars-overlay">
+                <div v-for="(data, cityName) in cityInspectionStats" :key="cityName" 
+                     class="city-bar-item"
+                     :style="{ left: getCityPosition(cityName).x + '%', top: getCityPosition(cityName).y + '%' }"
+                     @mouseenter="showInspectionTooltip(cityName, data)"
+                     @mouseleave="hideInspectionTooltip"
+                     @mousemove="updateInspectionTooltipPosition">
+                  <div class="bar-chart-wrapper">
+                    <div class="bar-group">
+                      <div class="bar bar-should-check" :style="{ height: (data.shouldCheck / maxInspectionValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.shouldCheck }}</span>
+                      </div>
+                      <div class="bar bar-checked" :style="{ height: (data.checked / maxInspectionValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.checked }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="city-name-label">{{ cityName.replace('市', '') }}</div>
+                </div>
+              </div>
+              <!-- 悬浮提示框 -->
+              <div v-if="showInspectionTip" 
+                   class="inspection-tooltip"
+                   :style="{ left: tooltipX + 'px', top: tooltipY + 'px' }">
+                <div class="tooltip-header">
+                  <span class="tooltip-city">{{ currentTooltipCity }}</span>
+                  <button class="tooltip-close" @click="hideInspectionTooltip">×</button>
+                </div>
+                <div class="tooltip-content">
+                  <div class="tooltip-item">
+                    <div class="tooltip-label">应检数（座）</div>
+                    <div class="tooltip-value should-check">{{ currentTooltipData?.shouldCheck || 0 }}</div>
+                  </div>
+                  <div class="tooltip-item">
+                    <div class="tooltip-label">已检数（座）</div>
+                    <div class="tooltip-value checked">{{ currentTooltipData?.checked || 0 }}</div>
+                  </div>
+                </div>
+              </div>
+              <!-- 图例 -->
+              <div class="bar-legend">
+                <div class="legend-item">
+                  <span class="legend-color legend-should"></span>
+                  <span class="legend-text">应检数（座）</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color legend-checked"></span>
+                  <span class="legend-text">已检数（座）</span>
+                </div>
+              </div>
+            </div>
+            <!-- 日常巡检：显示浙江省静态地图+柱状图 -->
+            <div v-show="highlightedModule === 'patrol'" class="static-map-container static-map-with-bars">
+              <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+              <div class="city-bars-overlay">
+                <div v-for="(data, cityName) in cityPatrolStats" :key="cityName" 
+                     class="city-bar-item"
+                     :style="{ left: getCityPosition(cityName).x + '%', top: getCityPosition(cityName).y + '%' }"
+                     @mouseenter="showPatrolTooltip(cityName, data, $event)"
+                     @mouseleave="hidePatrolTooltip">
+                  <div class="bar-chart-wrapper">
+                    <div class="bar-group">
+                      <div class="bar bar-major-hazard" :style="{ height: (data.majorHazard / maxPatrolValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.majorHazard }}</span>
+                      </div>
+                      <div class="bar bar-hazard" :style="{ height: (data.hazard / maxPatrolValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.hazard }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="city-name-label">{{ cityName.replace('市', '') }}</div>
+                </div>
+              </div>
+              <!-- 悬浮提示框（fixed定位，直接跟随柱状图） -->
+              <div v-if="showPatrolTip" 
+                   class="patrol-tooltip"
+                   :style="{ left: patrolTooltipX + 'px', top: patrolTooltipY + 'px', position: 'fixed' }">
+                <button class="tooltip-close-btn" @click="hidePatrolTooltip">×</button>
+                <div class="tooltip-item-box major-hazard-box">
+                  <div class="item-label">整改中重大隐患数</div>
+                  <div class="item-value">{{ currentPatrolTooltipData?.majorHazard || 0 }}</div>
+                  <div class="item-bar major-hazard-bar"></div>
+                </div>
+                <div class="tooltip-item-box hazard-box">
+                  <div class="item-label">整改中隐患数</div>
+                  <div class="item-value">{{ currentPatrolTooltipData?.hazard || 0 }}</div>
+                  <div class="item-bar hazard-bar"></div>
+                </div>
+              </div>
+              <!-- 图例 -->
+              <div class="bar-legend">
+                <div class="legend-item">
+                  <span class="legend-color legend-major-hazard"></span>
+                  <span class="legend-text">整改中重大隐患数（个）</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color legend-hazard"></span>
+                  <span class="legend-text">整改中隐患数（个）</span>
+                </div>
+              </div>
+            </div>
+            <!-- 安全评估：显示浙江省静态地图+柱状图 -->
+            <div v-show="highlightedModule === 'assess'" class="static-map-container static-map-with-bars">
+              <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+              <div class="city-bars-overlay">
+                <div v-for="(data, cityName) in cityAssessStats" :key="cityName" 
+                     class="city-bar-item"
+                     :style="{ left: getCityPosition(cityName).x + '%', top: getCityPosition(cityName).y + '%' }"
+                     @mouseenter="showAssessTooltip(cityName, data, $event)"
+                     @mouseleave="hideAssessTooltip">
+                  <div class="bar-chart-wrapper">
+                    <div class="bar-group">
+                      <div class="bar bar-assess-evaluated" :style="{ height: (data.evaluated / maxAssessValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.evaluated }}</span>
+                      </div>
+                      <div class="bar bar-assess-total" :style="{ height: (data.total / maxAssessValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.total }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="city-name-label">{{ cityName.replace('市', '') }}</div>
+                </div>
+              </div>
+              <!-- 悬浮提示框（fixed定位，直接跟随柱状图） -->
+              <div v-if="showAssessTip" 
+                   class="assess-tooltip"
+                   :style="{ left: assessTooltipX + 'px', top: assessTooltipY + 'px', position: 'fixed' }">
+                <button class="tooltip-close-btn" @click="hideAssessTooltip">×</button>
+                <div class="tooltip-item-box evaluated-box">
+                  <div class="item-label">已评单元数</div>
+                  <div class="item-value">{{ currentAssessTooltipData?.evaluated || 0 }}</div>
+                  <div class="item-bar evaluated-bar"></div>
+                </div>
+                <div class="tooltip-item-box total-box">
+                  <div class="item-label">应评单元数</div>
+                  <div class="item-value">{{ currentAssessTooltipData?.total || 0 }}</div>
+                  <div class="item-bar total-bar"></div>
+                </div>
+              </div>
+              <!-- 图例 -->
+              <div class="bar-legend">
+                <div class="legend-item">
+                  <span class="legend-color legend-assess-evaluated"></span>
+                  <span class="legend-text">已评单元数（个）</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color legend-assess-total"></span>
+                  <span class="legend-text">应评单元数（个）</span>
+                </div>
+              </div>
+            </div>
+            <!-- 其他模块：显示AMap容器 -->
+            <div ref="monitorMapRef" v-show="highlightedModule !== 'monitor' && highlightedModule !== 'inspect' && highlightedModule !== 'patrol' && highlightedModule !== 'assess'" class="amap-container"></div>
           </div>
         </div>
       </div>
 
-      <!-- 右侧：设施超限情况（仅桥梁图层显示） -->
-      <div class="panel monitor-right" v-show="monitorLayer === 'bridge'">
-        <div class="dark-card overlimit-card">
+      <!-- 右侧：日常巡检 + 安全评估 -->
+      <div class="panel monitor-right">
+        <!-- 日常巡检模块 -->
+        <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'patrol' }" @click="highlightModule('patrol')">
           <div class="card-title-row">
-            <div class="card-title">设施超限情况</div>
+            <div class="card-title">日常巡检</div>
           </div>
-          <div class="card-sub-title">今日超限现状</div>
-          <table class="dark-table">
-            <thead>
-              <tr>
-                <th>区域</th>
-                <th>设施名称</th>
-                <th style="text-align:center">今日超限量（辆）</th>
-                <th>在线情况</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="s in overlimitStats" :key="s.name">
-                <td>{{ s.area }}</td>
-                <td>{{ s.name }}</td>
-                <td style="text-align:center">{{ s.count }}</td>
-                <td><span class="online-tag" :class="s.online === '在线' ? 'online' : 'offline'">{{ s.online }}</span></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">排查总数</div>
+            <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">排查已完成</div>
+            <div class="stat-value green">3,878<span class="stat-unit"> 座</span></div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">完成率</div>
+            <div class="stat-value cyan">99.2%</div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">隐患处置情况</div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">隐患总数</div>
+                <div class="stat-value orange">128<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">重大隐患数</div>
+                <div class="stat-value red">15<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">整改中重大隐患数</div>
+                <div class="stat-value red">15<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">整改中隐患数</div>
+                <div class="stat-value yellow">33<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="dark-card time-chart-card">
+        
+        <!-- 安全评估模块 -->
+        <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'assess' }" @click="highlightModule('assess')">
           <div class="card-title-row">
-            <div class="card-title" style="font-size:15px;font-weight:700">今日超限分时</div>
+            <div class="card-title">安全评估</div>
           </div>
-          <div ref="timeFlowChartRef" class="time-flow-chart"></div>
-        </div>
-        <div class="dark-card max-overlimit-card">
-          <div class="card-title-row">
-            <div class="card-title">今日最高超限</div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">应评单元数</div>
+            <div class="stat-value blue">3,908<span class="stat-unit"> 个</span></div>
           </div>
-          <table class="dark-table">
-            <thead>
-              <tr>
-                <th>设施名称</th>
-                <th>车牌号</th>
-                <th>过车总重(吨)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="m in todayMaxOverlimit" :key="m.plate">
-                <td>{{ m.name }}</td>
-                <td>{{ m.plate }}</td>
-                <td class="weight-cell">{{ m.weight }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">已评单元数</div>
+            <div class="stat-value green">3,878<span class="stat-unit"> 个</span></div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">评估覆盖率</div>
+            <div class="stat-value cyan">99.2%</div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">重要风险源</div>
+            <div class="stat-value orange">128<span class="stat-unit"> 处</span></div>
+          </div>
+          <div class="hazard-section">
+            <div class="hazard-sub-title">隐患处置情况</div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">隐患总数</div>
+                <div class="stat-value orange">128<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">重大隐患数</div>
+                <div class="stat-value red">15<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">整改中重大隐患数</div>
+                <div class="stat-value red">15<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">整改中隐患数</div>
+                <div class="stat-value yellow">33<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1241,6 +1378,513 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- 项目管理页面 -->
+    <div class="cockpit-body project-body" v-show="cockpitTab === 'project'">
+      <!-- 左侧面板：运维项目 -->
+      <div class="panel panel-left">
+        <!-- 地图视图：运维项目模块 -->
+        <template v-if="projectViewMode === 'map'">
+          <!-- 运维项目 - 道路 -->
+        <div class="card dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': projectActiveModule === 'ops-road' }" @click="setProjectActiveModule('ops-road')">
+          <div class="card-title-row">
+            <div class="card-title">运维项目 - 道路</div>
+          </div>
+          
+          <div class="road-stats compact">
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">问题道路数</div>
+                <div class="stat-value blue">{{ projectOpsData.road.problemCount }}<span class="stat-unit"> 条</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">问题道路改造项目数</div>
+                <div class="stat-value green">{{ projectOpsData.road.rebuildProjectCount }}<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">计划改造道路长度</div>
+                <div class="stat-value cyan">{{ projectOpsData.road.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">已完成改造道路长度</div>
+                <div class="stat-value yellow">{{ projectOpsData.road.completedRebuildLength }}<span class="stat-unit"> 公里</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">完成率</div>
+                <div class="stat-value orange">{{ projectOpsData.road.completionRate }}%</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">总投资</div>
+                <div class="stat-value red">{{ projectOpsData.road.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">本年度计划投资</div>
+                <div class="stat-value purple">{{ projectOpsData.road.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">累计完成投资</div>
+                <div class="stat-value pink">{{ projectOpsData.road.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 运维项目 - 桥梁 -->
+        <div class="card dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': projectActiveModule === 'ops-bridge' }" @click="setProjectActiveModule('ops-bridge')">
+          <div class="card-title-row">
+            <div class="card-title">运维项目 - 桥梁</div>
+          </div>
+          
+          <div class="road-stats compact">
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">问题桥梁数</div>
+                <div class="stat-value blue">{{ projectOpsData.bridge.problemCount }}<span class="stat-unit"> 座</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">问题桥梁改造项目数</div>
+                <div class="stat-value green">{{ projectOpsData.bridge.rebuildProjectCount }}<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">计划改造桥梁数</div>
+                <div class="stat-value cyan">{{ projectOpsData.bridge.planRebuildLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">已完成改造桥梁数</div>
+                <div class="stat-value yellow">{{ projectOpsData.bridge.completedRebuildLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">完成率</div>
+                <div class="stat-value orange">{{ projectOpsData.bridge.completionRate }}%</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">总投资</div>
+                <div class="stat-value red">{{ projectOpsData.bridge.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">本年度计划投资</div>
+                <div class="stat-value purple">{{ projectOpsData.bridge.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">累计完成投资</div>
+                <div class="stat-value pink">{{ projectOpsData.bridge.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 运维项目 - 隧道 -->
+        <div class="card dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': projectActiveModule === 'ops-tunnel' }" @click="setProjectActiveModule('ops-tunnel')">
+          <div class="card-title-row">
+            <div class="card-title">运维项目 - 隧道</div>
+          </div>
+          
+          <div class="road-stats compact">
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">问题隧道数</div>
+                <div class="stat-value blue">{{ projectOpsData.tunnel.problemCount }}<span class="stat-unit"> 座</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">问题隧道改造项目数</div>
+                <div class="stat-value green">{{ projectOpsData.tunnel.rebuildProjectCount }}<span class="stat-unit"> 个</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">计划改造隧道数</div>
+                <div class="stat-value cyan">{{ projectOpsData.tunnel.planRebuildLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">已完成改造隧道数</div>
+                <div class="stat-value yellow">{{ projectOpsData.tunnel.completedRebuildLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">完成率</div>
+                <div class="stat-value orange">{{ projectOpsData.tunnel.completionRate }}%</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">总投资</div>
+                <div class="stat-value red">{{ projectOpsData.tunnel.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">本年度计划投资</div>
+                <div class="stat-value purple">{{ projectOpsData.tunnel.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">累计完成投资</div>
+                <div class="stat-value pink">{{ projectOpsData.tunnel.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </template>
+        
+        <!-- 列表视图：运维项目列表 -->
+        <template v-else>
+          <div class="card dark-card stat-card-compact list-card">
+            <div class="list-header">
+              <h3 class="list-title">运维项目列表</h3>
+              <div class="list-stats">
+                <span class="stat-item"><strong>{{ opsProjectStats.total }}</strong> 总数</span>
+                <span class="stat-item"><strong>{{ opsProjectStats.early }}</strong> 前期</span>
+                <span class="stat-item"><strong>{{ opsProjectStats.started }}</strong> 已开工</span>
+                <span class="stat-item"><strong>{{ opsProjectStats.completed }}</strong> 已完成</span>
+              </div>
+            </div>
+            <div class="list-table-wrapper">
+              <table class="project-table">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>归属地区</th>
+                    <th>项目名称</th>
+                    <th>类型</th>
+                    <th>项目状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in opsProjectList" :key="item.id" @click="viewOpsProjectDetail(item)">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.region }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.type }}</td>
+                    <td><span :class="['status-badge', 'status-' + getStatusClass(item.status)]">{{ item.status }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- 中间地图区 -->
+      <div class="panel panel-center">
+        <!-- 地图上方指标模块（列表视图下显示） -->
+        <template v-if="projectViewMode === 'list'">
+          <div class="map-indicator-modules-outside">
+            <div class="indicator-module">
+              <div class="module-title">项目概况</div>
+              <div class="module-stats">
+                <div class="stat-item"><div class="stat-label">项目总数</div><div class="stat-value blue">{{ projectOverviewData.totalProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">在建数量</div><div class="stat-value cyan">{{ projectOverviewData.ongoingProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">完工数量</div><div class="stat-value green">{{ projectOverviewData.completedProjects }}<span class="stat-unit"> 个</span></div></div>
+              </div>
+            </div>
+            <div class="indicator-module">
+              <div class="module-title">投资概况</div>
+              <div class="module-stats">
+                <div class="stat-item"><div class="stat-label">项目总投资</div><div class="stat-value orange">{{ projectOverviewData.totalInvestment }}<span class="stat-unit"> 万元</span></div></div>
+                <div class="stat-item"><div class="stat-label">本年度计划投资</div><div class="stat-value yellow">{{ projectOverviewData.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div></div>
+                <div class="stat-item"><div class="stat-label">累计完成投资</div><div class="stat-value red">{{ projectOverviewData.completedInvestment }}<span class="stat-unit"> 万元</span></div></div>
+              </div>
+            </div>
+          </div>
+        </template>
+        
+        <div class="card dark-card map-card">
+          <!-- 地图工具栏（行政区划选择 + 标准/卫星地图切换） -->
+          <div class="map-toolbar">
+            <div class="map-type-toggle" @click="toggleProjectMapType">
+              <span :class="{ active: projectMapStyle === 'standard' }">标准地图</span>
+              <span :class="{ active: projectMapStyle === 'satellite' }">卫星地图</span>
+            </div>
+            <div class="map-selector" @click="showProjectCityDropdown = !showProjectCityDropdown">
+              <span class="selector-text">{{ projectCurrentCity }}</span>
+              <span class="selector-arrow" :class="{ open: showProjectCityDropdown }">&#9662;</span>
+              <div class="city-dropdown" v-show="showProjectCityDropdown" @click.stop>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '浙江省' }" @click="selectProjectCity('浙江省')">浙江省</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '杭州市' }" @click="selectProjectCity('杭州市')">杭州市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '宁波市' }" @click="selectProjectCity('宁波市')">宁波市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '温州市' }" @click="selectProjectCity('温州市')">温州市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '绍兴市' }" @click="selectProjectCity('绍兴市')">绍兴市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '湖州市' }" @click="selectProjectCity('湖州市')">湖州市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '嘉兴市' }" @click="selectProjectCity('嘉兴市')">嘉兴市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '金华市' }" @click="selectProjectCity('金华市')">金华市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '衢州市' }" @click="selectProjectCity('衢州市')">衢州市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '台州市' }" @click="selectProjectCity('台州市')">台州市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '丽水市' }" @click="selectProjectCity('丽水市')">丽水市</div>
+                <div class="dropdown-item" :class="{ active: projectCurrentCity === '舟山市' }" @click="selectProjectCity('舟山市')">舟山市</div>
+              </div>
+            </div>
+            <!-- 视图切换按钮 -->
+            <button class="view-toggle-btn" @click="toggleProjectView" title="切换视图">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              <span class="toggle-label">{{ projectViewMode === 'map' ? '列表视图' : '地图视图' }}</span>
+            </button>
+          </div>
+          
+          <!-- 地图视图 -->
+          <template v-if="projectViewMode === 'map'">
+            <div class="static-map-container static-map-with-bars">
+              <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+              <div class="city-bars-overlay">
+                <div v-for="(data, cityName) in cityProjectStats" :key="cityName" 
+                     class="city-bar-item"
+                     :style="{ left: getCityPosition(cityName).x + '%', top: getCityPosition(cityName).y + '%' }"
+                     @mouseenter="showProjectTooltip(cityName, data, $event)"
+                     @mouseleave="hideProjectTooltip">
+                  <div class="bar-chart-wrapper">
+                    <div class="bar-group">
+                      <div class="bar bar-project-total" :style="{ height: (data.total / maxProjectValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.total }}</span>
+                      </div>
+                      <div class="bar bar-project-ongoing" :style="{ height: (data.ongoing / maxProjectValue * 100) + 'px' }">
+                        <span class="bar-value">{{ data.ongoing }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="city-name-label">{{ cityName.replace('市', '') }}</div>
+                </div>
+              </div>
+              <!-- 悬浮提示框（fixed定位） -->
+              <div v-if="showProjectTip" 
+                   class="project-tooltip"
+                   :style="{ left: projectTooltipX + 'px', top: projectTooltipY + 'px', position: 'fixed' }">
+                <button class="tooltip-close-btn" @click="hideProjectTooltip">×</button>
+                <div class="tooltip-item-box total-box">
+                  <div class="item-label">{{ projectTooltipLabels.total }}</div>
+                  <div class="item-value">{{ currentProjectTooltipData?.total || 0 }}</div>
+                  <div class="item-bar total-bar"></div>
+                </div>
+                <div class="tooltip-item-box ongoing-box">
+                  <div class="item-label">{{ projectTooltipLabels.ongoing }}</div>
+                  <div class="item-value">{{ currentProjectTooltipData?.ongoing || 0 }}</div>
+                  <div class="item-bar ongoing-bar"></div>
+                </div>
+              </div>
+              <!-- 图例 -->
+              <div class="bar-legend">
+                <div class="legend-item">
+                  <span class="legend-color legend-project-total"></span>
+                  <span class="legend-text">{{ projectTooltipLabels.total }}</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color legend-project-ongoing"></span>
+                  <span class="legend-text">{{ projectTooltipLabels.ongoing }}</span>
+                </div>
+              </div>
+            </div>
+          </template>
+          
+          <!-- 列表视图：高德地图 -->
+          <template v-else>
+            <div ref="projectMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
+            <!-- 项目点位图例 -->
+            <div class="project-map-legend">
+              <div class="legend-title">项目点位</div>
+              <div class="legend-items">
+                <div class="legend-item"><span class="legend-dot road-ops"></span>道路运维项目</div>
+                <div class="legend-item"><span class="legend-dot bridge-ops"></span>桥梁运维项目</div>
+                <div class="legend-item"><span class="legend-dot tunnel-ops"></span>隧道运维项目</div>
+                <div class="legend-item"><span class="legend-dot road-new"></span>道路新建项目</div>
+                <div class="legend-item"><span class="legend-dot bridge-new"></span>桥梁新建项目</div>
+                <div class="legend-item"><span class="legend-dot tunnel-new"></span>隧道新建项目</div>
+              </div>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- 右侧面板：新增项目 -->
+      <div class="panel panel-right">
+        <!-- 地图视图：新建项目模块 -->
+        <template v-if="projectViewMode === 'map'">
+          <!-- 新增项目 - 道路 -->
+        <div class="card dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': projectActiveModule === 'new-road' }" @click="setProjectActiveModule('new-road')">
+          <div class="card-title-row">
+            <div class="card-title">新增项目 - 道路</div>
+          </div>
+          
+          <div class="road-stats compact">
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">新建道路项目数</div>
+                <div class="stat-value blue">{{ projectNewData.road.newProjectCount }}<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">计划新建道路长度</div>
+                <div class="stat-value green">{{ projectNewData.road.planNewLength }}<span class="stat-unit"> 公里</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">已完成新建道路长度</div>
+                <div class="stat-value cyan">{{ projectNewData.road.completedNewLength }}<span class="stat-unit"> 公里</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">完成率</div>
+                <div class="stat-value yellow">{{ projectNewData.road.completionRate }}%</div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">总投资</div>
+                <div class="stat-value orange">{{ projectNewData.road.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">本年度计划投资</div>
+                <div class="stat-value red">{{ projectNewData.road.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">累计完成投资</div>
+                <div class="stat-value purple">{{ projectNewData.road.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 新增项目 - 桥梁 -->
+        <div class="card dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': projectActiveModule === 'new-bridge' }" @click="setProjectActiveModule('new-bridge')">
+          <div class="card-title-row">
+            <div class="card-title">新增项目 - 桥梁</div>
+          </div>
+          
+          <div class="road-stats compact">
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">新建桥梁项目数</div>
+                <div class="stat-value blue">{{ projectNewData.bridge.newProjectCount }}<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">计划新建桥梁数</div>
+                <div class="stat-value green">{{ projectNewData.bridge.planNewLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">已完成新建桥梁数</div>
+                <div class="stat-value cyan">{{ projectNewData.bridge.completedNewLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">完成率</div>
+                <div class="stat-value yellow">{{ projectNewData.bridge.completionRate }}%</div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">总投资</div>
+                <div class="stat-value orange">{{ projectNewData.bridge.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">本年度计划投资</div>
+                <div class="stat-value red">{{ projectNewData.bridge.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">累计完成投资</div>
+                <div class="stat-value purple">{{ projectNewData.bridge.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 新增项目 - 隧道 -->
+        <div class="card dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': projectActiveModule === 'new-tunnel' }" @click="setProjectActiveModule('new-tunnel')">
+          <div class="card-title-row">
+            <div class="card-title">新增项目 - 隧道</div>
+          </div>
+          
+          <div class="road-stats compact">
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">新建隧道项目数</div>
+                <div class="stat-value blue">{{ projectNewData.tunnel.newProjectCount }}<span class="stat-unit"> 个</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">计划新建隧道数</div>
+                <div class="stat-value green">{{ projectNewData.tunnel.planNewLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">已完成新建隧道数</div>
+                <div class="stat-value cyan">{{ projectNewData.tunnel.completedNewLength }}<span class="stat-unit"> 座</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">完成率</div>
+                <div class="stat-value yellow">{{ projectNewData.tunnel.completionRate }}%</div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">总投资</div>
+                <div class="stat-value orange">{{ projectNewData.tunnel.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-label">本年度计划投资</div>
+                <div class="stat-value red">{{ projectNewData.tunnel.yearPlanInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+            <div class="stat-grid">
+              <div class="stat-block">
+                <div class="stat-label">累计完成投资</div>
+                <div class="stat-value purple">{{ projectNewData.tunnel.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </template>
+        
+        <!-- 列表视图：新建项目列表 -->
+        <template v-else>
+          <div class="card dark-card stat-card-compact list-card">
+            <div class="list-header">
+              <h3 class="list-title">新建项目列表</h3>
+              <div class="list-stats">
+                <span class="stat-item"><strong>{{ newProjectStats.total }}</strong> 总数</span>
+                <span class="stat-item"><strong>{{ newProjectStats.early }}</strong> 前期</span>
+                <span class="stat-item"><strong>{{ newProjectStats.started }}</strong> 已开工</span>
+                <span class="stat-item"><strong>{{ newProjectStats.completed }}</strong> 已完成</span>
+              </div>
+            </div>
+            <div class="list-table-wrapper">
+              <table class="project-table">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>归属地区</th>
+                    <th>项目名称</th>
+                    <th>类型</th>
+                    <th>项目状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(item, index) in newProjectList" :key="item.id" @click="viewNewProjectDetail(item)">
+                    <td>{{ index + 1 }}</td>
+                    <td>{{ item.region }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.type }}</td>
+                    <td><span :class="['status-badge', 'status-' + getStatusClass(item.status)]">{{ item.status }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </template>
       </div>
     </div>
 
@@ -4156,6 +4800,486 @@
         </div>
       </div>
     </a-modal>
+
+    <!-- ===== 安全隐患排查整治 - 城市桥梁列表弹窗 ===== -->
+    <a-modal v-model:open="showMonitorCityBridgeModal" :title="currentMonitorCity + '接入桥梁列表'" width="1000px" :footer="null" class="dark-modal bridge-list-modal">
+      <div class="bridge-list-table-wrapper">
+        <a-table 
+          :columns="monitorBridgeColumns" 
+          :data-source="monitorCityBridges" 
+          :pagination="{ pageSize: 10, showSizeChanger: true, showTotal: (total) => `共 ${total} 条` }"
+          :scroll="{ y: 400 }"
+          row-key="index"
+          size="small"
+        />
+      </div>
+    </a-modal>
+
+    <!-- ===== 项目管理 - 运维道路详情弹窗 ===== -->
+    <a-modal v-model:open="showOpsRoadDetail" title="查看详情" width="1200px" :footer="null" class="dark-modal project-detail-modal">
+      <div class="project-detail-content">
+        <!-- 基本信息 -->
+        <div class="detail-section">
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目名称：</span><span class="field-value">{{ currentProjectDetail?.name }}</span></div>
+            <div class="detail-field"><span class="field-label">归属地区：</span><span class="field-value">{{ currentProjectDetail?.region }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目年份：</span><span class="field-value">2024</span></div>
+            <div class="detail-field"><span class="field-label">建设单位：</span><span class="field-value">杭州市西湖区城管局</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">建设单位责任人：</span><span class="field-value">张三</span></div>
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138001</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">施工单位：</span><span class="field-value">杭州市政工程有限公司</span></div>
+            <div class="detail-field"><span class="field-label">施工单位责任人：</span><span class="field-value">李四</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138002</span></div>
+            <div class="detail-field"><span class="field-label">项目状态：</span><span class="field-value">{{ currentProjectDetail?.status }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">计划开工时间：</span><span class="field-value">2024-03-01</span></div>
+            <div class="detail-field"><span class="field-label">计划完工时间：</span><span class="field-value">2024-12-31</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">关联设施：</span><span class="field-value link">文一路</span></div>
+          </div>
+        </div>
+
+        <!-- 进度信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">进度信息</h4>
+          <div class="progress-table-wrapper">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>道路名称</th>
+                  <th>需改造长度(m)</th>
+                  <th>已改造长度(m)</th>
+                  <th>形象进度</th>
+                  <th>状态描述</th>
+                  <th>计划投资额(万元)</th>
+                  <th>累计完成投资(万元)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>文一路</td>
+                  <td>1800</td>
+                  <td>1200</td>
+                  <td>66.7%</td>
+                  <td>施工中</td>
+                  <td>5000</td>
+                  <td>3500</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 实际开完工信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">实际开完工信息</h4>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">实际开工时间：</span><span class="field-value">2024-03-15</span></div>
+            <div class="detail-field"><span class="field-label">实际完工时间：</span><span class="field-value">选填</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">开工相关附件：</span><span class="field-value link">开工报告.pdf</span></div>
+            <div class="detail-field"><span class="field-label">完工相关附件：</span><span class="field-value">无附件</span></div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- ===== 项目管理 - 运维桥梁详情弹窗 ===== -->
+    <a-modal v-model:open="showOpsBridgeDetail" title="查看详情" width="1200px" :footer="null" class="dark-modal project-detail-modal">
+      <div class="project-detail-content">
+        <!-- 基本信息 -->
+        <div class="detail-section">
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目名称：</span><span class="field-value">{{ currentProjectDetail?.name }}</span></div>
+            <div class="detail-field"><span class="field-label">归属地区：</span><span class="field-value">{{ currentProjectDetail?.region }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目年份：</span><span class="field-value">2024</span></div>
+            <div class="detail-field"><span class="field-label">建设单位：</span><span class="field-value">杭州市上城区城管局</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">建设单位责任人：</span><span class="field-value">孙七</span></div>
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138005</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">施工单位：</span><span class="field-value">杭州桥梁工程有限公司</span></div>
+            <div class="detail-field"><span class="field-label">施工单位责任人：</span><span class="field-value">周八</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138006</span></div>
+            <div class="detail-field"><span class="field-label">项目状态：</span><span class="field-value">{{ currentProjectDetail?.status }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">计划开工时间：</span><span class="field-value">2024-05-01</span></div>
+            <div class="detail-field"><span class="field-label">计划完工时间：</span><span class="field-value">2025-04-30</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">关联设施：</span><span class="field-value link">秋石高架桥</span></div>
+          </div>
+        </div>
+
+        <!-- 进度信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">进度信息</h4>
+          <div class="progress-table-wrapper">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>桥梁名称</th>
+                  <th>形象进度</th>
+                  <th>状态描述</th>
+                  <th>计划投资额(万元)</th>
+                  <th>累计完成投资(万元)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>秋石高架桥</td>
+                  <td>如：66.7%</td>
+                  <td>请输入状态描述</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 实际开完工信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">实际开完工信息</h4>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">实际开工时间：</span><span class="field-value">2024-05-15</span></div>
+            <div class="detail-field"><span class="field-label">实际完工时间：</span><span class="field-value">选填</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">开工相关附件：</span><span class="field-value link">施工方案.pdf</span></div>
+            <div class="detail-field"><span class="field-label">完工相关附件：</span><span class="field-value">无附件</span></div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- ===== 项目管理 - 运维隧道详情弹窗 ===== -->
+    <a-modal v-model:open="showOpsTunnelDetail" title="查看详情" width="1200px" :footer="null" class="dark-modal project-detail-modal">
+      <div class="project-detail-content">
+        <!-- 基本信息 -->
+        <div class="detail-section">
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目名称：</span><span class="field-value">{{ currentProjectDetail?.name }}</span></div>
+            <div class="detail-field"><span class="field-label">归属地区：</span><span class="field-value">{{ currentProjectDetail?.region }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目年份：</span><span class="field-value">2024</span></div>
+            <div class="detail-field"><span class="field-label">建设单位：</span><span class="field-value">杭州市萧山区城管局</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">建设单位责任人：</span><span class="field-value">吴九</span></div>
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138007</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">施工单位：</span><span class="field-value">浙江隧道工程有限公司</span></div>
+            <div class="detail-field"><span class="field-label">施工单位责任人：</span><span class="field-value">郑十</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138008</span></div>
+            <div class="detail-field"><span class="field-label">项目状态：</span><span class="field-value">{{ currentProjectDetail?.status }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">计划开工时间：</span><span class="field-value">2024-06-01</span></div>
+            <div class="detail-field"><span class="field-label">计划完工时间：</span><span class="field-value">2025-05-31</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">关联设施：</span><span class="field-value link">萧山机场隧道</span></div>
+          </div>
+        </div>
+
+        <!-- 进度信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">进度信息</h4>
+          <div class="progress-table-wrapper">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>隧道名称</th>
+                  <th>形象进度</th>
+                  <th>状态描述</th>
+                  <th>计划投资额(万元)</th>
+                  <th>累计完成投资(万元)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>萧山机场隧道</td>
+                  <td>如：66.7%</td>
+                  <td>请输入状态描述</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 实际开完工信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">实际开完工信息</h4>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">实际开工时间：</span><span class="field-value">2024-06-10</span></div>
+            <div class="detail-field"><span class="field-label">实际完工时间：</span><span class="field-value">选填</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">开工相关附件：</span><span class="field-value link">安全评估报告.pdf</span></div>
+            <div class="detail-field"><span class="field-label">完工相关附件：</span><span class="field-value">无附件</span></div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- ===== 项目管理 - 新建道路详情弹窗 ===== -->
+    <a-modal v-model:open="showNewRoadDetail" title="查看详情" width="1200px" :footer="null" class="dark-modal project-detail-modal">
+      <div class="project-detail-content">
+        <!-- 基本信息 -->
+        <div class="detail-section">
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目名称：</span><span class="field-value">{{ currentProjectDetail?.name }}</span></div>
+            <div class="detail-field"><span class="field-label">归属地区：</span><span class="field-value">{{ currentProjectDetail?.region }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目年份：</span><span class="field-value">2024</span></div>
+            <div class="detail-field"><span class="field-label">建设单位：</span><span class="field-value">杭州市西湖区城管局</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">建设单位责任人：</span><span class="field-value">张三</span></div>
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138001</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">施工单位：</span><span class="field-value">杭州道路建设有限公司</span></div>
+            <div class="detail-field"><span class="field-label">施工单位责任人：</span><span class="field-value">李四</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138002</span></div>
+            <div class="detail-field"><span class="field-label">项目状态：</span><span class="field-value">{{ currentProjectDetail?.status }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">计划开工时间：</span><span class="field-value">2024-03-01</span></div>
+            <div class="detail-field"><span class="field-label">计划完工时间：</span><span class="field-value">2025-02-28</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">关联设施：</span><span class="field-value link">文一路延伸段、钱江新城道路</span></div>
+          </div>
+        </div>
+
+        <!-- 进度信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">进度信息</h4>
+          <div class="progress-table-wrapper">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>道路名称</th>
+                  <th>道路长度(m)</th>
+                  <th>目标建设长度(m)</th>
+                  <th>已建设长度(m)</th>
+                  <th>形象进度</th>
+                  <th>状态描述</th>
+                  <th>计划投资额(万元)</th>
+                  <th>累计完成投资(万元)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>文一路延伸段</td>
+                  <td>6500</td>
+                  <td>6500</td>
+                  <td>0</td>
+                  <td>如：6...</td>
+                  <td>请输入状...</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 实际开完工信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">实际开完工信息</h4>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">实际开工时间：</span><span class="field-value">2024-03-10</span></div>
+            <div class="detail-field"><span class="field-label">实际完工时间：</span><span class="field-value">选填</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">开工相关附件：</span><span class="field-value link">施工许可证.pdf</span></div>
+            <div class="detail-field"><span class="field-label">完工相关附件：</span><span class="field-value">无附件</span></div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- ===== 项目管理 - 新建桥梁详情弹窗 ===== -->
+    <a-modal v-model:open="showNewBridgeDetail" title="查看详情" width="1200px" :footer="null" class="dark-modal project-detail-modal">
+      <div class="project-detail-content">
+        <!-- 基本信息 -->
+        <div class="detail-section">
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目名称：</span><span class="field-value">{{ currentProjectDetail?.name }}</span></div>
+            <div class="detail-field"><span class="field-label">归属地区：</span><span class="field-value">{{ currentProjectDetail?.region }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目年份：</span><span class="field-value">2023</span></div>
+            <div class="detail-field"><span class="field-label">建设单位：</span><span class="field-value">杭州市上城区城管局</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">建设单位责任人：</span><span class="field-value">王五</span></div>
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138003</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">施工单位：</span><span class="field-value">浙江桥梁工程有限公司</span></div>
+            <div class="detail-field"><span class="field-label">施工单位责任人：</span><span class="field-value">赵六</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138004</span></div>
+            <div class="detail-field"><span class="field-label">项目状态：</span><span class="field-value">{{ currentProjectDetail?.status }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">计划开工时间：</span><span class="field-value">2023-01-01</span></div>
+            <div class="detail-field"><span class="field-label">计划完工时间：</span><span class="field-value">2024-12-31</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">关联设施：</span><span class="field-value link">钱江新城大桥</span></div>
+          </div>
+        </div>
+
+        <!-- 进度信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">进度信息</h4>
+          <div class="progress-table-wrapper">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>桥梁名称</th>
+                  <th>形象进度</th>
+                  <th>状态描述</th>
+                  <th>计划投资额(万元)</th>
+                  <th>累计完成投资(万元)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>钱江新城大桥</td>
+                  <td>如：66.7%</td>
+                  <td>请输入状态描述</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 实际开完工信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">实际开完工信息</h4>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">实际开工时间：</span><span class="field-value">2023-01-15</span></div>
+            <div class="detail-field"><span class="field-label">实际完工时间：</span><span class="field-value">2024-11-30</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">开工相关附件：</span><span class="field-value link">开工报告.pdf</span></div>
+            <div class="detail-field"><span class="field-label">完工相关附件：</span><span class="field-value link">竣工验收报告.pdf</span></div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- ===== 项目管理 - 新建隧道详情弹窗 ===== -->
+    <a-modal v-model:open="showNewTunnelDetail" title="查看详情" width="1200px" :footer="null" class="dark-modal project-detail-modal">
+      <div class="project-detail-content">
+        <!-- 基本信息 -->
+        <div class="detail-section">
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目名称：</span><span class="field-value">{{ currentProjectDetail?.name }}</span></div>
+            <div class="detail-field"><span class="field-label">归属地区：</span><span class="field-value">{{ currentProjectDetail?.region }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">项目年份：</span><span class="field-value">2024</span></div>
+            <div class="detail-field"><span class="field-label">建设单位：</span><span class="field-value">杭州市萧山区城管局</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">建设单位责任人：</span><span class="field-value">孙七</span></div>
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138005</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">施工单位：</span><span class="field-value">浙江隧道工程有限公司</span></div>
+            <div class="detail-field"><span class="field-label">施工单位责任人：</span><span class="field-value">周八</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">责任人联系方式：</span><span class="field-value">13800138006</span></div>
+            <div class="detail-field"><span class="field-label">项目状态：</span><span class="field-value">{{ currentProjectDetail?.status }}</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">计划开工时间：</span><span class="field-value">2024-06-01</span></div>
+            <div class="detail-field"><span class="field-label">计划完工时间：</span><span class="field-value">2026-05-31</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">关联设施：</span><span class="field-value link">萧山新建隧道</span></div>
+          </div>
+        </div>
+
+        <!-- 进度信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">进度信息</h4>
+          <div class="progress-table-wrapper">
+            <table class="detail-table">
+              <thead>
+                <tr>
+                  <th>隧道名称</th>
+                  <th>形象进度</th>
+                  <th>状态描述</th>
+                  <th>计划投资额(万元)</th>
+                  <th>累计完成投资(万元)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>萧山新建隧道</td>
+                  <td>如：66.7%</td>
+                  <td>请输入状态描述</td>
+                  <td>0</td>
+                  <td>0</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 实际开完工信息 -->
+        <div class="detail-section">
+          <h4 class="section-title">实际开完工信息</h4>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">实际开工时间：</span><span class="field-value">请选择实际开工日期</span></div>
+            <div class="detail-field"><span class="field-label">实际完工时间：</span><span class="field-value">选填</span></div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-field"><span class="field-label">开工相关附件：</span><span class="field-value link">可行性研究.pdf</span></div>
+            <div class="detail-field"><span class="field-label">完工相关附件：</span><span class="field-value">无附件</span></div>
+          </div>
+        </div>
+      </div>
+    </a-modal>
   </div>
 </template>
 
@@ -4199,14 +5323,26 @@ let inspectRateChart: echarts.ECharts | null = null
 let assessRateChart: echarts.ECharts | null = null
 let inspectBarChart: echarts.ECharts | null = null
 
+// 安全隐患排查整治页面 - 检测等级分布图表
+const inspectionLevelChartRef = ref<HTMLElement | null>(null)
+let inspectionLevelChart: echarts.ECharts | null = null
+
 const activeLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const subLayer = ref<'type' | 'eval'>('type')
-const cockpitTab = ref<'trend' | 'overview' | 'monitor' | 'ops2'>('overview')  // 临时改为overview方便测试
+const cockpitTab = ref<'trend' | 'overview' | 'monitor' | 'project'>('overview')  // 临时改为overview方便测试
+const trendActiveModule = ref<'industry' | 'hazard' | 'project' | null>(null)  // 总体态势页模块高亮
 const ops2SubTab = ref('日常巡检')
 const ops2SubTabs = ['日常巡检', '安全评估', '定期检测']
 
 // 设施概况卡片选中状态
 const activeFacilityCard = ref<'road' | 'bridge' | 'tunnel' | null>('road')
+
+// 地图上方指标数据（总体态势）
+const totalRoadMileage = computed(() => '1,256.8')
+const totalBridgeCount = computed(() => '3,908')
+const totalTunnelCount = computed(() => '436')
+const totalEnterpriseCount = computed(() => '286')
+const totalPersonnelCount = computed(() => '12,580')
 
 // 企业概况数据
 const enterpriseOverview = {
@@ -4502,8 +5638,342 @@ const trendHazardTab = ref<'road' | 'bridge' | 'tunnel'>('road')
 const showTrendRiskModal = ref(false)
 const trendRiskTab = ref<'road' | 'bridge' | 'tunnel'>('road')
 
-// 总体态势 - 项目管理数据
-const trendProjectData = { total: 156, ongoing: 82, completed: 54, planning: 20 }
+// 总体态势 - 项目管理数据（按道路、桥梁、隧道分类）
+const trendProjectData = {
+  road: {
+    planRebuildLength: '125.6',  // 计划改造道路长度
+    completedRebuildLength: '89.3',  // 已完成改造道路长度
+    planNewLength: '78.4',  // 计划新建道路长度
+    completedNewLength: '56.2',  // 已完成新建道路长度
+    totalInvestment: '12500',  // 项目总投资（万元）
+    completedInvestment: '8900'  // 累计完成投资（万元）
+  },
+  bridge: {
+    planRebuildLength: '45.8',  // 计划改造桥梁长度
+    completedRebuildLength: '32.1',  // 已完成改造桥梁长度
+    planNewLength: '28.6',  // 计划新建桥梁长度
+    completedNewLength: '19.4',  // 已完成新建桥梁长度
+    totalInvestment: '8600',  // 项目总投资（万元）
+    completedInvestment: '5800'  // 累计完成投资（万元）
+  },
+  tunnel: {
+    planRebuildLength: '18.2',  // 计划改造隧道长度
+    completedRebuildLength: '12.5',  // 已完成改造隧道长度
+    planNewLength: '15.3',  // 计划新建隧道长度
+    completedNewLength: '9.8',  // 已完成新建隧道长度
+    totalInvestment: '5200',  // 项目总投资（万元）
+    completedInvestment: '3400'  // 累计完成投资（万元）
+  }
+}
+
+// 项目管理页面 - 运维项目数据（问题设施改造统计）
+const projectOpsData = {
+  road: {
+    problemCount: 125,  // 问题道路数
+    rebuildProjectCount: 89,  // 问题道路改造项目数
+    planRebuildLength: '125.6',  // 计划改造道路长度
+    completedRebuildLength: '89.3',  // 已完成改造道路长度
+    completionRate: 71.1,  // 完成率
+    totalInvestment: '12500',  // 总投资
+    yearPlanInvestment: '8900',  // 本年度计划投资
+    completedInvestment: '6200'  // 累计完成投资
+  },
+  bridge: {
+    problemCount: 56,  // 问题桥梁数
+    rebuildProjectCount: 45,  // 问题桥梁改造项目数
+    planRebuildLength: 46,  // 计划改造桥梁数（座）
+    completedRebuildLength: 32,  // 已完成改造桥梁数（座）
+    completionRate: 70.1,  // 完成率
+    totalInvestment: '8600',  // 总投资
+    yearPlanInvestment: '5800',  // 本年度计划投资
+    completedInvestment: '4100'  // 累计完成投资
+  },
+  tunnel: {
+    problemCount: 28,  // 问题隧道数
+    rebuildProjectCount: 18,  // 问题隧道改造项目数
+    planRebuildLength: 18,  // 计划改造隧道数（座）
+    completedRebuildLength: 13,  // 已完成改造隧道数（座）
+    completionRate: 68.7,  // 完成率
+    totalInvestment: '5200',  // 总投资
+    yearPlanInvestment: '3400',  // 本年度计划投资
+    completedInvestment: '2300'  // 累计完成投资
+  }
+}
+
+// 项目管理页面 - 新增项目数据（新建设施统计）
+const projectNewData = {
+  road: {
+    newProjectCount: 78,  // 新建道路项目数
+    planNewLength: '78.4',  // 计划新建道路长度
+    completedNewLength: '56.2',  // 已完成新建道路长度
+    completionRate: 71.7,  // 完成率
+    totalInvestment: '12500',  // 总投资
+    yearPlanInvestment: '8900',  // 本年度计划投资
+    completedInvestment: '6200'  // 累计完成投资
+  },
+  bridge: {
+    newProjectCount: 28,  // 新建桥梁项目数
+    planNewLength: 29,  // 计划新建桥梁数（座）
+    completedNewLength: 19,  // 已完成新建桥梁数（座）
+    completionRate: 67.8,  // 完成率
+    totalInvestment: '8600',  // 总投资
+    yearPlanInvestment: '5800',  // 本年度计划投资
+    completedInvestment: '4100'  // 累计完成投资
+  },
+  tunnel: {
+    newProjectCount: 15,  // 新建隧道项目数
+    planNewLength: 15,  // 计划新建隧道数（座）
+    completedNewLength: 10,  // 已完成新建隧道数（座）
+    completionRate: 64.1,  // 完成率
+    totalInvestment: '5200',  // 总投资
+    yearPlanInvestment: '3400',  // 本年度计划投资
+    completedInvestment: '2300'  // 累计完成投资
+  }
+}
+
+// 项目管理页面 - 地图上方指标数据
+const projectOverviewData = {
+  totalProjects: 209,  // 项目总数
+  ongoingProjects: 152,  // 在建数量
+  completedProjects: 57,  // 完工数量
+  totalInvestment: '26300',  // 项目总投资
+  yearPlanInvestment: '18100',  // 本年度计划投资
+  completedInvestment: '12600'  // 累计完成投资
+}
+
+// 项目管理页面 - 各市项目统计数据（根据当前高亮模块动态切换）
+const cityProjectStats = computed(() => {
+  const stats: Record<string, { total: number; ongoing: number }> = {}
+  
+  // 根据当前高亮模块返回不同的数据
+  switch (projectActiveModule.value) {
+    case 'ops-road':
+      // 运维项目-道路：计划改造长度、已完成改造长度
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 80) + 40,  // 计划改造道路长度（公里）
+          ongoing: Math.floor(Math.random() * 60) + 20  // 已完成改造道路长度（公里）
+        }
+      })
+      break
+    case 'ops-bridge':
+      // 运维项目-桥梁：计划改造数、已完成改造数
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 30) + 10,  // 计划改造桥梁数（座）
+          ongoing: Math.floor(Math.random() * 20) + 5   // 已完成改造桥梁数（座）
+        }
+      })
+      break
+    case 'ops-tunnel':
+      // 运维项目-隧道：计划改造数、已完成改造数
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 15) + 5,  // 计划改造隧道数（座）
+          ongoing: Math.floor(Math.random() * 10) + 2  // 已完成改造隧道数（座）
+        }
+      })
+      break
+    case 'new-road':
+      // 新增项目-道路：计划新建长度、已完成新建长度
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 50) + 25,  // 计划新建道路长度（公里）
+          ongoing: Math.floor(Math.random() * 40) + 15  // 已完成新建道路长度（公里）
+        }
+      })
+      break
+    case 'new-bridge':
+      // 新增项目-桥梁：计划新建数、已完成新建数
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 20) + 8,  // 计划新建桥梁数（座）
+          ongoing: Math.floor(Math.random() * 15) + 4  // 已完成新建桥梁数（座）
+        }
+      })
+      break
+    case 'new-tunnel':
+      // 新增项目-隧道：计划新建数、已完成新建数
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 12) + 4,  // 计划新建隧道数（座）
+          ongoing: Math.floor(Math.random() * 8) + 2   // 已完成新建隧道数（座）
+        }
+      })
+      break
+    default:
+      // 默认显示项目总数和在建数量
+      cities.forEach(city => {
+        const total = Math.floor(Math.random() * 30) + 15
+        const ongoing = Math.floor(Math.random() * 20) + 5
+        stats[city.name + '市'] = { total, ongoing }
+      })
+  }
+  
+  return stats
+})
+
+const maxProjectValue = computed(() => {
+  let max = 0
+  Object.values(cityProjectStats.value).forEach(data => {
+    if (data.total > max) max = data.total
+    if (data.ongoing > max) max = data.ongoing
+  })
+  return max || 1
+})
+
+// 项目管理页面 - 悬浮提示框状态
+const showProjectTip = ref(false)
+const currentProjectTooltipCity = ref('')
+const currentProjectTooltipData = ref<{ total: number; ongoing: number } | null>(null)
+const projectTooltipX = ref(0)
+const projectTooltipY = ref(0)
+
+// 项目管理页面 - Tooltip标签（根据当前模块动态显示）
+const projectTooltipLabels = computed(() => {
+  switch (projectActiveModule.value) {
+    case 'ops-road':
+      return { total: '计划改造道路长度（公里）', ongoing: '已完成改造道路长度（公里）' }
+    case 'ops-bridge':
+      return { total: '计划改造桥梁数（座）', ongoing: '已完成改造桥梁数（座）' }
+    case 'ops-tunnel':
+      return { total: '计划改造隧道数（座）', ongoing: '已完成改造隧道数（座）' }
+    case 'new-road':
+      return { total: '计划新建道路长度（公里）', ongoing: '已完成新建道路长度（公里）' }
+    case 'new-bridge':
+      return { total: '计划新建桥梁数（座）', ongoing: '已完成新建桥梁数（座）' }
+    case 'new-tunnel':
+      return { total: '计划新建隧道数（座）', ongoing: '已完成新建隧道数（座）' }
+    default:
+      return { total: '项目总数（个）', ongoing: '在建数量（个）' }
+  }
+})
+
+// 项目管理页面 - 地图样式切换
+const projectMapStyle = ref<'standard' | 'satellite'>('standard')
+const showProjectCityDropdown = ref(false)
+const projectCurrentCity = ref('浙江省')
+
+// 项目管理页面 - 视图模式（map: 地图视图, list: 列表视图）
+const projectViewMode = ref<'map' | 'list'>('map')
+
+// 切换项目管理页面地图类型
+function toggleProjectMapType() {
+  projectMapStyle.value = projectMapStyle.value === 'standard' ? 'satellite' : 'standard'
+}
+
+// 选择项目管理页面城市
+function selectProjectCity(city: string) {
+  projectCurrentCity.value = city
+  showProjectCityDropdown.value = false
+}
+
+// 切换项目管理页面视图（地图/列表）
+function toggleProjectView() {
+  projectViewMode.value = projectViewMode.value === 'map' ? 'list' : 'map'
+}
+
+// 项目管理页面 - 运维项目列表数据
+const opsProjectList = ref([
+  { id: 1, region: '杭州市', name: '文一路改造工程', type: '道路运维', status: '已开工', lng: 120.1538, lat: 30.2741 },
+  { id: 2, region: '杭州市', name: '秋石高架桥加固工程', type: '桥梁运维', status: '前期', lng: 120.1695, lat: 30.2865 },
+  { id: 3, region: '宁波市', name: '中山路快速化改造', type: '道路运维', status: '已完工', lng: 121.5440, lat: 29.8683 },
+  { id: 4, region: '温州市', name: '瓯江大桥维修工程', type: '桥梁运维', status: '已开工', lng: 120.6994, lat: 28.0006 },
+  { id: 5, region: '绍兴市', name: '萧山机场隧道修缮工程', type: '隧道运维', status: '前期', lng: 120.5822, lat: 30.2285 },
+  { id: 6, region: '湖州市', name: '杭宁高速路面养护', type: '道路运维', status: '已完工', lng: 120.0933, lat: 30.8946 },
+  { id: 7, region: '嘉兴市', name: '钱江三桥加固', type: '桥梁运维', status: '已开工', lng: 120.7555, lat: 30.7467 },
+  { id: 8, region: '金华市', name: '义乌隧道维护', type: '隧道运维', status: '前期', lng: 120.0759, lat: 29.3089 },
+])
+
+// 项目管理页面 - 新建项目列表数据
+const newProjectList = ref([
+  { id: 1, region: '杭州市', name: '文一路延伸工程', type: '道路新建', status: '已开工', lng: 120.1420, lat: 30.2680 },
+  { id: 2, region: '杭州市', name: '秋石高架桥新建工程', type: '桥梁新建', status: '已完工', lng: 120.1750, lat: 30.2920 },
+  { id: 3, region: '宁波市', name: '环城南路快速路', type: '道路新建', status: '前期', lng: 121.5580, lat: 29.8520 },
+  { id: 4, region: '温州市', name: '瓯江新城大桥', type: '桥梁新建', status: '已开工', lng: 120.7150, lat: 28.0180 },
+  { id: 5, region: '绍兴市', name: '萧山新建隧道', type: '隧道新建', status: '前期', lng: 120.5980, lat: 30.2450 },
+  { id: 6, region: '湖州市', name: '湖杭高速连接线', type: '道路新建', status: '已完工', lng: 120.1080, lat: 30.9120 },
+  { id: 7, region: '嘉兴市', name: '钱江新城大桥', type: '桥梁新建', status: '已开工', lng: 120.7720, lat: 30.7620 },
+  { id: 8, region: '金华市', name: '金义东市域铁路隧道', type: '隧道新建', status: '前期', lng: 120.0920, lat: 29.3250 },
+])
+
+// 项目管理页面 - 运维项目统计
+const opsProjectStats = computed(() => {
+  const total = opsProjectList.value.length
+  const early = opsProjectList.value.filter(p => p.status === '前期').length
+  const started = opsProjectList.value.filter(p => p.status === '已开工').length
+  const completed = opsProjectList.value.filter(p => p.status === '已完工').length
+  return { total, early, started, completed }
+})
+
+// 项目管理页面 - 新建项目统计
+const newProjectStats = computed(() => {
+  const total = newProjectList.value.length
+  const early = newProjectList.value.filter(p => p.status === '前期').length
+  const started = newProjectList.value.filter(p => p.status === '已开工').length
+  const completed = newProjectList.value.filter(p => p.status === '已完工').length
+  return { total, early, started, completed }
+})
+
+// 获取状态样式类
+function getStatusClass(status: string): string {
+  switch (status) {
+    case '前期': return 'early'
+    case '已开工': return 'started'
+    case '已完工': return 'completed'
+    default: return ''
+  }
+}
+
+// 项目管理页面 - 详情弹窗状态
+const showOpsRoadDetail = ref(false)
+const showOpsBridgeDetail = ref(false)
+const showOpsTunnelDetail = ref(false)
+const showNewRoadDetail = ref(false)
+const showNewBridgeDetail = ref(false)
+const showNewTunnelDetail = ref(false)
+const currentProjectDetail = ref<any>(null)
+
+// 查看运维项目详情
+function viewOpsProjectDetail(item: any) {
+  currentProjectDetail.value = item
+  if (item.type === '道路运维') {
+    showOpsRoadDetail.value = true
+  } else if (item.type === '桥梁运维') {
+    showOpsBridgeDetail.value = true
+  } else if (item.type === '隧道运维') {
+    showOpsTunnelDetail.value = true
+  }
+}
+
+// 查看新建项目详情
+function viewNewProjectDetail(item: any) {
+  currentProjectDetail.value = item
+  if (item.type === '道路新建') {
+    showNewRoadDetail.value = true
+  } else if (item.type === '桥梁新建') {
+    showNewBridgeDetail.value = true
+  } else if (item.type === '隧道新建') {
+    showNewTunnelDetail.value = true
+  }
+}
+
+function showProjectTooltip(cityName: string, data: { total: number; ongoing: number }, event: MouseEvent) {
+  showProjectTip.value = true
+  currentProjectTooltipCity.value = cityName.replace('市', '')
+  currentProjectTooltipData.value = data
+  const target = event.currentTarget as HTMLElement
+  if (!target) return
+  const targetRect = target.getBoundingClientRect()
+  projectTooltipX.value = targetRect.right + 8
+  projectTooltipY.value = targetRect.top + targetRect.height / 2 - 60
+}
+
+function hideProjectTooltip() {
+  showProjectTip.value = false
+  currentProjectTooltipCity.value = ''
+  currentProjectTooltipData.value = null
+}
 
 // 隐患排查页签状态（道路、桥梁、隧道）
 const hazardRoadView = ref<'chart' | 'list'>('chart')
@@ -5025,11 +6495,15 @@ const tunnelCheckColumns = [
 // 高德地图
 const overviewMapRef = ref<HTMLElement | null>(null)
 const monitorMapRef = ref<HTMLElement | null>(null)
+const projectMapRef = ref<HTMLElement | null>(null)
 const opsMapRef = ref<HTMLElement | null>(null)
 const mapStyle = ref<'standard' | 'satellite'>('standard')
 let overviewMap: any = null
 let monitorMap: any = null
 let opsMap: any = null
+let projectMap: any = null
+let projectMapOverlays: any[] = []
+let projectMapInfoWindow: any = null
 let opsMapOverlays: any[] = []
 let opsMapInfoWindow: any = null
 let monitorMapOverlays: any[] = []
@@ -5412,6 +6886,91 @@ function initOverviewMap() {
   })
   addCityMarkers()
   initMapOverlays()
+}
+
+// 项目管理页面 - 初始化项目地图
+function initProjectMap() {
+  const AMap = (window as any).AMap
+  if (!projectMapRef.value || !AMap) return
+  if (projectMap) projectMap.destroy()
+  
+  const layers: any[] = []
+  if (projectMapStyle.value === 'satellite') {
+    layers.push(new AMap.TileLayer.Satellite())
+    layers.push(new AMap.TileLayer.RoadNet())
+  }
+  
+  const zoom = 8
+  const center: [number, number] = [120.15, 29.5]
+  projectMap = new AMap.Map(projectMapRef.value, {
+    zoom, center, layers,
+    viewMode: '2D', dragEnable: true, zoomEnable: true,
+    mapStyle: 'amap://styles/dark',
+  })
+  
+  // 添加项目点位标记
+  addProjectMarkers()
+  
+  // 初始化信息窗口
+  projectMapInfoWindow = new AMap.InfoWindow({
+    isCustom: true,
+    autoMove: true,
+    offset: new AMap.Pixel(0, -10),
+  })
+}
+
+// 项目管理页面 - 添加项目点位标记
+function addProjectMarkers() {
+  const AMap = (window as any).AMap
+  if (!projectMap || !AMap) return
+  
+  // 清除旧标记
+  if (projectMapOverlays.length > 0) {
+    projectMap.remove(projectMapOverlays)
+    projectMapOverlays = []
+  }
+  
+  // 定义不同项目类型的颜色和图标
+  const typeConfig: Record<string, { color: string; icon: string }> = {
+    '道路运维': { color: '#5b8ff9', icon: 'road' },
+    '桥梁运维': { color: '#5ad8a6', icon: 'bridge' },
+    '隧道运维': { color: '#f6bd16', icon: 'tunnel' },
+    '道路新建': { color: '#e86452', icon: 'road-new' },
+    '桥梁新建': { color: '#6dc8ec', icon: 'bridge-new' },
+    '隧道新建': { color: '#945fb9', icon: 'tunnel-new' },
+  }
+  
+  // 合并所有项目数据
+  const allProjects = [...opsProjectList.value, ...newProjectList.value]
+  
+  allProjects.forEach(project => {
+    if (!project.lng || !project.lat) return
+    
+    const config = typeConfig[project.type] || { color: '#5b8ff9', icon: 'default' }
+    
+    // 创建自定义标记内容
+    const markerContent = `<div class="project-marker" style="display:flex;align-items:center;gap:4px;pointer-events:none">
+      <div style="width:12px;height:12px;border-radius:50%;background:${config.color};box-shadow:0 0 10px ${config.color};border:2px solid #fff"></div>
+    </div>`
+    
+    const marker = new AMap.Marker({
+      position: [project.lng, project.lat],
+      content: markerContent,
+      offset: new AMap.Pixel(-6, -6),
+    })
+    
+    // 点击事件：显示详情弹窗
+    marker.on('click', () => {
+      if (project.type.includes('运维')) {
+        viewOpsProjectDetail(project)
+      } else {
+        viewNewProjectDetail(project)
+      }
+    })
+    
+    projectMap.add(marker)
+    projectMapOverlays.push(marker)
+  })
 }
 
 function addCityMarkers() {
@@ -7272,6 +8831,22 @@ const riskDetailPageData = computed(() => ({
 const monitorCity = ref('浙江省')
 const monitorLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 
+// 安全隐患排查整治 - 当前高亮模块
+const highlightedModule = ref<'monitor' | 'inspect' | 'patrol' | 'assess' | null>('monitor') // 默认高亮物联监管
+
+// 项目管理页面 - 当前高亮模块（运维项目：ops-road/ops-bridge/ops-tunnel，新增项目：new-road/new-bridge/new-tunnel）
+const projectActiveModule = ref<'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel' | null>(null)
+
+// 设置项目管理页面活跃模块
+function setProjectActiveModule(module: 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel') {
+  projectActiveModule.value = projectActiveModule.value === module ? null : module
+}
+
+// 安全隐患排查整治 - 城市桥梁列表弹窗
+const showMonitorCityBridgeModal = ref(false)
+const monitorCityBridges = ref<any[]>([])
+const currentMonitorCity = ref('')
+
 const roadDevices = [
   { key: 1, name: '石贯子巷', district: '杭州市上城区', online: '离线' },
   { key: 2, name: '复兴大道', district: '杭州市滨江区', online: '在线' },
@@ -7348,6 +8923,231 @@ const cities = [
   { name: '台州', x: 430, y: 340, color: '#f6bd16' },
   { name: '丽水', x: 340, y: 390, color: '#e86452' },
   { name: '舟山', x: 500, y: 200, color: '#6dc8ec' },
+]
+
+// 生成各市桥梁列表数据
+function generateCityBridges(cityName: string) {
+  const bridgeCounts: Record<string, number> = {
+    '杭州': 520,
+    '宁波': 480,
+    '温州': 420,
+    '绍兴': 380,
+    '湖州': 350,
+    '嘉兴': 360,
+    '金华': 340,
+    '衢州': 280,
+    '台州': 320,
+    '丽水': 260,
+    '舟山': 198,
+  }
+  
+  const count = bridgeCounts[cityName] || 300
+  const bridges = []
+  for (let i = 1; i <= count; i++) {
+    bridges.push({
+      index: i,
+      district: `${cityName}市`,
+      name: `${cityName}${['大桥', '特大桥', '立交桥', '高架桥'][Math.floor(Math.random() * 4)]}${i}号`,
+      structureDevices: Math.floor(Math.random() * 50) + 10,
+      overloadDevices: Math.floor(Math.random() * 30) + 5,
+    })
+  }
+  return bridges
+}
+
+// 点击模块高亮
+function highlightModule(module: 'monitor' | 'inspect' | 'patrol' | 'assess') {
+  highlightedModule.value = module
+}
+
+// 点击城市显示桥梁列表
+function showCityBridgeList(cityName: string) {
+  currentMonitorCity.value = cityName
+  monitorCityBridges.value = generateCityBridges(cityName)
+  showMonitorCityBridgeModal.value = true
+}
+
+// 物联监管地图 - 各市桥梁数量统计
+const cityBridgeCountForMonitor = computed(() => {
+  const counts: Record<string, { count: number }> = {}
+  cities.forEach(city => {
+    counts[city.name + '市'] = { count: Math.floor(Math.random() * 400) + 200 }
+  })
+  return counts
+})
+
+// 设施检测地图 - 各市应检数和已检数统计
+const cityInspectionStats = computed(() => {
+  const stats: Record<string, { shouldCheck: number; checked: number }> = {}
+  cities.forEach(city => {
+    const shouldCheck = Math.floor(Math.random() * 200) + 100 // 100-300
+    const checked = Math.floor(shouldCheck * (0.85 + Math.random() * 0.14)) // 85%-99%
+    stats[city.name + '市'] = { shouldCheck, checked }
+  })
+  return stats
+})
+
+// 设施检测最大值（用于柱状图高度计算）
+const maxInspectionValue = computed(() => {
+  let max = 0
+  Object.values(cityInspectionStats.value).forEach(data => {
+    if (data.shouldCheck > max) max = data.shouldCheck
+    if (data.checked > max) max = data.checked
+  })
+  return max || 1
+})
+
+// 设施检测悬浮提示框相关状态
+const showInspectionTip = ref(false)
+const currentTooltipCity = ref('')
+const currentTooltipData = ref<{ shouldCheck: number; checked: number } | null>(null)
+const tooltipX = ref(0)
+const tooltipY = ref(0)
+
+// 显示设施检测悬浮提示框
+function showInspectionTooltip(cityName: string, data: { shouldCheck: number; checked: number }) {
+  showInspectionTip.value = true
+  currentTooltipCity.value = cityName.replace('市', '')
+  currentTooltipData.value = data
+}
+
+// 隐藏设施检测悬浮提示框
+function hideInspectionTooltip() {
+  showInspectionTip.value = false
+  currentTooltipCity.value = ''
+  currentTooltipData.value = null
+}
+
+// 更新悬浮提示框位置
+function updateInspectionTooltipPosition(event: MouseEvent) {
+  const mapContainer = document.querySelector('.static-map-with-bars')
+  if (!mapContainer) return
+  
+  const rect = mapContainer.getBoundingClientRect()
+  // 将鼠标坐标转换为相对于地图容器的坐标
+  tooltipX.value = event.clientX - rect.left + 20 // 向右偏移20px
+  tooltipY.value = event.clientY - rect.top - 10  // 向上偏移10px
+}
+
+// 日常巡检地图 - 各市整改中重大隐患数和整改中隐患数统计
+const cityPatrolStats = computed(() => {
+  const stats: Record<string, { majorHazard: number; hazard: number }> = {}
+  cities.forEach(city => {
+    const majorHazard = Math.floor(Math.random() * 15) + 5 // 5-20
+    const hazard = Math.floor(Math.random() * 40) + 20 // 20-60
+    stats[city.name + '市'] = { majorHazard, hazard }
+  })
+  return stats
+})
+
+// 日常巡检最大值（用于柱状图高度计算）
+const maxPatrolValue = computed(() => {
+  let max = 0
+  Object.values(cityPatrolStats.value).forEach(data => {
+    if (data.majorHazard > max) max = data.majorHazard
+    if (data.hazard > max) max = data.hazard
+  })
+  return max || 1
+})
+
+// 日常巡检悬浮提示框相关状态
+const showPatrolTip = ref(false)
+const currentPatrolTooltipCity = ref('')
+const currentPatrolTooltipData = ref<{ majorHazard: number; hazard: number } | null>(null)
+const patrolTooltipX = ref(0)
+const patrolTooltipY = ref(0)
+
+// 显示日常巡检悬浮提示框
+function showPatrolTooltip(cityName: string, data: { majorHazard: number; hazard: number }, event: MouseEvent) {
+  showPatrolTip.value = true
+  currentPatrolTooltipCity.value = cityName.replace('市', '')
+  currentPatrolTooltipData.value = data
+  
+  // 使用fixed定位，直接基于视口坐标，放在柱状图右侧
+  const target = event.currentTarget as HTMLElement
+  if (!target) return
+  
+  const targetRect = target.getBoundingClientRect()
+  
+  // 提示框放在柱状图右侧，紧挨着
+  patrolTooltipX.value = targetRect.right + 8
+  patrolTooltipY.value = targetRect.top + targetRect.height / 2 - 60 // 垂直居中偏上
+}
+
+// 隐藏日常巡检悬浮提示框
+function hidePatrolTooltip() {
+  showPatrolTip.value = false
+  currentPatrolTooltipCity.value = ''
+  currentPatrolTooltipData.value = null
+}
+
+// 安全评估地图 - 各市应评单元数和已评单元数统计
+const cityAssessStats = computed(() => {
+  const stats: Record<string, { total: number; evaluated: number }> = {}
+  cities.forEach(city => {
+    const total = Math.floor(Math.random() * 300) + 200 // 200-500
+    const evaluated = Math.floor(Math.random() * 100) + (total - 100) // total-100 to total
+    stats[city.name + '市'] = { total, evaluated }
+  })
+  return stats
+})
+
+// 安全评估最大值（用于柱状图高度计算）
+const maxAssessValue = computed(() => {
+  let max = 0
+  Object.values(cityAssessStats.value).forEach(data => {
+    if (data.total > max) max = data.total
+    if (data.evaluated > max) max = data.evaluated
+  })
+  return max || 1
+})
+
+// 安全评估悬浮提示框相关状态
+const showAssessTip = ref(false)
+const currentAssessTooltipCity = ref('')
+const currentAssessTooltipData = ref<{ total: number; evaluated: number } | null>(null)
+const assessTooltipX = ref(0)
+const assessTooltipY = ref(0)
+
+// 显示安全评估悬浮提示框
+function showAssessTooltip(cityName: string, data: { total: number; evaluated: number }, event: MouseEvent) {
+  showAssessTip.value = true
+  currentAssessTooltipCity.value = cityName.replace('市', '')
+  currentAssessTooltipData.value = data
+  
+  const target = event.currentTarget as HTMLElement
+  if (!target) return
+  
+  const targetRect = target.getBoundingClientRect()
+  assessTooltipX.value = targetRect.right + 8
+  assessTooltipY.value = targetRect.top + targetRect.height / 2 - 60
+}
+
+// 隐藏安全评估悬浮提示框
+function hideAssessTooltip() {
+  showAssessTip.value = false
+  currentAssessTooltipCity.value = ''
+  currentAssessTooltipData.value = null
+}
+
+// 检测等级分布数据
+const inspectionLevelData = [
+  { name: 'A级', value: 2850, color: '#5b8ff9' },
+  { name: 'B级', value: 780, color: '#5ad8a6' },
+  { name: 'C级', value: 180, color: '#fca510' },
+  { name: 'D级', value: 45, color: '#e86452' },
+  { name: 'E级', value: 23, color: '#945fb9' },
+  { name: '合格', value: 120, color: '#13c2c2' },
+  { name: '不合格', value: 35, color: '#ff4d4f' },
+]
+
+// 桥梁列表表格列定义
+const monitorBridgeColumns = [
+  { title: '序号', dataIndex: 'index', key: 'index', width: 80, align: 'center' },
+  { title: '市区县', dataIndex: 'district', key: 'district', width: 150 },
+  { title: '桥梁名称', dataIndex: 'name', key: 'name', width: 250 },
+  { title: '结构设备安全数（台）', dataIndex: 'structureDevices', key: 'structureDevices', width: 180, align: 'right' },
+  { title: '超重设备数（台）', dataIndex: 'overloadDevices', key: 'overloadDevices', width: 180, align: 'right' },
 ]
 
 
@@ -7485,6 +9285,61 @@ function initMonitorModuleCharts() {
     accessRingChart = initRingChart(accessRingRef.value, data.accessRate, '#6dc8ec')
   }
   nextTick(() => initDeviceSubChart())
+}
+
+// 初始化安全隐患排查整治页面 - 检测等级分布图表
+function initInspectionLevelChart() {
+  if (!inspectionLevelChartRef.value) return
+  
+  if (inspectionLevelChart) inspectionLevelChart.dispose()
+  inspectionLevelChart = echarts.init(inspectionLevelChartRef.value)
+  
+  const data = [
+    { name: 'A级', value: 44.89, itemStyle: { color: '#5b8ff9' } },
+    { name: 'B级', value: 48.34, itemStyle: { color: '#5ad8a6' } },
+    { name: 'C级', value: 6.23, itemStyle: { color: '#fca510' } },
+    { name: 'D级', value: 0.54, itemStyle: { color: '#e86452' } },
+    { name: 'E级', value: 0, itemStyle: { color: '#945fb9' } },
+    { name: '合格', value: 99.46, itemStyle: { color: '#13c2c2' } },
+    { name: '不合格', value: 0.54, itemStyle: { color: '#ff4d4f' } },
+  ]
+  
+  inspectionLevelChart.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: '{b}: {c}%'
+    },
+    legend: {
+      orient: 'vertical',
+      right: '2%',
+      top: 'center',
+      textStyle: {
+        fontSize: 11,
+        color: 'rgba(255, 255, 255, 0.85)'
+      },
+      itemWidth: 10,
+      itemHeight: 10,
+      itemGap: 8,
+      align: 'left',
+      padding: [0, 0, 0, 10]
+    },
+    series: [{
+      type: 'pie',
+      radius: ['55%', '75%'],
+      center: ['30%', '50%'],
+      avoidLabelOverlap: false,
+      label: {
+        show: false
+      },
+      emphasis: {
+        label: {
+          show: false
+        }
+      },
+      labelLine: { show: false },
+      data: data
+    }]
+  })
 }
 
 // 任务清单图表初始化
@@ -7655,7 +9510,7 @@ onMounted(() => {
     cockpitTab.value = 'monitor'
     if (route.query.layer === 'bridge') monitorLayer.value = 'bridge'
   }
-  setTimeout(() => { initCharts(); initMonitorModuleCharts(); initTaskCharts() }, 100)
+  setTimeout(() => { initCharts(); initMonitorModuleCharts(); initTaskCharts(); initInspectionLevelChart() }, 100)
   // 初始化高德地图
   if ((window as any).AMap) {
     setTimeout(() => { initOverviewMap() }, 200)
@@ -7670,6 +9525,7 @@ onUnmounted(() => {
   deviceSubChart?.dispose(); bridgeDrillChart?.dispose()
   hazardRateChart?.dispose(); inspectRateChart?.dispose()
   assessRateChart?.dispose(); inspectBarChart?.dispose()
+  inspectionLevelChart?.dispose()
   overviewMap?.destroy(); monitorMap?.destroy()
   delete (window as any).__goBridgePointMonitor
 })
@@ -7746,6 +9602,28 @@ watch(cockpitTab, (val) => {
       setTimeout(initMonitorCharts, 50)
       setTimeout(initMonitorMap, 200)
     })
+  }
+  if (val === 'project') {
+    // 项目管理页面：如果当前是列表视图，初始化项目地图
+    if (projectViewMode.value === 'list') {
+      nextTick(() => {
+        setTimeout(initProjectMap, 200)
+      })
+    }
+  }
+})
+
+// 监听项目视图模式切换
+watch(projectViewMode, (val) => {
+  if (cockpitTab.value === 'project' && val === 'list') {
+    nextTick(() => {
+      setTimeout(initProjectMap, 200)
+    })
+  } else if (val === 'map' && projectMap) {
+    // 切换回地图视图时销毁项目地图
+    projectMap.destroy()
+    projectMap = null
+    projectMapOverlays = []
   }
 })
 watch(monitorLayer, (val) => {
@@ -8875,7 +10753,273 @@ watch(riskType, (val) => {
   text-align: center;
   margin-bottom: 8px;
 }
-.map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; position: relative; }
+.map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; position: relative; z-index: 10; }
+.view-toggle-btn {
+  padding: 6px 12px;
+  background: rgba(91,143,249,0.15);
+  border: 1px solid rgba(91,143,249,0.4);
+  border-radius: 4px;
+  color: #5b8ff9;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  &:hover {
+    background: rgba(91,143,249,0.3);
+    border-color: rgba(91,143,249,0.6);
+    color: #fff;
+  }
+  .toggle-label {
+    font-size: 13px;
+  }
+}
+.project-list-view {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .list-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+.list-card {
+  flex: 1;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(91, 143, 249, 0.3);
+    border-radius: 3px;
+  }
+}
+.list-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(91, 143, 249, 0.2);
+}
+.list-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 10px rgba(91, 143, 249, 0.5);
+}
+.list-stats {
+  display: flex;
+  gap: 16px;
+  .stat-item {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    strong {
+      color: #5b8ff9;
+      font-size: 15px;
+      margin-right: 4px;
+    }
+  }
+}
+.list-table-wrapper {
+  max-height: calc(100% - 120px);
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(91, 143, 249, 0.3);
+    border-radius: 3px;
+  }
+}
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  thead {
+    tr {
+      background: linear-gradient(180deg, rgba(64,158,255,0.15) 0%, rgba(10,22,40,0.9) 100%);
+    }
+    
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 13px;
+      font-weight: bold;
+      border-bottom: 2px solid rgba(64,158,255,0.3);
+      text-shadow: 0 0 8px rgba(64,158,255,0.3);
+    }
+  }
+  
+  tbody {
+    tr {
+      background: transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      
+      &:hover {
+        background: linear-gradient(90deg, rgba(64,158,255,0.1) 0%, rgba(64,158,255,0.05) 100%);
+        box-shadow: inset 0 0 15px rgba(64,158,255,0.1);
+      }
+    }
+    
+    td {
+      padding: 12px 16px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      border-bottom: 1px solid rgba(64,158,255,0.15);
+    }
+  }
+}
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
+  
+  &.status-early {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.4);
+  }
+  
+  &.status-started {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.4);
+  }
+  
+  &.status-completed {
+    background: rgba(33, 150, 243, 0.2);
+    color: #2196f3;
+    border: 1px solid rgba(33, 150, 243, 0.4);
+  }
+}
+.list-container {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+}
+.list-panel {
+  flex: 1;
+  background: rgba(20, 40, 80, 0.6);
+  border-radius: 8px;
+  padding: 16px;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(91, 143, 249, 0.3);
+    border-radius: 3px;
+  }
+}
+.list-header {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(91, 143, 249, 0.2);
+}
+.list-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 0 12px 0;
+  text-shadow: 0 0 10px rgba(91, 143, 249, 0.5);
+}
+.list-stats {
+  display: flex;
+  gap: 16px;
+  .stat-item {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    strong {
+      color: #5b8ff9;
+      font-size: 15px;
+      margin-right: 4px;
+    }
+  }
+}
+.list-table-wrapper {
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(91, 143, 249, 0.3);
+    border-radius: 3px;
+  }
+}
+.project-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  thead {
+    th {
+      background: rgba(91, 143, 249, 0.15);
+      color: #5b8ff9;
+      padding: 10px 8px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid rgba(91, 143, 249, 0.3);
+      white-space: nowrap;
+    }
+  }
+  tbody {
+    tr {
+      cursor: pointer;
+      transition: background 0.2s ease;
+      &:hover {
+        background: rgba(91, 143, 249, 0.1);
+      }
+      td {
+        padding: 10px 8px;
+        color: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid rgba(91, 143, 249, 0.1);
+      }
+    }
+  }
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  &.status-early {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+  }
+  &.status-started {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+  }
+  &.status-completed {
+    background: rgba(33, 150, 243, 0.2);
+    color: #2196f3;
+    border: 1px solid rgba(33, 150, 243, 0.3);
+  }
+}
+.map-title-bar {
+  text-align: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(100,160,255,0.2);
+  margin-bottom: 8px;
+  .map-title-text {
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(91,143,249,0.8);
+  }
+}
 .monitor-map-toolbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 8px; position: relative; }
 .map-btn {
   padding: 4px 14px; border-radius: 4px; font-size: 12px; cursor: pointer;
@@ -8950,6 +11094,548 @@ watch(riskType, (val) => {
       .city-label {
         font-size: 12px; color: #8ab4f8; text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         background: rgba(10,22,40,0.8); padding: 2px 8px; border-radius: 3px;
+      }
+    }
+  }
+}
+
+// 设施检测柱状图样式
+.static-map-with-bars {
+  .city-bars-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    .city-bar-item {
+      position: absolute; display: flex; flex-direction: column; align-items: center;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+      pointer-events: auto;
+      &:hover {
+        .bar-chart-wrapper {
+          box-shadow: 0 0 20px rgba(91,143,249,0.6);
+          transform: scale(1.05);
+        }
+      }
+      .bar-chart-wrapper {
+        background: rgba(10,22,40,0.7);
+        border: 1px solid rgba(100,160,255,0.3);
+        border-radius: 4px;
+        padding: 8px 6px;
+        transition: all 0.3s ease;
+        .bar-group {
+          display: flex;
+          gap: 4px;
+          align-items: flex-end;
+          height: 100px;
+          .bar {
+            width: 20px;
+            min-height: 2px;
+            border-radius: 2px 2px 0 0;
+            position: relative;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            transition: all 0.3s ease;
+            &.bar-should-check {
+              background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
+              box-shadow: 0 0 8px rgba(91,143,249,0.5);
+            }
+            &.bar-checked {
+              background: linear-gradient(180deg, #5ad8a6, #3cb890);
+              box-shadow: 0 0 8px rgba(90,216,166,0.5);
+            }
+            &.bar-major-hazard {
+              background: linear-gradient(180deg, #ff4d4f, #cf1322);
+              box-shadow: 0 0 8px rgba(255,77,79,0.5);
+            }
+            &.bar-hazard {
+              background: linear-gradient(180deg, #ffd700, #faad14);
+              box-shadow: 0 0 8px rgba(255,215,0,0.5);
+            }
+            &.bar-assess-evaluated {
+              background: linear-gradient(180deg, #5ad8a6, #3cb890);
+              box-shadow: 0 0 8px rgba(90,216,166,0.5);
+            }
+            &.bar-assess-total {
+              background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
+              box-shadow: 0 0 8px rgba(91,143,249,0.5);
+            }
+            &.bar-project-total {
+              background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
+              box-shadow: 0 0 8px rgba(91,143,249,0.5);
+            }
+            &.bar-project-ongoing {
+              background: linear-gradient(180deg, #5ad8a6, #3cb890);
+              box-shadow: 0 0 8px rgba(90,216,166,0.5);
+            }
+            .bar-value {
+              font-size: 10px;
+              color: #fff;
+              font-weight: bold;
+              margin-top: 2px;
+              text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            }
+          }
+        }
+      }
+      .city-name-label {
+        font-size: 12px;
+        color: #8ab4f8;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        background: rgba(10,22,40,0.8);
+        padding: 2px 8px;
+        border-radius: 3px;
+        margin-top: 4px;
+      }
+    }
+  }
+  
+  // 图例
+  .bar-legend {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    display: flex;
+    gap: 20px;
+    background: rgba(10,22,40,0.85);
+    border: 1px solid rgba(100,160,255,0.3);
+    border-radius: 4px;
+    padding: 8px 12px;
+    z-index: 10;
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      .legend-color {
+        width: 16px;
+        height: 12px;
+        border-radius: 2px;
+        &.legend-should {
+          background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
+          box-shadow: 0 0 6px rgba(91,143,249,0.5);
+        }
+        &.legend-checked {
+          background: linear-gradient(180deg, #5ad8a6, #3cb890);
+          box-shadow: 0 0 6px rgba(90,216,166,0.5);
+        }
+        &.legend-major-hazard {
+          background: linear-gradient(180deg, #ff4d4f, #cf1322);
+          box-shadow: 0 0 6px rgba(255,77,79,0.5);
+        }
+        &.legend-hazard {
+          background: linear-gradient(180deg, #ffd700, #faad14);
+          box-shadow: 0 0 6px rgba(255,215,0,0.5);
+        }
+        &.legend-assess-evaluated {
+          background: linear-gradient(180deg, #5ad8a6, #3cb890);
+          box-shadow: 0 0 6px rgba(90,216,166,0.5);
+        }
+        &.legend-assess-total {
+          background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
+          box-shadow: 0 0 6px rgba(91,143,249,0.5);
+        }
+        &.legend-project-total {
+          background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
+          box-shadow: 0 0 6px rgba(91,143,249,0.5);
+        }
+        &.legend-project-ongoing {
+          background: linear-gradient(180deg, #5ad8a6, #3cb890);
+          box-shadow: 0 0 6px rgba(90,216,166,0.5);
+        }
+      }
+      .legend-text {
+        font-size: 12px;
+        color: rgba(255,255,255,0.9);
+      }
+    }
+  }
+  
+  // 悬浮提示框
+  .inspection-tooltip {
+    position: absolute;
+    min-width: 240px;
+    background: linear-gradient(135deg, rgba(10,30,60,0.95), rgba(5,20,40,0.95));
+    border: 2px solid rgba(0,180,255,0.6);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0,180,255,0.4), inset 0 0 20px rgba(0,180,255,0.1);
+    z-index: 100;
+    pointer-events: auto;
+    overflow: hidden;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,180,255,0.8), transparent);
+    }
+    
+    .tooltip-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: linear-gradient(90deg, rgba(0,180,255,0.15), transparent);
+      border-bottom: 1px solid rgba(0,180,255,0.3);
+      
+      .tooltip-city {
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        text-shadow: 0 0 10px rgba(0,180,255,0.8);
+      }
+      
+      .tooltip-close {
+        background: none;
+        border: none;
+        color: rgba(255,255,255,0.7);
+        font-size: 20px;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        line-height: 1;
+        transition: all 0.2s;
+        &:hover {
+          color: #fff;
+          transform: scale(1.2);
+        }
+      }
+    }
+    
+    .tooltip-content {
+      padding: 16px;
+      
+      .tooltip-item {
+        margin-bottom: 16px;
+        &:last-child {
+          margin-bottom: 0;
+        }
+        
+        .tooltip-label {
+          font-size: 13px;
+          color: rgba(255,255,255,0.8);
+          margin-bottom: 8px;
+        }
+        
+        .tooltip-value {
+          font-size: 28px;
+          font-weight: bold;
+          font-family: 'DIN', 'Arial', sans-serif;
+          letter-spacing: 2px;
+          
+          &.should-check {
+            color: #5b8ff9;
+            text-shadow: 0 0 15px rgba(91,143,249,0.8);
+            background: linear-gradient(180deg, rgba(91,143,249,0.2), transparent);
+            padding: 8px 12px;
+            border-left: 3px solid #5b8ff9;
+            border-radius: 0 4px 4px 0;
+          }
+          
+          &.checked {
+            color: #5ad8a6;
+            text-shadow: 0 0 15px rgba(90,216,166,0.8);
+            background: linear-gradient(180deg, rgba(90,216,166,0.2), transparent);
+            padding: 8px 12px;
+            border-left: 3px solid #5ad8a6;
+            border-radius: 0 4px 4px 0;
+          }
+          
+          &.major-hazard {
+            color: #ff4d4f;
+            text-shadow: 0 0 15px rgba(255,77,79,0.8);
+            background: linear-gradient(180deg, rgba(255,77,79,0.2), transparent);
+            padding: 8px 12px;
+            border-left: 3px solid #ff4d4f;
+            border-radius: 0 4px 4px 0;
+          }
+          
+          &.hazard {
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255,215,0,0.8);
+            background: linear-gradient(180deg, rgba(255,215,0,0.2), transparent);
+            padding: 8px 12px;
+            border-left: 3px solid #ffd700;
+            border-radius: 0 4px 4px 0;
+          }
+        }
+      }
+    }
+  }
+  
+  // 日常巡检悬浮提示框（卡片式布局）
+  .patrol-tooltip {
+    position: absolute;
+    min-width: 280px;
+    background: rgba(10, 22, 40, 0.95);
+    border: 2px solid rgba(0, 180, 255, 0.6);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 180, 255, 0.4), inset 0 0 20px rgba(0, 180, 255, 0.1);
+    z-index: 100;
+    pointer-events: auto;
+    padding: 16px;
+    
+    .tooltip-close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      line-height: 1;
+      transition: all 0.2s;
+      &:hover {
+        color: #fff;
+        transform: scale(1.2);
+      }
+    }
+    
+    .tooltip-item-box {
+      background: rgba(0, 20, 40, 0.6);
+      border: 1px solid rgba(100, 160, 255, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .item-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 8px;
+      }
+      
+      .item-value {
+        font-size: 32px;
+        font-weight: bold;
+        font-family: 'DIN', 'Arial', sans-serif;
+        color: #fff;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      
+      .item-bar {
+        height: 4px;
+        border-radius: 2px;
+        
+        &.major-hazard-bar {
+          background: linear-gradient(90deg, #ff4d4f, #cf1322);
+          box-shadow: 0 0 8px rgba(255, 77, 79, 0.6);
+        }
+        
+        &.hazard-bar {
+          background: linear-gradient(90deg, #ffd700, #faad14);
+          box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+        }
+      }
+    }
+  }
+  
+  // 安全评估悬浮提示框（卡片式布局）
+  .assess-tooltip {
+    position: absolute;
+    min-width: 280px;
+    background: rgba(10, 22, 40, 0.95);
+    border: 2px solid rgba(0, 180, 255, 0.6);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 180, 255, 0.4), inset 0 0 20px rgba(0, 180, 255, 0.1);
+    z-index: 100;
+    pointer-events: auto;
+    padding: 16px;
+    
+    .tooltip-close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      line-height: 1;
+      transition: all 0.2s;
+      &:hover {
+        color: #fff;
+        transform: scale(1.2);
+      }
+    }
+    
+    .tooltip-item-box {
+      background: rgba(0, 20, 40, 0.6);
+      border: 1px solid rgba(100, 160, 255, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .item-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 8px;
+      }
+      
+      .item-value {
+        font-size: 32px;
+        font-weight: bold;
+        font-family: 'DIN', 'Arial', sans-serif;
+        color: #fff;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      
+      .item-bar {
+        height: 4px;
+        border-radius: 2px;
+        
+        &.evaluated-bar {
+          background: linear-gradient(90deg, #5ad8a6, #3cb890);
+          box-shadow: 0 0 8px rgba(90, 216, 166, 0.6);
+        }
+        
+        &.total-bar {
+          background: linear-gradient(90deg, #5b8ff9, #3a6fd8);
+          box-shadow: 0 0 8px rgba(91, 143, 249, 0.6);
+        }
+      }
+    }
+  }
+  
+  // 项目管理悬浮提示框（卡片式布局）
+  .project-tooltip {
+    position: absolute;
+    min-width: 280px;
+    background: rgba(10, 22, 40, 0.95);
+    border: 2px solid rgba(0, 180, 255, 0.6);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 180, 255, 0.4), inset 0 0 20px rgba(0, 180, 255, 0.1);
+    z-index: 100;
+    pointer-events: auto;
+    padding: 16px;
+    
+    .tooltip-close-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      line-height: 1;
+      transition: all 0.2s;
+      &:hover {
+        color: #fff;
+        transform: scale(1.2);
+      }
+    }
+    
+    .tooltip-item-box {
+      background: rgba(0, 20, 40, 0.6);
+      border: 1px solid rgba(100, 160, 255, 0.3);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .item-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-bottom: 8px;
+      }
+      
+      .item-value {
+        font-size: 32px;
+        font-weight: bold;
+        font-family: 'DIN', 'Arial', sans-serif;
+        color: #fff;
+        letter-spacing: 2px;
+        margin-bottom: 8px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+      
+      .item-bar {
+        height: 4px;
+        border-radius: 2px;
+        
+        &.total-bar {
+          background: linear-gradient(90deg, #5b8ff9, #3a6fd8);
+          box-shadow: 0 0 8px rgba(91, 143, 249, 0.6);
+        }
+        
+        &.ongoing-bar {
+          background: linear-gradient(90deg, #5ad8a6, #3cb890);
+          box-shadow: 0 0 8px rgba(90, 216, 166, 0.6);
+        }
+      }
+    }
+  }
+}
+
+// 检测等级分布列表样式
+.inspection-level-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  
+  .level-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 0;
+    border-bottom: 1px solid rgba(100,160,255,0.08);
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    .level-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 5px;
+      flex-shrink: 0;
+    }
+    
+    .level-name {
+      flex: 1;
+      font-size: 11px;
+      color: rgba(255,255,255,0.85);
+    }
+    
+    .level-value {
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      text-align: right;
+      
+      .level-unit {
+        font-size: 10px;
+        color: rgba(255,255,255,0.6);
+        margin-left: 2px;
+        font-weight: normal;
       }
     }
   }
@@ -11598,5 +14284,773 @@ watch(riskType, (val) => {
   align-items: center !important;
   gap: 4px !important;
 }
+
+/* ===== 地图上方指标模块样式 ===== */
+.map-indicator-modules {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+  padding: 0 4px;
+  position: relative;
+  z-index: 10;
+}
+
+/* 列表视图下地图外部指标模块 */
+.map-indicator-modules-outside {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 0;
+}
+
+.indicator-module {
+  flex: 1;
+  background: rgba(0, 20, 40, 0.4);
+  border: 1px solid rgba(0, 180, 255, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  min-width: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &.indicator-active {
+    border: 2px solid #00b4ff;
+    box-shadow: 0 0 20px rgba(0, 180, 255, 0.5), inset 0 0 20px rgba(0, 180, 255, 0.1);
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.15) 0%, rgba(0, 180, 255, 0.05) 100%);
+  }
+}
+
+/* 总体态势页左右卡片高亮 */
+.trend-clickable-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.trend-card-highlighted {
+  border: 2px solid #00b4ff !important;
+  box-shadow: 0 0 20px rgba(0, 180, 255, 0.5), inset 0 0 20px rgba(0, 180, 255, 0.1) !important;
+  background: linear-gradient(135deg, rgba(0, 180, 255, 0.1) 0%, rgba(0, 180, 255, 0.05) 100%) !important;
+}
+
+.module-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 180, 255, 0.2);
+  letter-spacing: 1px;
+}
+
+.module-stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.module-stats .stat-item {
+  flex: 1;
+  min-width: 80px;
+}
+
+.module-stats .stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 4px;
+}
+
+.module-stats .stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  
+  &.blue { color: #5b8ff9; }
+  &.cyan { color: #5ad8a6; }
+  &.green { color: #5ad8a6; }
+  
+  .stat-unit {
+    font-size: 11px;
+    font-weight: 400;
+    margin-left: 2px;
+    opacity: 0.8;
+  }
+}
+
+/* ===== 安全隐患排查整治页面模块样式 ===== */
+.hazard-module-card {
+  height: auto !important;
+  overflow-y: visible !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &.module-highlighted {
+    border: 2px solid #00b4ff;
+    box-shadow: 0 0 20px rgba(0, 180, 255, 0.5), inset 0 0 20px rgba(0, 180, 255, 0.1);
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.1) 0%, rgba(0, 180, 255, 0.05) 100%);
+  }
+}
+
+/* 项目管理页面 - 模块标题高亮样式 */
+.hazard-module-title {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &.module-highlighted {
+    color: #00b4ff;
+    text-shadow: 0 0 10px rgba(0, 180, 255, 0.8);
+    font-weight: 700;
+  }
+}
+
+.hazard-section {
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(0, 180, 255, 0.15);
+  
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.hazard-sub-title {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.stat-grid {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.stat-block {
+  flex: 1;
+  background: rgba(0, 20, 40, 0.3);
+  border-radius: 4px;
+  padding: 8px;
+  text-align: center;
+  
+  .stat-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 4px;
+  }
+  
+  .stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    
+    &.blue { color: #5b8ff9; }
+    &.cyan { color: #5ad8a6; }
+    &.green { color: #5ad8a6; }
+    &.orange { color: #fca510; }
+    &.yellow { color: #ffd700; }
+    &.red { color: #ff4d4f; }
+    
+    .stat-unit {
+      font-size: 10px;
+      font-weight: 400;
+      margin-left: 2px;
+      opacity: 0.8;
+    }
+  }
+}
+
+.chart-small {
+  width: 100%;
+  height: 160px;
+  margin-top: 8px;
+}
+
+.monitor-left,
+.monitor-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.monitor-center {
+  position: relative;
+}
+
+.monitor-map-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.monitor-map-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(0, 180, 255, 0.2);
+  background: rgba(0, 20, 40, 0.3);
+}
+
+.map-layer-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.layer-tab {
+  padding: 4px 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+  
+  &.active {
+    color: #fff;
+    background: rgba(0, 180, 255, 0.3);
+  }
+  
+  &:hover {
+    color: #fff;
+    background: rgba(0, 180, 255, 0.2);
+  }
+  
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+    pointer-events: none;
+    
+    &:hover {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+}
+
+.map-type-toggle {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  
+  span {
+    padding: 4px 8px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+    transition: all 0.3s;
+    
+    &.active {
+      color: #fff;
+      background: rgba(0, 180, 255, 0.3);
+    }
+    
+    &:hover {
+      color: #fff;
+      background: rgba(0, 180, 255, 0.2);
+    }
+  }
+}
+
+.map-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: rgba(0, 20, 40, 0.5);
+  border: 1px solid rgba(0, 180, 255, 0.3);
+  border-radius: 4px;
+  cursor: pointer;
+  min-width: 120px;
+  
+  .selector-text {
+    font-size: 12px;
+    color: #fff;
+  }
+  
+  .selector-arrow {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s;
+    
+    &.open {
+      transform: rotate(180deg);
+    }
+  }
+  
+  .city-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: rgba(10, 30, 50, 0.95);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    
+    .dropdown-item {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.3s;
+      
+      &:hover {
+        background: rgba(0, 180, 255, 0.2);
+        color: #fff;
+      }
+      
+      &.active {
+        background: rgba(0, 180, 255, 0.3);
+        color: #fff;
+      }
+    }
+  }
+}
+
+.map-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.legend-checkbox-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  
+  .custom-checkbox {
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgba(0, 180, 255, 0.5);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    
+    &.checked {
+      background: rgba(0, 180, 255, 0.3);
+      border-color: #00b4ff;
+    }
+    
+    .check-icon {
+      width: 10px;
+      height: 10px;
+    }
+  }
+  
+  .legend-line {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+  }
+  
+  .checkbox-label {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+.legend-control-panel {
+  pointer-events: auto;
+}
+
+.sub-layer-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s;
+  
+  &.selected {
+    color: #fff;
+    background: rgba(0, 180, 255, 0.3);
+  }
+  
+  &:hover {
+    color: #fff;
+    background: rgba(0, 180, 255, 0.2);
+  }
+  
+  .radio-dot {
+    width: 8px;
+    height: 8px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+  }
+}
+
+/* ===== 桥梁列表弹窗样式 - 全局 ===== */
+.bridge-list-modal .ant-modal-content {
+  background: linear-gradient(180deg, #0d1f3c 0%, #0a1628 100%) !important;
+  border: 1px solid rgba(0, 180, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 180, 255, 0.2), inset 0 0 30px rgba(0, 180, 255, 0.05) !important;
+  border-radius: 8px !important;
+}
+
+.bridge-list-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 2px solid rgba(0, 180, 255, 0.3) !important;
+  padding: 16px 24px !important;
+  position: relative;
+}
+
+.bridge-list-modal .ant-modal-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100px;
+  height: 2px;
+  background: linear-gradient(90deg, #00b4ff 0%, transparent 100%);
+}
+
+.bridge-list-modal .ant-modal-title {
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  text-shadow: 0 0 10px rgba(0, 180, 255, 0.5) !important;
+}
+
+.bridge-list-modal .ant-modal-close {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.bridge-list-modal .ant-modal-close:hover {
+  color: #fff !important;
+}
+
+.bridge-list-modal .ant-modal-body {
+  padding: 20px 24px !important;
+  background: transparent !important;
+}
+
+/* 表格样式 */
+.bridge-list-modal .ant-table {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.bridge-list-modal .ant-table-thead > tr > th {
+  background: linear-gradient(180deg, rgba(0, 180, 255, 0.25) 0%, rgba(0, 180, 255, 0.15) 100%) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  border-bottom: 2px solid rgba(0, 180, 255, 0.4) !important;
+  text-shadow: 0 0 8px rgba(0, 180, 255, 0.3) !important;
+  padding: 12px 16px !important;
+}
+
+.bridge-list-modal .ant-table-tbody > tr {
+  background: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.bridge-list-modal .ant-table-tbody > tr:nth-child(even) {
+  background: rgba(0, 180, 255, 0.03) !important;
+}
+
+.bridge-list-modal .ant-table-tbody > tr:hover {
+  background: linear-gradient(90deg, rgba(0, 180, 255, 0.15) 0%, rgba(0, 180, 255, 0.05) 100%) !important;
+}
+
+.bridge-list-modal .ant-table-tbody > tr:hover > td {
+  color: #fff !important;
+  text-shadow: 0 0 5px rgba(0, 180, 255, 0.3) !important;
+}
+
+.bridge-list-modal .ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(0, 180, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 13px !important;
+  padding: 12px 16px !important;
+  transition: all 0.3s ease;
+}
+
+.bridge-list-modal .ant-table-tbody > tr:last-child > td {
+  border-bottom: none !important;
+}
+
+/* 分页器样式 */
+.bridge-list-modal .ant-table-pagination {
+  margin-top: 16px !important;
+  padding: 12px 0 !important;
+  border-top: 1px solid rgba(0, 180, 255, 0.2) !important;
+}
+
+.bridge-list-modal .ant-pagination-item,
+.bridge-list-modal .ant-pagination-prev,
+.bridge-list-modal .ant-pagination-next {
+  background: rgba(0, 180, 255, 0.1) !important;
+  border: 1px solid rgba(0, 180, 255, 0.3) !important;
+  border-radius: 4px !important;
+  transition: all 0.3s ease;
+}
+
+.bridge-list-modal .ant-pagination-item a,
+.bridge-list-modal .ant-pagination-prev a,
+.bridge-list-modal .ant-pagination-next a {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.bridge-list-modal .ant-pagination-item:hover,
+.bridge-list-modal .ant-pagination-prev:hover,
+.bridge-list-modal .ant-pagination-next:hover {
+  background: rgba(0, 180, 255, 0.2) !important;
+  border-color: rgba(0, 180, 255, 0.5) !important;
+}
+
+.bridge-list-modal .ant-pagination-item:hover a,
+.bridge-list-modal .ant-pagination-prev:hover a,
+.bridge-list-modal .ant-pagination-next:hover a {
+  color: #fff !important;
+}
+
+.bridge-list-modal .ant-pagination-item.ant-pagination-item-active {
+  background: linear-gradient(135deg, rgba(0, 180, 255, 0.4) 0%, rgba(0, 180, 255, 0.2) 100%) !important;
+  border-color: #00b4ff !important;
+  box-shadow: 0 0 10px rgba(0, 180, 255, 0.3) !important;
+}
+
+.bridge-list-modal .ant-pagination-item.ant-pagination-item-active a {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.bridge-list-modal .ant-pagination-total-text {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 13px !important;
+}
+
+.bridge-list-modal .ant-pagination-options .ant-select-selector {
+  background: rgba(0, 180, 255, 0.1) !important;
+  border: 1px solid rgba(0, 180, 255, 0.3) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.bridge-list-modal .ant-pagination-options .ant-select-selection-item {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* ===== 项目详情弹窗样式 ===== */
+/* ===== 项目详情弹窗样式 - 全局 ===== */
+.project-detail-modal .ant-modal-content {
+  background: linear-gradient(180deg, #0a1628 0%, #0d1f3c 100%) !important;
+  border: 1px solid rgba(100,160,255,0.2) !important;
+  box-shadow: 0 0 30px rgba(0,100,255,0.3) !important;
+}
+
+.project-detail-modal .ant-modal-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(100,160,255,0.2) !important;
+  padding: 16px 24px !important;
+}
+
+.project-detail-modal .ant-modal-title {
+  color: #fff !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+}
+
+.project-detail-modal .ant-modal-close {
+  color: rgba(255,255,255,0.7) !important;
+}
+
+.project-detail-modal .ant-modal-close:hover {
+  color: #fff !important;
+}
+
+.project-detail-modal .ant-modal-body {
+  padding: 24px !important;
+  max-height: calc(100vh - 200px) !important;
+  overflow-y: auto !important;
+  background: transparent !important;
+}
+
+.project-detail-content {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.detail-section {
+  margin-bottom: 24px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 0 16px 0;
+  padding-left: 12px;
+  border-left: 3px solid #5b8ff9;
+  text-shadow: 0 0 10px rgba(91, 143, 249, 0.5);
+}
+
+.detail-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 12px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.detail-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.field-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  white-space: nowrap;
+  min-width: 120px;
+}
+
+.field-value {
+  color: #fff;
+  font-size: 13px;
+  
+  &.link {
+    color: #5b8ff9;
+    cursor: pointer;
+    text-decoration: underline;
+    
+    &:hover {
+      color: #67b3ff;
+      text-shadow: 0 0 8px rgba(91, 143, 249, 0.5);
+    }
+  }
+}
+
+.progress-table-wrapper {
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  
+  thead {
+    tr {
+      background: linear-gradient(180deg, rgba(64,158,255,0.15) 0%, rgba(10,22,40,0.9) 100%);
+    }
+    
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 13px;
+      font-weight: bold;
+      border-bottom: 2px solid rgba(64,158,255,0.3);
+      text-shadow: 0 0 8px rgba(64,158,255,0.3);
+    }
+  }
+  
+  tbody {
+    tr {
+      background: transparent;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: linear-gradient(90deg, rgba(64,158,255,0.1) 0%, rgba(64,158,255,0.05) 100%);
+        box-shadow: inset 0 0 15px rgba(64,158,255,0.1);
+      }
+    }
+    
+    td {
+      padding: 12px 16px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      border-bottom: 1px solid rgba(64,158,255,0.15);
+    }
+  }
+}
+
+/* ===== 项目地图图例样式 ===== */
+.project-map-legend {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(10, 22, 40, 0.85);
+  border: 1px solid rgba(100, 160, 255, 0.3);
+  border-radius: 6px;
+  padding: 12px 16px;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.legend-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 8px;
+  text-shadow: 0 0 8px rgba(100, 160, 255, 0.5);
+}
+
+.legend-items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px 12px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 6px currentColor;
+  flex-shrink: 0;
+}
+
+.legend-dot.road-ops { background: #5b8ff9; color: #5b8ff9; }
+.legend-dot.bridge-ops { background: #5ad8a6; color: #5ad8a6; }
+.legend-dot.tunnel-ops { background: #f6bd16; color: #f6bd16; }
+.legend-dot.road-new { background: #e86452; color: #e86452; }
+.legend-dot.bridge-new { background: #6dc8ec; color: #6dc8ec; }
+.legend-dot.tunnel-new { background: #945fb9; color: #945fb9; }
 </style>
 
