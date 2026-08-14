@@ -1614,9 +1614,8 @@
 
       <!-- 中间地图区 -->
       <div class="panel panel-center">
-        <!-- 地图上方指标模块（列表视图下显示） -->
-        <template v-if="projectViewMode === 'list'">
-          <div class="map-indicator-modules-outside">
+        <!-- 地图上方指标模块（列表视图和地图视图都显示） -->
+        <div class="map-indicator-modules-outside">
             <div class="indicator-module">
               <div class="module-title">项目概况</div>
               <div class="module-stats">
@@ -1634,7 +1633,6 @@
               </div>
             </div>
           </div>
-        </template>
         
         <div class="card dark-card map-card">
           <!-- 地图工具栏（行政区划选择 + 标准/卫星地图切换） -->
