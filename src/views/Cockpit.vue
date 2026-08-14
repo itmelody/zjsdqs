@@ -614,7 +614,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'inspect' }" @click="highlightModule('inspect')">
           <div class="card-title-row">
             <div class="card-title">设施检测</div>
-            <a-button type="link" size="small" class="detail-btn" @click.stop="goToInspectionDetail">详情 &gt;</a-button>
+            <span class="detail-btn static-detail-btn">详情 &gt;</span>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">应检数</div>
@@ -868,7 +868,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'patrol' }" @click="highlightModule('patrol')">
           <div class="card-title-row">
             <div class="card-title">日常巡检</div>
-            <a-button type="link" size="small" class="detail-btn" @click.stop="goToPatrolDetail">详情 &gt;</a-button>
+            <span class="detail-btn static-detail-btn">详情 &gt;</span>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">排查总数</div>
@@ -911,7 +911,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'assess' }" @click="highlightModule('assess')">
           <div class="card-title-row">
             <div class="card-title">安全评估</div>
-            <a-button type="link" size="small" class="detail-btn" @click.stop="goToAssessmentDetail">详情 &gt;</a-button>
+            <span class="detail-btn static-detail-btn">详情 &gt;</span>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">应评单元数</div>
@@ -5363,7 +5363,7 @@ let inspectionLevelChart: echarts.ECharts | null = null
 
 const activeLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const subLayer = ref<'type' | 'eval'>('type')
-const cockpitTab = ref<'trend' | 'overview' | 'monitor' | 'project'>('overview')  // 临时改为overview方便测试
+const cockpitTab = ref<'trend' | 'overview' | 'monitor' | 'project'>('trend')  // 默认显示总体态势页面
 const trendActiveModule = ref<'industry' | 'hazard' | 'project' | null>(null)  // 总体态势页模块高亮
 const hazardTab = ref<'桥梁' | '道路' | '隧道'>('桥梁')  // 安全隐患排查整治页签
 const projectTab = ref<'桥梁' | '道路' | '隧道'>('桥梁')  // 项目管理页签
@@ -14510,6 +14510,13 @@ watch(riskType, (val) => {
   &:hover {
     color: #4a9eff !important;
   }
+}
+
+/* 静态详情按钮样式（不可点击） */
+.static-detail-btn {
+  color: rgba(255, 255, 255, 0.6) !important;
+  cursor: default;
+  pointer-events: none;
 }
 
 /* 项目管理页面 - 模块标题高亮样式 */

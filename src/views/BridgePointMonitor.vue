@@ -14,8 +14,8 @@
           <div class="pm-card-title">设备运行状态</div>
           <div class="device-stats-row">
             <div class="ds-item"><span class="ds-val blue">28</span><span class="ds-lbl">设备总数</span></div>
-            <div class="ds-item"><span class="ds-val green">24</span><span class="ds-lbl">在线数</span></div>
-            <div class="ds-item"><span class="ds-val cyan">85.7%</span><span class="ds-lbl">在线率</span></div>
+            <div class="ds-item"><span class="ds-val green">472</span><span class="ds-lbl">结构安全设备数</span></div>
+            <div class="ds-item"><span class="ds-val orange">128</span><span class="ds-lbl">超重设备数</span></div>
           </div>
           <div ref="deviceBarRef" class="device-bar-chart"></div>
           <div class="card-footer-btn"><a class="link-btn" @click="showDeviceModal = true">设备在线详情 &gt;</a></div>
@@ -307,7 +307,7 @@ import * as echarts from 'echarts'
 const router = useRouter()
 const route = useRoute()
 const bridgeName = (route.query.name as string) || '备塘河桥'
-const goBack = () => router.push({ path: '/cockpit', query: { tab: 'monitor', layer: 'bridge' } })
+const goBack = () => router.push('/monitor-detail')
 
 const mapStyle = ref<'standard' | 'satellite'>('standard')
 const toggleMapType = () => {
