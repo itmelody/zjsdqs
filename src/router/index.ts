@@ -353,6 +353,31 @@ const routes = [
     component: () => import('@/views/BridgePointMonitor.vue'),
     meta: { title: '点位监测' },
   },
+  // 安全隐患排查详情页面
+  {
+    path: '/monitor-detail',
+    name: 'MonitorDetail',
+    component: () => import('@/views/MonitorDetail.vue'),
+    meta: { title: '物联监管详情' },
+  },
+  {
+    path: '/inspection-detail',
+    name: 'InspectionDetail',
+    component: () => import('@/views/InspectionDetail.vue'),
+    meta: { title: '设施检测详情' },
+  },
+  {
+    path: '/patrol-detail',
+    name: 'PatrolDetail',
+    component: () => import('@/views/PatrolDetail.vue'),
+    meta: { title: '日常巡检详情' },
+  },
+  {
+    path: '/assessment-detail',
+    name: 'AssessmentDetail',
+    component: () => import('@/views/AssessmentDetail.vue'),
+    meta: { title: '安全评估详情' },
+  },
 ]
 
 const router = createRouter({

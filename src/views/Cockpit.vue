@@ -540,6 +540,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'monitor' }" @click="highlightModule('monitor')">
           <div class="card-title-row">
             <div class="card-title">物联监管</div>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="goToMonitorDetail">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">接入桥梁数</div>
@@ -581,6 +582,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'inspect' }" @click="highlightModule('inspect')">
           <div class="card-title-row">
             <div class="card-title">设施检测</div>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="goToInspectionDetail">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">应检数</div>
@@ -834,6 +836,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'patrol' }" @click="highlightModule('patrol')">
           <div class="card-title-row">
             <div class="card-title">日常巡检</div>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="goToPatrolDetail">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">排查总数</div>
@@ -876,6 +879,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'assess' }" @click="highlightModule('assess')">
           <div class="card-title-row">
             <div class="card-title">安全评估</div>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="goToAssessmentDetail">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">应评单元数</div>
@@ -8960,6 +8964,26 @@ function highlightModule(module: 'monitor' | 'inspect' | 'patrol' | 'assess') {
   highlightedModule.value = module
 }
 
+// 跳转到物联监管详情页面
+function goToMonitorDetail() {
+  router.push('/monitor-detail')
+}
+
+// 跳转到设施检测详情页面
+function goToInspectionDetail() {
+  router.push('/inspection-detail')
+}
+
+// 跳转到日常巡检详情页面
+function goToPatrolDetail() {
+  router.push('/patrol-detail')
+}
+
+// 跳转到安全评估详情页面
+function goToAssessmentDetail() {
+  router.push('/assessment-detail')
+}
+
 // 点击城市显示桥梁列表
 function showCityBridgeList(cityName: string) {
   currentMonitorCity.value = cityName
@@ -14386,6 +14410,19 @@ watch(riskType, (val) => {
     border: 2px solid #00b4ff;
     box-shadow: 0 0 20px rgba(0, 180, 255, 0.5), inset 0 0 20px rgba(0, 180, 255, 0.1);
     background: linear-gradient(135deg, rgba(0, 180, 255, 0.1) 0%, rgba(0, 180, 255, 0.05) 100%);
+  }
+}
+
+/* 详情按钮样式 */
+.detail-btn {
+  color: #00b4ff !important;
+  font-size: 12px;
+  padding: 0 8px;
+  height: 24px;
+  line-height: 24px;
+  
+  &:hover {
+    color: #4a9eff !important;
   }
 }
 

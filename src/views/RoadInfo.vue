@@ -484,6 +484,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { message, Modal } from 'ant-design-vue'
 import type { TableColumnsType } from 'ant-design-vue'
 import {
@@ -503,6 +504,11 @@ import {
   roadLevelOptions,
   regionOptions,
 } from '@/utils/mockRoadData'
+
+const route = useRoute()
+
+// 是否显示检测/评价单位列（从检测评价菜单进入时显示）
+const showEvalUnit = computed(() => route.query.showEvalUnit === '1')
 
 // 搜索表单
 const searchForm = reactive<RoadSearchParams>({
@@ -584,63 +590,77 @@ const addForm = reactive({
 })
 
 // 表格列定义
-const columns: TableColumnsType = [
-  {
-    title: '归属地区',
-    dataIndex: 'region',
-    key: 'region',
-    width: 150,
-    fixed: 'left',
-  },
-  {
-    title: '道路名称',
-    dataIndex: 'name',
-    key: 'name',
-    width: 300,
-  },
-  {
-    title: '道路等级',
-    dataIndex: 'level',
-    key: 'level',
-    width: 100,
-  },
-  {
-    title: '综合评价等级',
-    dataIndex: 'evalLevel',
-    key: 'evalLevel',
-    width: 120,
-  },
-  {
-    title: '检测时间',
-    dataIndex: 'detectTime',
-    key: 'detectTime',
-    width: 120,
-  },
-  {
-    title: '数据是否完善',
-    dataIndex: 'dataComplete',
-    key: 'dataComplete',
-    width: 120,
-  },
-  {
-    title: '发布状态',
-    dataIndex: 'publishStatus',
-    key: 'publishStatus',
-    width: 100,
-  },
-  {
-    title: '检测是否超期',
-    dataIndex: 'isOverdue',
-    key: 'isOverdue',
-    width: 120,
-  },
-  {
-    title: '操作',
-    key: 'action',
-    fixed: 'right',
-    width: 200,
-  },
-]
+const columns = computed<TableColumnsType>(() => {
+  const base: TableColumnsType = [
+    {
+      title: '归属地区',
+      dataIndex: 'region',
+      key: 'region',
+      width: 150,
+      fixed: 'left',
+    },
+    {
+      title: '道路名称',
+      dataIndex: 'name',
+      key: 'name',
+      width: 300,
+    },
+    {
+      title: '道路等级',
+      dataIndex: 'level',
+      key: 'level',
+      width: 100,
+    },
+    {
+      title: '综合评价等级',
+      dataIndex: 'evalLevel',
+      key: 'evalLevel',
+      width: 120,
+    },
+    {
+      title: '检测时间',
+      dataIndex: 'detectTime',
+      key: 'detectTime',
+      width: 120,
+    },
+  ]
+  // 从检测评价菜单进入时显示检测/评价单位列
+  if (showEvalUnit.value) {
+    base.push({
+      title: '检测/评价单位',
+      dataIndex: 'evalUnit',
+      key: 'evalUnit',
+      width: 160,
+    })
+  }
+  base.push(
+    {
+      title: '数据是否完善',
+      dataIndex: 'dataComplete',
+      key: 'dataComplete',
+      width: 120,
+    },
+    {
+      title: '发布状态',
+      dataIndex: 'publishStatus',
+      key: 'publishStatus',
+      width: 100,
+    },
+    {
+      title: '检测是否超期',
+      dataIndex: 'isOverdue',
+      key: 'isOverdue',
+      width: 120,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      fixed: 'right',
+      width: 200,
+    },
+  )
+  return base
+})
 
 // 批量填写弹窗相关
 const batchFillModalVisible = ref(false)
