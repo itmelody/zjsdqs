@@ -137,7 +137,6 @@ const columns = [
   { title: '点位名称', dataIndex: 'pointName', key: 'pointName', width: 200 },
   { title: '是否在线', dataIndex: 'online', key: 'online', width: 90 },
   { title: '点位值最新时间', dataIndex: 'latestTime', key: 'latestTime', width: 160 },
-  { title: '点位最新值', dataIndex: 'latestValue', key: 'latestValue', width: 100 },
   { title: '操作', key: 'action', width: 160, fixed: 'right' as const },
 ]
 

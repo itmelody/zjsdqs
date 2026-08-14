@@ -21,100 +21,118 @@
         <!-- ===== 总体态势：安全隐患排查整治 ===== -->
         <template v-if="cockpitTab === 'trend'">
           <!-- 安全隐患排查整治卡片 -->
-          <div class="card dark-card stat-card-compact trend-clickable-card" :class="{ 'trend-card-highlighted': trendActiveModule === 'hazard' }" @click="trendActiveModule = trendActiveModule === 'hazard' ? null : 'hazard'">
+          <div class="card dark-card stat-card-compact trend-clickable-card" :class="{ 'trend-card-highlighted': trendActiveModule === 'hazard' }" @click="cockpitTab = 'monitor'">
             <div class="card-title-row">
               <div class="card-title">安全隐患排查整治</div>
             </div>
             <div class="trend-hazard-tabs">
-              <span class="hazard-tab active">桥梁</span>
-              <span class="hazard-tab static">道路</span>
-              <span class="hazard-tab static">隧道</span>
+              <span class="hazard-tab" :class="{ active: hazardTab === '桥梁' }" @click.stop="hazardTab = '桥梁'">桥梁</span>
+              <span class="hazard-tab" :class="{ active: hazardTab === '道路' }" @click.stop="hazardTab = '道路'">道路</span>
+              <span class="hazard-tab" :class="{ active: hazardTab === '隧道' }" @click.stop="hazardTab = '隧道'">隧道</span>
             </div>
-            <!-- 桥梁内容始终显示 -->
-            <div class="road-stats compact">
+            <div class="road-stats compact" v-show="hazardTab === '桥梁'">
               <!-- 物联监管 -->
               <div class="hazard-module-title">物联监管</div>
               <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">接入桥梁数</div>
-                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">预警总数</div>
-                  <div class="stat-value yellow">526<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已处置数</div>
-                  <div class="stat-value cyan">481<span class="stat-unit"> 个</span></div>
-                </div>
+                <div class="stat-block"><div class="stat-label">接入桥梁数</div><div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">预警总数</div><div class="stat-value yellow">526<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已处置数</div><div class="stat-value cyan">481<span class="stat-unit"> 个</span></div></div>
               </div>
               <!-- 设施检测 -->
               <div class="hazard-module-title">设施检测</div>
               <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">应检数</div>
-                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已检数</div>
-                  <div class="stat-value green">3,878<span class="stat-unit"> 座</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">风险总数</div>
-                  <div class="stat-value yellow">128<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已处置数</div>
-                  <div class="stat-value cyan">95<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">D/E级、不合格桥梁数</div>
-                  <div class="stat-value red">128<span class="stat-unit"> 座</span></div>
-                </div>
+                <div class="stat-block"><div class="stat-label">应检数</div><div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">已检数</div><div class="stat-value green">3,878<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">风险总数</div><div class="stat-value yellow">128<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已处置数</div><div class="stat-value cyan">95<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">D/E级、不合格桥梁数</div><div class="stat-value red">128<span class="stat-unit"> 座</span></div></div>
               </div>
               <!-- 日常巡检 -->
               <div class="hazard-module-title">日常巡检</div>
               <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">排查总数</div>
-                  <div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">排查已完成</div>
-                  <div class="stat-value green">3,878<span class="stat-unit"> 座</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">整改中重大隐患数</div>
-                  <div class="stat-value orange">15<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">整改中隐患数</div>
-                  <div class="stat-value yellow">33<span class="stat-unit"> 个</span></div>
-                </div>
+                <div class="stat-block"><div class="stat-label">排查总数</div><div class="stat-value blue">3,908<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">排查已完成</div><div class="stat-value green">3,878<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中重大隐患数</div><div class="stat-value orange">15<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中隐患数</div><div class="stat-value yellow">33<span class="stat-unit"> 个</span></div></div>
               </div>
               <!-- 安全评估 -->
               <div class="hazard-module-title">安全评估</div>
               <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">应评单元数</div>
-                  <div class="stat-value blue">3,908<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已评单元数</div>
-                  <div class="stat-value green">3,878<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">重要风险源</div>
-                  <div class="stat-value orange">128<span class="stat-unit"> 处</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">整改中重大隐患数</div>
-                  <div class="stat-value red">15<span class="stat-unit"> 个</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">整改中隐患数</div>
-                  <div class="stat-value yellow">33<span class="stat-unit"> 个</span></div>
-                </div>
+                <div class="stat-block"><div class="stat-label">应评单元数</div><div class="stat-value blue">3,908<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已评单元数</div><div class="stat-value green">3,878<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">重要风险源</div><div class="stat-value orange">128<span class="stat-unit"> 处</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中重大隐患数</div><div class="stat-value red">15<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中隐患数</div><div class="stat-value yellow">33<span class="stat-unit"> 个</span></div></div>
+              </div>
+            </div>
+            <div class="road-stats compact" v-show="hazardTab === '道路'">
+              <!-- 物联监管 -->
+              <div class="hazard-module-title">物联监管</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">接入道路数</div><div class="stat-value blue">1,256<span class="stat-unit"> 条</span></div></div>
+                <div class="stat-block"><div class="stat-label">预警总数</div><div class="stat-value yellow">312<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已处置数</div><div class="stat-value cyan">289<span class="stat-unit"> 个</span></div></div>
+              </div>
+              <!-- 设施检测 -->
+              <div class="hazard-module-title">设施检测</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">应检数</div><div class="stat-value blue">1,256<span class="stat-unit"> 条</span></div></div>
+                <div class="stat-block"><div class="stat-label">已检数</div><div class="stat-value green">1,198<span class="stat-unit"> 条</span></div></div>
+                <div class="stat-block"><div class="stat-label">风险总数</div><div class="stat-value yellow">86<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已处置数</div><div class="stat-value cyan">72<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">D级道路数</div><div class="stat-value red">58<span class="stat-unit"> 条</span></div></div>
+              </div>
+              <!-- 日常巡检 -->
+              <div class="hazard-module-title">日常巡检</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">排查总数</div><div class="stat-value blue">1,256<span class="stat-unit"> 条</span></div></div>
+                <div class="stat-block"><div class="stat-label">排查已完成</div><div class="stat-value green">1,198<span class="stat-unit"> 条</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中重大隐患数</div><div class="stat-value orange">8<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中隐患数</div><div class="stat-value yellow">22<span class="stat-unit"> 个</span></div></div>
+              </div>
+              <!-- 安全评估 -->
+              <div class="hazard-module-title">安全评估</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">应评单元数</div><div class="stat-value blue">1,256<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已评单元数</div><div class="stat-value green">1,198<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">重要风险源</div><div class="stat-value orange">86<span class="stat-unit"> 处</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中重大隐患数</div><div class="stat-value red">8<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中隐患数</div><div class="stat-value yellow">22<span class="stat-unit"> 个</span></div></div>
+              </div>
+            </div>
+            <div class="road-stats compact" v-show="hazardTab === '隧道'">
+              <!-- 物联监管 -->
+              <div class="hazard-module-title">物联监管</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">接入隧道数</div><div class="stat-value blue">436<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">预警总数</div><div class="stat-value yellow">186<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已处置数</div><div class="stat-value cyan">172<span class="stat-unit"> 个</span></div></div>
+              </div>
+              <!-- 设施检测 -->
+              <div class="hazard-module-title">设施检测</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">应检数</div><div class="stat-value blue">436<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">已检数</div><div class="stat-value green">418<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">风险总数</div><div class="stat-value yellow">42<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已处置数</div><div class="stat-value cyan">35<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">D/E级、不合格隧道数</div><div class="stat-value red">18<span class="stat-unit"> 座</span></div></div>
+              </div>
+              <!-- 日常巡检 -->
+              <div class="hazard-module-title">日常巡检</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">排查总数</div><div class="stat-value blue">436<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">排查已完成</div><div class="stat-value green">418<span class="stat-unit"> 座</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中重大隐患数</div><div class="stat-value orange">5<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中隐患数</div><div class="stat-value yellow">12<span class="stat-unit"> 个</span></div></div>
+              </div>
+              <!-- 安全评估 -->
+              <div class="hazard-module-title">安全评估</div>
+              <div class="stat-grid">
+                <div class="stat-block"><div class="stat-label">应评单元数</div><div class="stat-value blue">436<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">已评单元数</div><div class="stat-value green">418<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">重要风险源</div><div class="stat-value orange">42<span class="stat-unit"> 处</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中重大隐患数</div><div class="stat-value red">5<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-block"><div class="stat-label">整改中隐患数</div><div class="stat-value yellow">12<span class="stat-unit"> 个</span></div></div>
               </div>
             </div>
           </div>
@@ -205,14 +223,22 @@
         <div class="card dark-card map-card">
           <!-- 地图上方指标模块（仅总体态势显示） -->
           <div v-if="cockpitTab === 'trend'" class="map-indicator-modules">
-            <div class="indicator-module" :class="{ 'indicator-active': trendActiveModule === 'industry' }" @click="trendActiveModule = trendActiveModule === 'industry' ? null : 'industry'">
-              <div class="module-title">行业概况</div>
-              <div class="module-stats">
-                <div class="stat-item"><div class="stat-label">道路总长</div><div class="stat-value blue">{{ totalRoadMileage }}<span class="stat-unit"> km</span></div></div>
-                <div class="stat-item"><div class="stat-label">城市桥梁总数</div><div class="stat-value cyan">{{ totalBridgeCount }}<span class="stat-unit"> 座</span></div></div>
-                <div class="stat-item"><div class="stat-label">城市隧道总数</div><div class="stat-value green">{{ totalTunnelCount }}<span class="stat-unit"> 座</span></div></div>
-                <div class="stat-item"><div class="stat-label">企业总数</div><div class="stat-value blue">{{ totalEnterpriseCount }}<span class="stat-unit"> 家</span></div></div>
-                <div class="stat-item"><div class="stat-label">从业人员总数</div><div class="stat-value cyan">{{ totalPersonnelCount }}<span class="stat-unit"> 人</span></div></div>
+            <div class="indicator-module indicator-side-by-side" :class="{ 'indicator-active': trendActiveModule === 'industry' }" @click="cockpitTab = 'overview'">
+              <div class="module-stats-group">
+                <div class="module-stats-title">设施概况</div>
+                <div class="module-stats">
+                  <div class="stat-item"><div class="stat-label">道路总长</div><div class="stat-value blue">{{ totalRoadMileage }}<span class="stat-unit"> km</span></div></div>
+                  <div class="stat-item"><div class="stat-label">城市桥梁总数</div><div class="stat-value cyan">{{ totalBridgeCount }}<span class="stat-unit"> 座</span></div></div>
+                  <div class="stat-item"><div class="stat-label">城市隧道总数</div><div class="stat-value green">{{ totalTunnelCount }}<span class="stat-unit"> 座</span></div></div>
+                </div>
+              </div>
+              <div class="module-stats-divider"></div>
+              <div class="module-stats-group">
+                <div class="module-stats-title">企业概况</div>
+                <div class="module-stats">
+                  <div class="stat-item"><div class="stat-label">企业总数</div><div class="stat-value blue">{{ totalEnterpriseCount }}<span class="stat-unit"> 家</span></div></div>
+                  <div class="stat-item"><div class="stat-label">从业人员总数</div><div class="stat-value cyan">{{ totalPersonnelCount }}<span class="stat-unit"> 人</span></div></div>
+                </div>
               </div>
             </div>
           </div>
@@ -240,6 +266,10 @@
             </div>
           </div>
           <div class="map-area">
+            <!-- 总体态势页面：浙江省静态地图 -->
+            <div v-if="cockpitTab === 'trend'" class="static-map-container trend-static-map">
+              <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+            </div>
             <!-- 道路统计图层：静态地图+各市里程标注 -->
             <div v-show="cockpitTab === 'overview' && activeLayer === 'road' && roadMapMode === 'stats'" class="static-map-container">
               <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
@@ -331,7 +361,7 @@
               </div>
             </div>
             <!-- 路网分布/桥梁分布/隧道分布图层：高德地图（始终存在，用v-show控制显隐） -->
-            <div v-show="!(cockpitTab === 'overview' && ((activeLayer === 'road' && roadMapMode === 'stats') || (activeLayer === 'bridge' && bridgeMapMode === 'stats') || (activeLayer === 'tunnel' && tunnelMapMode === 'stats') || activeEnterpriseCard !== null))" ref="overviewMapRef" class="amap-container"></div>
+            <div v-show="cockpitTab !== 'trend' && !(cockpitTab === 'overview' && ((activeLayer === 'road' && roadMapMode === 'stats') || (activeLayer === 'bridge' && bridgeMapMode === 'stats') || (activeLayer === 'tunnel' && tunnelMapMode === 'stats') || activeEnterpriseCard !== null))" ref="overviewMapRef" class="amap-container"></div>
           </div>
           <!-- 道路统计/路网分布图层切换按钮 -->
           <div v-if="cockpitTab === 'overview' && activeLayer === 'road' && !activeEnterpriseCard" class="road-mode-toggle-below">
@@ -368,47 +398,17 @@
       <div class="panel panel-right">
         <!-- ===== 总体态势：项目管理 ===== -->
         <template v-if="cockpitTab === 'trend'">
-          <div class="card dark-card stat-card-compact trend-clickable-card" :class="{ 'trend-card-highlighted': trendActiveModule === 'project' }" @click="trendActiveModule = trendActiveModule === 'project' ? null : 'project'">
+          <div class="card dark-card stat-card-compact trend-clickable-card" :class="{ 'trend-card-highlighted': trendActiveModule === 'project' }" @click="cockpitTab = 'project'">
             <div class="card-title-row">
               <div class="card-title">项目管理</div>
             </div>
-            <!-- 道路项目 -->
-            <div class="hazard-module-title">道路</div>
-            <div class="road-stats compact">
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">计划改造道路长度</div>
-                  <div class="stat-value blue">{{ trendProjectData.road.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已完成改造道路长度</div>
-                  <div class="stat-value green">{{ trendProjectData.road.completedRebuildLength }}<span class="stat-unit"> 公里</span></div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">计划新建道路长度</div>
-                  <div class="stat-value cyan">{{ trendProjectData.road.planNewLength }}<span class="stat-unit"> 公里</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">已完成新建道路长度</div>
-                  <div class="stat-value yellow">{{ trendProjectData.road.completedNewLength }}<span class="stat-unit"> 公里</span></div>
-                </div>
-              </div>
-              <div class="stat-grid">
-                <div class="stat-block">
-                  <div class="stat-label">项目总投资</div>
-                  <div class="stat-value orange">{{ trendProjectData.road.totalInvestment }}<span class="stat-unit"> 万元</span></div>
-                </div>
-                <div class="stat-block">
-                  <div class="stat-label">累计完成投资</div>
-                  <div class="stat-value red">{{ trendProjectData.road.completedInvestment }}<span class="stat-unit"> 万元</span></div>
-                </div>
-              </div>
+            <div class="trend-hazard-tabs">
+              <span class="hazard-tab" :class="{ active: projectTab === '桥梁' }" @click.stop="projectTab = '桥梁'">桥梁</span>
+              <span class="hazard-tab" :class="{ active: projectTab === '道路' }" @click.stop="projectTab = '道路'">道路</span>
+              <span class="hazard-tab" :class="{ active: projectTab === '隧道' }" @click.stop="projectTab = '隧道'">隧道</span>
             </div>
             <!-- 桥梁项目 -->
-            <div class="hazard-module-title">桥梁</div>
-            <div class="road-stats compact">
+            <div class="road-stats compact" v-show="projectTab === '桥梁'">
               <div class="stat-grid">
                 <div class="stat-block">
                   <div class="stat-label">计划改造桥梁长度</div>
@@ -440,9 +440,41 @@
                 </div>
               </div>
             </div>
+            <!-- 道路项目 -->
+            <div class="road-stats compact" v-show="projectTab === '道路'">
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">计划改造道路长度</div>
+                  <div class="stat-value blue">{{ trendProjectData.road.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完成改造道路长度</div>
+                  <div class="stat-value green">{{ trendProjectData.road.completedRebuildLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">计划新建道路长度</div>
+                  <div class="stat-value cyan">{{ trendProjectData.road.planNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完成新建道路长度</div>
+                  <div class="stat-value yellow">{{ trendProjectData.road.completedNewLength }}<span class="stat-unit"> 公里</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">项目总投资</div>
+                  <div class="stat-value orange">{{ trendProjectData.road.totalInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">累计完成投资</div>
+                  <div class="stat-value red">{{ trendProjectData.road.completedInvestment }}<span class="stat-unit"> 万元</span></div>
+                </div>
+              </div>
+            </div>
             <!-- 隧道项目 -->
-            <div class="hazard-module-title">隧道</div>
-            <div class="road-stats compact">
+            <div class="road-stats compact" v-show="projectTab === '隧道'">
               <div class="stat-grid">
                 <div class="stat-block">
                   <div class="stat-label">计划改造隧道长度</div>
@@ -5335,6 +5367,8 @@ const activeLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const subLayer = ref<'type' | 'eval'>('type')
 const cockpitTab = ref<'trend' | 'overview' | 'monitor' | 'project'>('overview')  // 临时改为overview方便测试
 const trendActiveModule = ref<'industry' | 'hazard' | 'project' | null>(null)  // 总体态势页模块高亮
+const hazardTab = ref<'桥梁' | '道路' | '隧道'>('桥梁')  // 安全隐患排查整治页签
+const projectTab = ref<'桥梁' | '道路' | '隧道'>('桥梁')  // 项目管理页签
 const ops2SubTab = ref('日常巡检')
 const ops2SubTabs = ['日常巡检', '安全评估', '定期检测']
 
@@ -11123,6 +11157,18 @@ watch(riskType, (val) => {
   }
 }
 
+// 总体态势页面静态地图样式
+.trend-static-map {
+  .static-map-bg {
+    width: 90%; height: 90%; object-fit: contain; opacity: 0.7;
+    margin: auto;
+    display: block;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
 // 设施检测柱状图样式
 .static-map-with-bars {
   .city-bars-overlay {
@@ -14355,20 +14401,62 @@ watch(riskType, (val) => {
   background: linear-gradient(135deg, rgba(0, 180, 255, 0.1) 0%, rgba(0, 180, 255, 0.05) 100%) !important;
 }
 
+.module-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 180, 255, 0.2);
+}
 .module-title {
   font-size: 13px;
   font-weight: 700;
   color: #fff;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid rgba(0, 180, 255, 0.2);
   letter-spacing: 1px;
+}
+.module-sub-tabs {
+  display: flex;
+  gap: 6px;
+  .module-sub-tab {
+    padding: 2px 10px;
+    font-size: 11px;
+    border-radius: 3px;
+    cursor: pointer;
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.06);
+    transition: all 0.2s;
+    &.active { color: #fff; background: #5b8ff9; }
+    &:hover:not(.active) { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.1); }
+  }
 }
 
 .module-stats {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+}
+
+.indicator-side-by-side {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+.module-stats-group {
+  flex: 1;
+  padding: 0 12px;
+}
+.module-stats-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+.module-stats-divider {
+  width: 1px;
+  background: rgba(0, 180, 255, 0.2);
+  margin: 4px 0;
 }
 
 .module-stats .stat-item {
