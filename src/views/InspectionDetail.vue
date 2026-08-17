@@ -43,7 +43,7 @@
             <div class="stat-value yellow">{{ inspectionOverviewData.aboutToOverdue }}<span class="stat-unit"> 座</span></div>
           </div>
           <div class="hazard-section">
-            <div class="hazard-sub-title">已超期数</div>
+            <div class="hazard-sub-title">超期未检数</div>
             <div class="stat-value orange">{{ inspectionOverviewData.alreadyOverdue }}<span class="stat-unit"> 座</span></div>
           </div>
         </div>
@@ -89,23 +89,18 @@
                        @mouseenter="showTooltip(cityName, data, $event)"
                        @mouseleave="hideTooltip">
                     <div class="bar-chart-wrapper">
-                      <div class="bar-group">
-                        <!-- 根据当前模块显示不同的柱状图 -->
-                        <template v-if="inspectionActiveModule === 'overview'">
-                          <div class="bar bar-should-check" :style="{ height: (data.shouldCheck / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.shouldCheck }}</span>
+                      <!-- 检测概览模块使用环形图 -->
+                      <template v-if="inspectionActiveModule === 'overview'">
+                        <div class="ring-chart" :style="{ background: `conic-gradient(#5ad8a6 0% ${data.checked / data.shouldCheck * 100}%, #5b8ff9 ${data.checked / data.shouldCheck * 100}% 100%)` }">
+                          <div class="ring-center">
+                            <span class="ring-value">{{ data.shouldCheck }}</span>
+                            <span class="ring-label">应检</span>
                           </div>
-                          <div class="bar bar-checked" :style="{ height: (data.checked / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.checked }}</span>
-                          </div>
-                          <div class="bar bar-overdue-uncheck" :style="{ height: (data.overdueUncheck / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.overdueUncheck }}</span>
-                          </div>
-                          <div class="bar bar-about-to-overdue" :style="{ height: (data.aboutToOverdue / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.aboutToOverdue }}</span>
-                          </div>
-                        </template>
-                        <template v-else>
+                        </div>
+                      </template>
+                      <!-- 风险整改模块使用柱状图 -->
+                      <template v-else>
+                        <div class="bar-group">
                           <div class="bar bar-risk-total" :style="{ height: (data.riskTotal / maxValue * 100) + 'px' }">
                             <span class="bar-value">{{ data.riskTotal }}</span>
                           </div>
@@ -115,8 +110,8 @@
                           <div class="bar bar-unqualified" :style="{ height: (data.unqualified / maxValue * 100) + 'px' }">
                             <span class="bar-value">{{ data.unqualified }}</span>
                           </div>
-                        </template>
-                      </div>
+                        </div>
+                      </template>
                     </div>
                     <div class="city-name-label">{{ cityName.replace('市', '') }}</div>
                   </div>
@@ -172,20 +167,12 @@
                 <div class="bar-legend">
                   <template v-if="inspectionActiveModule === 'overview'">
                     <div class="legend-item">
-                      <span class="legend-color legend-should-check"></span>
-                      <span class="legend-text">应检数（座）</span>
-                    </div>
-                    <div class="legend-item">
                       <span class="legend-color legend-checked"></span>
                       <span class="legend-text">已检数（座）</span>
                     </div>
                     <div class="legend-item">
-                      <span class="legend-color legend-overdue-uncheck"></span>
-                      <span class="legend-text">超期未检数（座）</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color legend-about-to-overdue"></span>
-                      <span class="legend-text">即将超期数（座）</span>
+                      <span class="legend-color legend-should-check"></span>
+                      <span class="legend-text">应检数（座）</span>
                     </div>
                   </template>
                   <template v-else>
@@ -768,6 +755,49 @@ onBeforeUnmount(() => {
           border-radius: 4px;
           padding: 8px 6px;
           margin-bottom: 4px;
+          
+          // 环形图样式
+          .ring-chart {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(91, 143, 249, 0.3);
+            
+            &::before {
+              content: '';
+              position: absolute;
+              width: 40px;
+              height: 40px;
+              background: rgba(0, 0, 0, 0.7);
+              border-radius: 50%;
+            }
+            
+            .ring-center {
+              position: relative;
+              z-index: 1;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              
+              .ring-value {
+                font-size: 14px;
+                font-weight: bold;
+                color: #fff;
+                line-height: 1;
+              }
+              
+              .ring-label {
+                font-size: 10px;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 2px;
+              }
+            }
+          }
           
           .bar-group {
             display: flex;
