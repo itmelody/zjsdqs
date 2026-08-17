@@ -503,6 +503,11 @@ onBeforeUnmount(() => {
     padding: 12px;
   }
   
+  &.inspection-module-card {
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
   &.module-highlighted {
     border: 2px solid #00b4ff;
     box-shadow: 0 0 20px rgba(0, 180, 255, 0.5), inset 0 0 20px rgba(0, 180, 255, 0.1);
