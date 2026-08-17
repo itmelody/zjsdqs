@@ -771,7 +771,7 @@ onBeforeUnmount(() => {
               fill: none;
               stroke: #5b8ff9;
               stroke-width: 10;
-              opacity: 0.3;
+              opacity: 0.4;
             }
             
             .ring-checked {
