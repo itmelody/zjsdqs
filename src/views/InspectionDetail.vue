@@ -489,6 +489,18 @@ function hideTooltip() {
 const gisMapRef = ref<HTMLElement>()
 let gisMap: any = null
 
+// 进入页面时立即刷新一次（在组件挂载前执行，避免显示初始页面）
+const hasRefreshed = sessionStorage.getItem('inspectionDetailHasRefreshed')
+if (!hasRefreshed) {
+  sessionStorage.setItem('inspectionDetailHasRefreshed', 'true')
+  // 使用 nextTick 确保 DOM 准备好后立即刷新
+  setTimeout(() => {
+    window.location.reload()
+  }, 0)
+} else {
+  sessionStorage.removeItem('inspectionDetailHasRefreshed')
+}
+
 // 初始化GIS地图
 function initGisMap() {
   if (!gisMapRef.value) return
@@ -509,18 +521,6 @@ watch(riskMapTab, (newTab: 'stats' | 'grade') => {
 
 onMounted(() => {
   // 默认显示静态地图
-  
-  // 自动刷新一次，确保页面显示正确（使用sessionStorage防止无限循环）
-  const hasRefreshed = sessionStorage.getItem('inspectionDetailHasRefreshed')
-  if (!hasRefreshed) {
-    sessionStorage.setItem('inspectionDetailHasRefreshed', 'true')
-    setTimeout(() => {
-      window.location.reload()
-    }, 100)
-  } else {
-    // 清除标记，下次进入时再次刷新
-    sessionStorage.removeItem('inspectionDetailHasRefreshed')
-  }
 })
 
 onBeforeUnmount(() => {
