@@ -476,7 +476,9 @@ function hideTooltip() {
 // GIS地图引用
 const gisMapRef = ref<HTMLElement>()
 let gisMap: any = null
-let gisMarkers: any[] = []
+let gisPolylines: any[] = []
+let currentHighlightPolyline: any = null
+let mapInfoWindow: any = null
 
 // 进入页面时立即刷新一次（在组件挂载前执行，避免显示初始页面）
 const hasRefreshed = sessionStorage.getItem('inspectionDetailHasRefreshed')
@@ -504,29 +506,45 @@ const cityCoordinates: Record<string, [number, number]> = {
   '丽水市': [119.92, 28.47]
 }
 
-// 生成GIS地图上的等级分布标记点
-function generateGradeMarkers() {
-  const markers: { grade: string; color: string; lng: number; lat: number }[] = []
+// 生成GIS地图上的等级分布线条（桥梁）
+function generateGradePolylines() {
+  const polylines: { grade: string; color: string; path: [number, number][]; bridgeName: string; city: string }[] = []
   const gradeKeys = ['a', 'b', 'c', 'd', 'e', 'qualified', 'unqualified']
   const gradeColors: Record<string, string> = {}
   gradeLevels.forEach(l => { gradeColors[l.key] = l.color })
   
-  cityList.forEach(city => {
-    const [lng, lat] = cityCoordinates[city]
-    gradeKeys.forEach(key => {
-      // 每个城市每个等级生成1-5个随机点
-      const count = Math.floor(Math.random() * 5) + 1
-      for (let i = 0; i < count; i++) {
-        markers.push({
-          grade: key,
-          color: gradeColors[key],
-          lng: lng + (Math.random() - 0.5) * 0.3,
-          lat: lat + (Math.random() - 0.5) * 0.2
-        })
-      }
+  // 模拟桥梁数据
+  const bridges = [
+    { name: '半山桥', city: '杭州市', lng: 120.18, lat: 30.35 },
+    { name: '钱塘江大桥', city: '杭州市', lng: 120.14, lat: 30.20 },
+    { name: '西兴大桥', city: '杭州市', lng: 120.21, lat: 30.22 },
+    { name: '彭埠大桥', city: '杭州市', lng: 120.23, lat: 30.28 },
+    { name: '复兴大桥', city: '杭州市', lng: 120.16, lat: 30.21 },
+    { name: '钱江三桥', city: '杭州市', lng: 120.20, lat: 30.24 },
+    { name: '宁波大桥', city: '宁波市', lng: 121.58, lat: 29.90 },
+    { name: '灵桥', city: '宁波市', lng: 121.56, lat: 29.87 },
+    { name: '温州大桥', city: '温州市', lng: 120.68, lat: 28.02 },
+    { name: '瓯江大桥', city: '温州市', lng: 120.66, lat: 28.01 }
+  ]
+  
+  bridges.forEach((bridge, idx) => {
+    // 随机分配一个等级
+    const grade = gradeKeys[idx % gradeKeys.length]
+    // 生成一条短线段（模拟桥梁）
+    const startLng = bridge.lng - 0.01
+    const endLng = bridge.lng + 0.01
+    const startLat = bridge.lat - 0.005
+    const endLat = bridge.lat + 0.005
+    
+    polylines.push({
+      grade: grade,
+      color: gradeColors[grade],
+      path: [[startLng, startLat], [endLng, endLat]],
+      bridgeName: bridge.name,
+      city: bridge.city
     })
   })
-  return markers
+  return polylines
 }
 
 // 初始化GIS地图
@@ -537,41 +555,132 @@ function initGisMap() {
   if (gisMap) gisMap.destroy()
   
   gisMap = new AMap.Map(gisMapRef.value, {
-    zoom: 8,
-    center: [120.15, 29.2],
+    zoom: 10,
+    center: [120.15, 30.27],
     viewMode: '2D',
     dragEnable: true,
     zoomEnable: true,
     mapStyle: 'amap://styles/dark',
   })
   
-  // 添加等级分布标记点
-  gisMarkers = []
-  const markerData = generateGradeMarkers()
-  markerData.forEach(m => {
-    const marker = new AMap.Marker({
-      position: new AMap.LngLat(m.lng, m.lat),
-      content: `<div style="width:10px;height:10px;border-radius:50%;background:${m.color};border:1px solid rgba(255,255,255,0.5);"></div>`,
-      offset: new AMap.Pixel(-5, -5),
-      extData: { grade: m.grade }
+  // 创建信息窗口
+  mapInfoWindow = new AMap.InfoWindow({ isCustom: true, autoMove: true, offset: new AMap.Pixel(0, -10) })
+  
+  // 添加等级分布线条（桥梁）
+  gisPolylines = []
+  const polylineData = generateGradePolylines()
+  polylineData.forEach(data => {
+    const polyline = new AMap.Polyline({
+      path: data.path.map(p => new AMap.LngLat(p[0], p[1])),
+      strokeColor: data.color,
+      strokeWeight: 4,
+      strokeOpacity: 0.9,
+      lineCap: 'round',
+      extData: {
+        grade: data.grade,
+        bridgeName: data.bridgeName,
+        city: data.city,
+        originalColor: data.color
+      }
     })
-    marker.setMap(gisMap)
-    gisMarkers.push(marker)
+    
+    // 点击事件
+    polyline.on('click', () => {
+      highlightPolyline(polyline)
+      showBridgeInfoWindow(polyline, data)
+    })
+    
+    polyline.setMap(gisMap)
+    gisPolylines.push(polyline)
   })
   
-  // 根据当前勾选状态显示/隐藏标记
-  updateMarkerVisibility()
+  // 根据当前勾选状态显示/隐藏线条
+  updatePolylineVisibility()
 }
 
-// 更新标记点可见性
-function updateMarkerVisibility() {
-  gisMarkers.forEach(marker => {
-    const grade = marker.getExtData().grade
+// 高亮线条
+function highlightPolyline(polyline: any) {
+  // 恢复之前高亮的线条
+  if (currentHighlightPolyline && currentHighlightPolyline !== polyline) {
+    const origColor = currentHighlightPolyline.getExtData().originalColor
+    currentHighlightPolyline.setOptions({
+      strokeColor: origColor,
+      strokeWeight: 4,
+      strokeOpacity: 0.9
+    })
+  }
+  
+  // 高亮当前线条
+  polyline.setOptions({
+    strokeColor: '#ffffff',
+    strokeWeight: 6,
+    strokeOpacity: 1
+  })
+  currentHighlightPolyline = polyline
+}
+
+// 显示桥梁信息窗口
+function showBridgeInfoWindow(polyline: any, data: any) {
+  const AMap = (window as any).AMap
+  const extData = polyline.getExtData()
+  
+  const content = `
+    <div style="background:rgba(10,22,40,0.95);border:1px solid rgba(0,180,255,0.3);border-radius:4px;padding:16px;color:#fff;min-width:280px;">
+      <div style="font-size:16px;font-weight:bold;margin-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:8px;">${data.bridgeName}</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,0.7);">归属地区：</span>
+        <span>${data.city}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,0.7);">桥梁名称：</span>
+        <span>${data.bridgeName}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,0.7);">桥梁类型：</span>
+        <span>梁桥</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+        <span style="color:rgba(255,255,255,0.7);">综合评价等级：</span>
+        <span style="color:${extData.originalColor};font-weight:bold;">${getGradeName(extData.grade)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="color:rgba(255,255,255,0.7);">检测时间：</span>
+        <span>2025-07-01</span>
+      </div>
+    </div>
+  `
+  
+  // 计算线段中点作为弹窗位置
+  const midLng = (data.path[0][0] + data.path[1][0]) / 2
+  const midLat = (data.path[0][1] + data.path[1][1]) / 2
+  
+  mapInfoWindow.setContent(content)
+  mapInfoWindow.open(gisMap, new AMap.LngLat(midLng, midLat))
+}
+
+// 获取等级名称
+function getGradeName(grade: string): string {
+  const gradeMap: Record<string, string> = {
+    'a': 'A级',
+    'b': 'B级',
+    'c': 'C级',
+    'd': 'D级',
+    'e': 'E级',
+    'qualified': '合格',
+    'unqualified': '不合格'
+  }
+  return gradeMap[grade] || grade
+}
+
+// 更新线条可见性
+function updatePolylineVisibility() {
+  gisPolylines.forEach(polyline => {
+    const grade = polyline.getExtData().grade
     const visible = (gradeChecked.value as any)[grade]
     if (visible) {
-      marker.show()
+      polyline.show()
     } else {
-      marker.hide()
+      polyline.hide()
     }
   })
 }
@@ -579,7 +688,7 @@ function updateMarkerVisibility() {
 // 监听等级勾选变化
 watch(gradeChecked, () => {
   if (gisMap) {
-    updateMarkerVisibility()
+    updatePolylineVisibility()
   }
 }, { deep: true })
 
