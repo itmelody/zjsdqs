@@ -14392,7 +14392,8 @@ watch(riskType, (val) => {
   cursor: pointer;
   transition: all 0.3s ease;
   
-  &.indicator-active {
+  &.indicator-active,
+  &.module-highlighted {
     border: 2px solid #00b4ff;
     box-shadow: 0 0 20px rgba(0, 180, 255, 0.5), inset 0 0 20px rgba(0, 180, 255, 0.1);
     background: linear-gradient(135deg, rgba(0, 180, 255, 0.15) 0%, rgba(0, 180, 255, 0.05) 100%);
