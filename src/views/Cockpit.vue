@@ -1693,15 +1693,6 @@
                 <div class="stat-item"><div class="stat-label">累计完成投资</div><div class="stat-value red">{{ projectOverviewData.completedInvestment }}<span class="stat-unit"> 万元</span></div></div>
               </div>
             </div>
-            <div class="indicator-module" :class="{ 'module-highlighted': projectActiveModule === 'preliminary' }" @click="setProjectActiveModule('preliminary')" style="cursor:pointer;">
-              <div class="module-title">项目前期</div>
-              <div class="module-stats">
-                <div class="stat-item"><div class="stat-label">项目总数</div><div class="stat-value blue">{{ projectOverviewData.totalProjects }}<span class="stat-unit"> 个</span></div></div>
-                <div class="stat-item"><div class="stat-label">前期数量</div><div class="stat-value yellow">{{ projectOverviewData.preliminaryProjects }}<span class="stat-unit"> 个</span></div></div>
-                <div class="stat-item"><div class="stat-label">已开工数量</div><div class="stat-value cyan">{{ projectOverviewData.ongoingProjects }}<span class="stat-unit"> 个</span></div></div>
-                <div class="stat-item"><div class="stat-label">已完工数量</div><div class="stat-value green">{{ projectOverviewData.completedProjects }}<span class="stat-unit"> 个</span></div></div>
-              </div>
-            </div>
           </div>
         
         <div class="card dark-card map-card">
