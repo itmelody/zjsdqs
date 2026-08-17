@@ -174,6 +174,10 @@
                       <span class="legend-color legend-should-check"></span>
                       <span class="legend-text">应检数（座）</span>
                     </div>
+                    <div class="legend-item">
+                      <span class="legend-color legend-overdue-uncheck"></span>
+                      <span class="legend-text">超期未检数（座）</span>
+                    </div>
                   </template>
                   <template v-else>
                     <div class="legend-item">
