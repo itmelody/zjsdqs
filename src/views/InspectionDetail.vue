@@ -97,10 +97,7 @@
                             #5b8ff9 ${(data.checked / data.shouldCheck) * 100}% 100%
                           )` 
                         }">
-                          <div class="ring-center">
-                            <span class="ring-value">{{ data.shouldCheck - data.checked }}</span>
-                            <span class="ring-label">待检</span>
-                          </div>
+                          <div class="ring-center"></div>
                         </div>
                       </template>
                       <!-- 风险整改模块使用柱状图 -->
@@ -131,7 +128,7 @@
                     <div class="tooltip-item-box">
                       <div class="item-label">应检数（座）</div>
                       <div class="item-value">{{ currentTooltipData?.shouldCheck || 0 }}</div>
-                      <div class="item-bar should-check-bar"></div>
+                      <div class="item-bar total-check-bar"></div>
                     </div>
                     <div class="tooltip-item-box">
                       <div class="item-label">已检数（座）</div>
@@ -942,8 +939,16 @@ onBeforeUnmount(() => {
         background: linear-gradient(90deg, #5b8ff9, #3a6fd8);
       }
       
+      &.total-check-bar {
+        background: linear-gradient(90deg, #9254de, #722ed1);
+      }
+      
       &.checked-bar {
         background: linear-gradient(90deg, #5ad8a6, #3cb890);
+      }
+      
+      &.pending-check-bar {
+        background: linear-gradient(90deg, #5b8ff9, #3a6fd8);
       }
       
       &.overdue-uncheck-bar {
