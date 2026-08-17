@@ -31,6 +31,10 @@
             <div class="stat-value green">{{ inspectionOverviewData.checked }}<span class="stat-unit"> 座</span></div>
           </div>
           <div class="hazard-section">
+            <div class="hazard-sub-title">待检数</div>
+            <div class="stat-value orange">{{ inspectionOverviewData.shouldCheck - inspectionOverviewData.checked }}<span class="stat-unit"> 座</span></div>
+          </div>
+          <div class="hazard-section">
             <div class="hazard-sub-title">检测完成率</div>
             <div class="stat-value cyan">{{ inspectionOverviewData.completionRate }}%</div>
           </div>
@@ -90,14 +94,12 @@
                         <div class="ring-chart" :style="{ 
                           background: `conic-gradient(
                             #5ad8a6 0% ${(data.checked / data.shouldCheck) * 100}%, 
-                            #e86452 ${(data.checked / data.shouldCheck) * 100}% ${((data.checked + data.overdueUncheck) / data.shouldCheck) * 100}%, 
-                            #f6bd16 ${((data.checked + data.overdueUncheck) / data.shouldCheck) * 100}% ${((data.checked + data.overdueUncheck + data.aboutToOverdue) / data.shouldCheck) * 100}%, 
-                            #5b8ff9 ${((data.checked + data.overdueUncheck + data.aboutToOverdue) / data.shouldCheck) * 100}% 100%
+                            #5b8ff9 ${(data.checked / data.shouldCheck) * 100}% 100%
                           )` 
                         }">
                           <div class="ring-center">
-                            <span class="ring-value">{{ data.shouldCheck }}</span>
-                            <span class="ring-label">应检</span>
+                            <span class="ring-value">{{ data.shouldCheck - data.checked }}</span>
+                            <span class="ring-label">待检</span>
                           </div>
                         </div>
                       </template>
@@ -137,14 +139,9 @@
                       <div class="item-bar checked-bar"></div>
                     </div>
                     <div class="tooltip-item-box">
-                      <div class="item-label">超期未检数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.overdueUncheck || 0 }}</div>
-                      <div class="item-bar overdue-uncheck-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">即将超期数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.aboutToOverdue || 0 }}</div>
-                      <div class="item-bar about-to-overdue-bar"></div>
+                      <div class="item-label">待检数（座）</div>
+                      <div class="item-value">{{ (currentTooltipData?.shouldCheck || 0) - (currentTooltipData?.checked || 0) }}</div>
+                      <div class="item-bar pending-check-bar"></div>
                     </div>
                   </template>
                   <template v-else>
@@ -175,7 +172,7 @@
                     </div>
                     <div class="legend-item">
                       <span class="legend-color legend-should-check"></span>
-                      <span class="legend-text">应检数（座）</span>
+                      <span class="legend-text">待检数（座）</span>
                     </div>
                   </template>
                   <template v-else>
