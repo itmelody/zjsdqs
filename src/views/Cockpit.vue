@@ -971,7 +971,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'assess' }" @click="highlightModule('assess')">
           <div class="card-title-row">
             <div class="card-title">安全评估</div>
-            <span class="detail-btn static-detail-btn">详情 &gt;</span>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="openAssessmentDetailModal">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">应评单元数</div>
@@ -4126,6 +4126,48 @@
       </a-table>
     </a-modal>
 
+    <!-- 安全评估详情弹窗 -->
+    <a-modal 
+      v-model:open="showAssessmentDetailModalNew" 
+      title="安全评估详情"
+      width="1200px"
+      :footer="null"
+      class="dark-modal assessment-detail-modal">
+      <a-table 
+        :columns="assessmentDetailColumns" 
+        :data-source="assessmentDetailData"
+        :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }"
+        size="small"
+        bordered>
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'region'">
+            <span>{{ record.region }}</span>
+          </template>
+          <template v-if="column.key === 'unitName'">
+            <span>{{ record.unitName }}</span>
+          </template>
+          <template v-if="column.key === 'totalHazards'">
+            <span class="text-orange">{{ record.totalHazards }}</span>
+          </template>
+          <template v-if="column.key === 'generalHazards'">
+            <span>{{ record.generalHazards }}</span>
+          </template>
+          <template v-if="column.key === 'largerHazards'">
+            <span>{{ record.largerHazards }}</span>
+          </template>
+          <template v-if="column.key === 'majorHazards'">
+            <span class="text-red">{{ record.majorHazards }}</span>
+          </template>
+          <template v-if="column.key === 'rectifyingMajorHazards'">
+            <span class="text-orange">{{ record.rectifyingMajorHazards }}</span>
+          </template>
+          <template v-if="column.key === 'rectifiedHazards'">
+            <span class="text-green">{{ record.rectifiedHazards }}</span>
+          </template>
+        </template>
+      </a-table>
+    </a-modal>
+
     <!-- 道路详情深色弹窗 -->
     <a-modal 
       v-model:open="showRoadDetailModal" 
@@ -6940,6 +6982,43 @@ function openPatrolDetailModal() {
   ]
   patrolDetailData.value = mockPatrolData
   showPatrolDetailModal.value = true
+}
+
+// 安全评估详情弹窗
+const showAssessmentDetailModalNew = ref(false)
+const assessmentDetailData = ref<any[]>([])
+
+// 安全评估详情表格列定义
+const assessmentDetailColumns = [
+  { title: '归属地区', dataIndex: 'region', key: 'region', width: 120 },
+  { title: '评估单元名称', dataIndex: 'unitName', key: 'unitName', width: 180 },
+  { title: '隐患总数', dataIndex: 'totalHazards', key: 'totalHazards', width: 100 },
+  { title: '一般隐患数', dataIndex: 'generalHazards', key: 'generalHazards', width: 100 },
+  { title: '较大隐患数', dataIndex: 'largerHazards', key: 'largerHazards', width: 100 },
+  { title: '重大隐患数', dataIndex: 'majorHazards', key: 'majorHazards', width: 100 },
+  { title: '整改中重大隐患数', dataIndex: 'rectifyingMajorHazards', key: 'rectifyingMajorHazards', width: 140 },
+  { title: '已整改隐患数', dataIndex: 'rectifiedHazards', key: 'rectifiedHazards', width: 120 },
+]
+
+// 打开安全评估详情弹窗
+function openAssessmentDetailModal() {
+  // 模拟数据：生成安全评估详情列表
+  const mockAssessmentData = [
+    { region: '杭州市', unitName: '杭州湾跨海大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 5 },
+    { region: '杭州市', unitName: '钱塘江隧道', totalHazards: 9, generalHazards: 6, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 6 },
+    { region: '宁波市', unitName: '宁波绕城高速', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
+    { region: '温州市', unitName: '温州瓯江大桥', totalHazards: 7, generalHazards: 5, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 5 },
+    { region: '嘉兴市', unitName: '嘉兴高铁站枢纽', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
+    { region: '湖州市', unitName: '湖州南浔古镇桥梁群', totalHazards: 5, generalHazards: 4, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 4 },
+    { region: '绍兴市', unitName: '绍兴鲁迅故里隧道', totalHazards: 8, generalHazards: 5, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 5 },
+    { region: '金华市', unitName: '金华义乌小商品城天桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
+    { region: '衢州市', unitName: '衢州烂柯山景区道路', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 4 },
+    { region: '舟山市', unitName: '舟山朱家尖大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
+    { region: '台州市', unitName: '台州温岭石塘渔港', totalHazards: 5, generalHazards: 4, largerHazards: 0, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 4 },
+    { region: '丽水市', unitName: '丽水云和梯田景区道路', totalHazards: 7, generalHazards: 5, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 5 },
+  ]
+  assessmentDetailData.value = mockAssessmentData
+  showAssessmentDetailModalNew.value = true
 }
 
 // 道路详情弹窗
