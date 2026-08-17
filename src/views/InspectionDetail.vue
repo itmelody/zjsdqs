@@ -203,14 +203,6 @@
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
             </template>
             
-            <!-- 风险整改模块：页签切换（地图下方） -->
-            <template v-if="inspectionActiveModule === 'risk'">
-              <div class="risk-map-tabs-bottom">
-                <div class="tab-btn" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">检测统计</div>
-                <div class="tab-btn" :class="{ active: riskMapTab === 'grade' }" @click="riskMapTab = 'grade'">评价等级分布</div>
-              </div>
-            </template>
-            
             <!-- 调试信息 -->
             <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px; color: #fff; font-size: 12px; z-index: 1000;">
               inspectionActiveModule: {{ inspectionActiveModule }}<br/>
@@ -263,6 +255,14 @@
               </template>
             </div>
           </div>
+          
+          <!-- 风险整改模块：页签切换（地图下方，在map-placeholder外部） -->
+          <template v-if="inspectionActiveModule === 'risk'">
+            <div class="risk-map-tabs-bottom">
+              <div class="tab-btn" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">检测统计</div>
+              <div class="tab-btn" :class="{ active: riskMapTab === 'grade' }" @click="riskMapTab = 'grade'">评价等级分布</div>
+            </div>
+          </template>
         </div>
       </div>
 
