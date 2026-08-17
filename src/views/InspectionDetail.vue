@@ -203,12 +203,6 @@
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
             </template>
             
-            <!-- 调试信息 -->
-            <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px; color: #fff; font-size: 12px; z-index: 1000;">
-              inspectionActiveModule: {{ inspectionActiveModule }}<br/>
-              riskMapTab: {{ riskMapTab }}
-            </div>
-            
             <!-- 悬浮提示框（所有模块共用） -->
             <div v-if="showTip"
                  class="inspection-tooltip"
