@@ -344,8 +344,8 @@ function getCityPosition(cityName: string): { x: number; y: number } {
   return positions[cityName] || { x: 50, y: 50 }
 }
 
-// 各市检测统计数据
-const cityInspectionStats = computed(() => {
+// 各市检测统计数据 - 使用ref立即初始化，避免首次渲染时conic-gradient不显示
+function generateCityStats() {
   const stats: Record<string, {
     shouldCheck: number;
     checked: number;
@@ -369,7 +369,9 @@ const cityInspectionStats = computed(() => {
   })
   
   return stats
-})
+}
+
+const cityInspectionStats = ref(generateCityStats())
 
 // 计算最大值用于柱状图高度
 const maxValue = computed(() => {
@@ -765,6 +767,7 @@ onBeforeUnmount(() => {
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 10px rgba(91, 143, 249, 0.3);
+            will-change: transform;
             
             &::before {
               content: '';
