@@ -509,6 +509,11 @@ watch(riskMapTab, (newTab: 'stats' | 'grade') => {
 
 onMounted(() => {
   // 默认显示静态地图
+  
+  // 自动刷新一次，确保页面显示正确
+  setTimeout(() => {
+    window.location.reload()
+  }, 100)
 })
 
 onBeforeUnmount(() => {
