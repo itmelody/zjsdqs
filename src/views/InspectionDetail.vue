@@ -510,10 +510,17 @@ watch(riskMapTab, (newTab: 'stats' | 'grade') => {
 onMounted(() => {
   // 默认显示静态地图
   
-  // 自动刷新一次，确保页面显示正确
-  setTimeout(() => {
-    window.location.reload()
-  }, 100)
+  // 自动刷新一次，确保页面显示正确（使用sessionStorage防止无限循环）
+  const hasRefreshed = sessionStorage.getItem('inspectionDetailHasRefreshed')
+  if (!hasRefreshed) {
+    sessionStorage.setItem('inspectionDetailHasRefreshed', 'true')
+    setTimeout(() => {
+      window.location.reload()
+    }, 100)
+  } else {
+    // 清除标记，下次进入时再次刷新
+    sessionStorage.removeItem('inspectionDetailHasRefreshed')
+  }
 })
 
 onBeforeUnmount(() => {
