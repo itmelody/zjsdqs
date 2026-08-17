@@ -744,10 +744,11 @@ onBeforeUnmount(() => {
     
     .city-bars-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      width: 85%;
+      height: 85%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       pointer-events: none;
       
       .city-bar-item {
@@ -755,6 +756,7 @@ onBeforeUnmount(() => {
         display: flex;
         flex-direction: column;
         align-items: center;
+        transform: translate(-50%, -50%);
         pointer-events: auto;
         cursor: pointer;
         
