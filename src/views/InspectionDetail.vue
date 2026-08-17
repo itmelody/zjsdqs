@@ -143,6 +143,16 @@
                       <div class="item-value">{{ (currentTooltipData?.shouldCheck || 0) - (currentTooltipData?.checked || 0) }}</div>
                       <div class="item-bar pending-check-bar"></div>
                     </div>
+                    <div class="tooltip-item-box">
+                      <div class="item-label">超期未检数（座）</div>
+                      <div class="item-value">{{ currentTooltipData?.overdueUncheck || 0 }}</div>
+                      <div class="item-bar overdue-uncheck-bar"></div>
+                    </div>
+                    <div class="tooltip-item-box">
+                      <div class="item-label">即将超期数（座）</div>
+                      <div class="item-value">{{ currentTooltipData?.aboutToOverdue || 0 }}</div>
+                      <div class="item-bar about-to-overdue-bar"></div>
+                    </div>
                   </template>
                   <template v-else>
                     <div class="tooltip-item-box">
