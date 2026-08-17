@@ -77,9 +77,17 @@
             <span class="map-title-text">{{ inspectionActiveModule === 'overview' ? '检测概览' : '风险整改' }}</span>
           </div>
           
+          <!-- 风险整改模块：页签切换 -->
+          <template v-if="inspectionActiveModule === 'risk'">
+            <div class="risk-map-tabs">
+              <div class="tab-item" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">检测统计</div>
+              <div class="tab-item" :class="{ active: riskMapTab === 'grade' }" @click="riskMapTab = 'grade'">评价等级分布</div>
+            </div>
+          </template>
+          
           <div class="map-placeholder">
-            <!-- 静态地图：柱状图 -->
-            <template v-if="mapStyle === 'standard'">
+            <!-- 检测概览模块：静态地图 -->
+            <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'standard'">
               <div class="static-map-container static-map-with-bars">
                 <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
                 <div class="city-bars-overlay">
@@ -189,6 +197,61 @@
               </div>
             </template>
             
+            <!-- 风险整改模块：检测统计页签 -->
+            <template v-if="inspectionActiveModule === 'risk' && riskMapTab === 'stats'">
+              <div class="static-map-container static-map-with-bars">
+                <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
+                <div class="city-bars-overlay">
+                  <div v-for="(data, cityName) in cityInspectionStats" :key="cityName" 
+                       class="city-bar-item"
+                       :style="{ left: getCityPosition(cityName).x + '%', top: getCityPosition(cityName).y + '%' }"
+                       @mouseenter="showTooltip(cityName, data, $event)"
+                       @mouseleave="hideTooltip">
+                    <div class="bar-chart-wrapper">
+                      <!-- 风险整改模块使用柱状图 -->
+                      <div class="bar-group">
+                        <div class="bar bar-risk-total" :style="{ height: (data.riskTotal / maxValue * 100) + 'px' }">
+                          <span class="bar-value">{{ data.riskTotal }}</span>
+                        </div>
+                        <div class="bar bar-de-grade-unqualified" :style="{ height: ((data.deGrade + data.unqualified) / maxValue * 100) + 'px' }">
+                          <span class="bar-value">{{ data.deGrade + data.unqualified }}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="city-name">{{ cityName.replace('市', '') }}</div>
+                  </div>
+                </div>
+              </div>
+              <!-- 柱状图图例 -->
+              <div class="bar-legend">
+                <div class="legend-item">
+                  <span class="legend-color legend-risk-total"></span>
+                  <span class="legend-text">风险总数（个）</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color legend-de-grade-unqualified"></span>
+                  <span class="legend-text">D/E级、不合格桥梁数（座）</span>
+                </div>
+              </div>
+            </template>
+            
+            <!-- 风险整改模块：评价等级分布页签（GIS地图） -->
+            <template v-if="inspectionActiveModule === 'risk' && riskMapTab === 'grade'">
+              <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
+              <!-- GIS地图图例 -->
+              <div class="gis-map-legend">
+                <div class="legend-checkbox-panel">
+                  <label class="checkbox-item" v-for="level in gradeLevels" :key="level.key">
+                    <span class="custom-checkbox" :class="{ checked: (gradeChecked as any)[level.key] }" @click="(gradeChecked as any)[level.key] = !(gradeChecked as any)[level.key]">
+                      <svg v-if="(gradeChecked as any)[level.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
+                    </span>
+                    <span class="legend-dot" :style="{ backgroundColor: level.color }"></span>
+                    <span class="checkbox-label">{{ level.name }}</span>
+                  </label>
+                </div>
+              </div>
+            </template>
+            
             <!-- 高德GIS地图：点位 -->
             <template v-else>
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
@@ -247,7 +310,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeftOutlined } from '@ant-design/icons-vue'
 
@@ -308,6 +371,9 @@ const gradeLevels = [
 const gradeChecked = ref({
   a: true, b: true, c: true, d: true, e: true, qualified: true, unqualified: true
 })
+
+// 风险整改模块地图页签：stats-检测统计，grade-评价等级分布
+const riskMapTab = ref<'stats' | 'grade'>('stats')
 
 // 城市列表
 const cityList = ['杭州市', '宁波市', '温州市', '嘉兴市', '湖州市', '绍兴市', '金华市', '衢州市', '舟山市', '台州市', '丽水市']
@@ -431,6 +497,15 @@ function initGisMap() {
   // 由于是示例代码，暂时不实现具体逻辑
   console.log('Init GIS Map')
 }
+
+// 监听风险整改模块页签切换
+watch(riskMapTab, (newTab: 'stats' | 'grade') => {
+  if (newTab === 'grade' && inspectionActiveModule.value === 'risk') {
+    nextTick(() => {
+      initGisMap()
+    })
+  }
+})
 
 onMounted(() => {
   // 默认显示静态地图
@@ -704,6 +779,38 @@ onBeforeUnmount(() => {
       font-size: 16px;
       font-weight: bold;
       color: #00b4ff;
+    }
+  }
+  
+  // 风险整改模块页签
+  .risk-map-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    
+    .tab-item {
+      flex: 1;
+      padding: 8px 16px;
+      text-align: center;
+      background: rgba(0, 180, 255, 0.1);
+      border: 1px solid rgba(0, 180, 255, 0.3);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      
+      &:hover {
+        background: rgba(0, 180, 255, 0.2);
+        color: #fff;
+      }
+      
+      &.active {
+        background: rgba(0, 180, 255, 0.3);
+        border-color: #00b4ff;
+        color: #00b4ff;
+        font-weight: bold;
+      }
     }
   }
   
