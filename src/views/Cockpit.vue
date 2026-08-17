@@ -928,7 +928,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'patrol' }" @click="highlightModule('patrol')">
           <div class="card-title-row">
             <div class="card-title">日常巡检</div>
-            <span class="detail-btn static-detail-btn">详情 &gt;</span>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="openPatrolDetailModal">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">排查总数</div>
@@ -4084,6 +4084,51 @@
       </a-table>
     </a-modal>
 
+    <!-- 日常巡检详情弹窗 -->
+    <a-modal 
+      v-model:open="showPatrolDetailModal" 
+      title="日常巡检详情"
+      width="1200px"
+      :footer="null"
+      class="dark-modal patrol-detail-modal">
+      <a-table 
+        :columns="patrolDetailColumns" 
+        :data-source="patrolDetailData"
+        :pagination="{ pageSize: 10, showTotal: (t: number) => `共${t}条` }"
+        size="small"
+        bordered>
+        <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'region'">
+            <span>{{ record.region }}</span>
+          </template>
+          <template v-if="column.key === 'bridgeName'">
+            <span>{{ record.bridgeName }}</span>
+          </template>
+          <template v-if="column.key === 'totalHazards'">
+            <span class="text-orange">{{ record.totalHazards }}</span>
+          </template>
+          <template v-if="column.key === 'generalHazards'">
+            <span>{{ record.generalHazards }}</span>
+          </template>
+          <template v-if="column.key === 'largerHazards'">
+            <span>{{ record.largerHazards }}</span>
+          </template>
+          <template v-if="column.key === 'majorHazards'">
+            <span class="text-red">{{ record.majorHazards }}</span>
+          </template>
+          <template v-if="column.key === 'rectifyingMajorHazards'">
+            <span class="text-orange">{{ record.rectifyingMajorHazards }}</span>
+          </template>
+          <template v-if="column.key === 'rectifyingHazards'">
+            <span class="text-orange">{{ record.rectifyingHazards }}</span>
+          </template>
+          <template v-if="column.key === 'rectifiedHazards'">
+            <span class="text-green">{{ record.rectifiedHazards }}</span>
+          </template>
+        </template>
+      </a-table>
+    </a-modal>
+
     <!-- 道路详情深色弹窗 -->
     <a-modal 
       v-model:open="showRoadDetailModal" 
@@ -6861,6 +6906,44 @@ function viewTunnelDetail(tunnel: any) {
   currentTunnelDetail.value = tunnel
   showTunnelDetailModal.value = true
   showCityTunnelListModal.value = false
+}
+
+// 日常巡检详情弹窗
+const showPatrolDetailModal = ref(false)
+const patrolDetailData = ref<any[]>([])
+
+// 日常巡检详情表格列定义
+const patrolDetailColumns = [
+  { title: '归属地区', dataIndex: 'region', key: 'region', width: 120 },
+  { title: '桥梁名称', dataIndex: 'bridgeName', key: 'bridgeName', width: 150 },
+  { title: '隐患总数', dataIndex: 'totalHazards', key: 'totalHazards', width: 100 },
+  { title: '一般隐患数', dataIndex: 'generalHazards', key: 'generalHazards', width: 100 },
+  { title: '较大隐患数', dataIndex: 'largerHazards', key: 'largerHazards', width: 100 },
+  { title: '重大隐患数', dataIndex: 'majorHazards', key: 'majorHazards', width: 100 },
+  { title: '整改中重大隐患数', dataIndex: 'rectifyingMajorHazards', key: 'rectifyingMajorHazards', width: 140 },
+  { title: '整改中隐患数', dataIndex: 'rectifyingHazards', key: 'rectifyingHazards', width: 120 },
+  { title: '已整改隐患数', dataIndex: 'rectifiedHazards', key: 'rectifiedHazards', width: 120 },
+]
+
+// 打开日常巡检详情弹窗
+function openPatrolDetailModal() {
+  // 模拟数据：生成日常巡检详情列表
+  const mockPatrolData = [
+    { region: '杭州市', bridgeName: '半山桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 2, rectifiedHazards: 3 },
+    { region: '杭州市', bridgeName: '钱塘江大桥', totalHazards: 8, generalHazards: 5, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 0, rectifyingHazards: 3, rectifiedHazards: 5 },
+    { region: '宁波市', bridgeName: '宁波大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 2 },
+    { region: '温州市', bridgeName: '温州大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 2, rectifiedHazards: 4 },
+    { region: '嘉兴市', bridgeName: '嘉兴大桥', totalHazards: 2, generalHazards: 2, largerHazards: 0, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 0, rectifiedHazards: 2 },
+    { region: '湖州市', bridgeName: '湖州大桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 3 },
+    { region: '绍兴市', bridgeName: '绍兴大桥', totalHazards: 7, generalHazards: 4, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 3, rectifiedHazards: 4 },
+    { region: '金华市', bridgeName: '金华大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 2 },
+    { region: '衢州市', bridgeName: '衢州大桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifyingHazards: 2, rectifiedHazards: 3 },
+    { region: '舟山市', bridgeName: '舟山大桥', totalHazards: 2, generalHazards: 1, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 1 },
+    { region: '台州市', bridgeName: '台州大桥', totalHazards: 4, generalHazards: 3, largerHazards: 0, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 1, rectifiedHazards: 3 },
+    { region: '丽水市', bridgeName: '丽水大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifyingHazards: 2, rectifiedHazards: 4 },
+  ]
+  patrolDetailData.value = mockPatrolData
+  showPatrolDetailModal.value = true
 }
 
 // 道路详情弹窗
