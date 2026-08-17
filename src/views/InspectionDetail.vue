@@ -143,7 +143,7 @@
               </div>
             </template>
             
-            <!-- 风险整改模块：检测统计页签 -->
+            <!-- 风险整改模块：风险统计页签 -->
             <template v-if="inspectionActiveModule === 'risk' && riskMapTab === 'stats'">
               <div class="static-map-container static-map-with-bars">
                 <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
@@ -253,8 +253,8 @@
           <!-- 风险整改模块：页签切换（地图下方，在map-placeholder外部） -->
           <template v-if="inspectionActiveModule === 'risk'">
             <div class="risk-map-tabs-bottom">
-              <div class="tab-btn" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">检测统计</div>
               <div class="tab-btn" :class="{ active: riskMapTab === 'grade' }" @click="riskMapTab = 'grade'">评价等级分布</div>
+              <div class="tab-btn" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">风险统计</div>
             </div>
           </template>
         </div>
@@ -360,8 +360,8 @@ const gradeChecked = ref({
   a: true, b: true, c: true, d: true, e: true, qualified: true, unqualified: true
 })
 
-// 风险整改模块地图页签：stats-检测统计，grade-评价等级分布
-const riskMapTab = ref<'stats' | 'grade'>('stats')
+// 风险整改模块地图页签：stats-风险统计，grade-评价等级分布（默认显示评价等级分布）
+const riskMapTab = ref<'stats' | 'grade'>('grade')
 
 // 城市列表
 const cityList = ['杭州市', '宁波市', '温州市', '嘉兴市', '湖州市', '绍兴市', '金华市', '衢州市', '舟山市', '台州市', '丽水市']
