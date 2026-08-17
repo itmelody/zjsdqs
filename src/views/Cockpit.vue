@@ -411,6 +411,26 @@
             <div class="road-stats compact" v-show="projectTab === '桥梁'">
               <div class="stat-grid">
                 <div class="stat-block">
+                  <div class="stat-label">项目总数</div>
+                  <div class="stat-value blue">{{ trendProjectData.bridge.totalProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">前期数量</div>
+                  <div class="stat-value yellow">{{ trendProjectData.bridge.preliminaryProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">已开工数量</div>
+                  <div class="stat-value cyan">{{ trendProjectData.bridge.ongoingProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完工数量</div>
+                  <div class="stat-value green">{{ trendProjectData.bridge.completedProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
                   <div class="stat-label">计划改造桥梁长度</div>
                   <div class="stat-value blue">{{ trendProjectData.bridge.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
                 </div>
@@ -444,6 +464,26 @@
             <div class="road-stats compact" v-show="projectTab === '道路'">
               <div class="stat-grid">
                 <div class="stat-block">
+                  <div class="stat-label">项目总数</div>
+                  <div class="stat-value blue">{{ trendProjectData.road.totalProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">前期数量</div>
+                  <div class="stat-value yellow">{{ trendProjectData.road.preliminaryProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">已开工数量</div>
+                  <div class="stat-value cyan">{{ trendProjectData.road.ongoingProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完工数量</div>
+                  <div class="stat-value green">{{ trendProjectData.road.completedProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
                   <div class="stat-label">计划改造道路长度</div>
                   <div class="stat-value blue">{{ trendProjectData.road.planRebuildLength }}<span class="stat-unit"> 公里</span></div>
                 </div>
@@ -475,6 +515,26 @@
             </div>
             <!-- 隧道项目 -->
             <div class="road-stats compact" v-show="projectTab === '隧道'">
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">项目总数</div>
+                  <div class="stat-value blue">{{ trendProjectData.tunnel.totalProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">前期数量</div>
+                  <div class="stat-value yellow">{{ trendProjectData.tunnel.preliminaryProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+              </div>
+              <div class="stat-grid">
+                <div class="stat-block">
+                  <div class="stat-label">已开工数量</div>
+                  <div class="stat-value cyan">{{ trendProjectData.tunnel.ongoingProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">已完工数量</div>
+                  <div class="stat-value green">{{ trendProjectData.tunnel.completedProjects }}<span class="stat-unit"> 个</span></div>
+                </div>
+              </div>
               <div class="stat-grid">
                 <div class="stat-block">
                   <div class="stat-label">计划改造隧道长度</div>
@@ -5678,6 +5738,10 @@ const trendRiskTab = ref<'road' | 'bridge' | 'tunnel'>('road')
 // 总体态势 - 项目管理数据（按道路、桥梁、隧道分类）
 const trendProjectData = {
   road: {
+    totalProjects: 89,  // 项目总数
+    preliminaryProjects: 23,  // 前期数量
+    ongoingProjects: 45,  // 已开工数量
+    completedProjects: 21,  // 已完工数量
     planRebuildLength: '125.6',  // 计划改造道路长度
     completedRebuildLength: '89.3',  // 已完成改造道路长度
     planNewLength: '78.4',  // 计划新建道路长度
@@ -5686,6 +5750,10 @@ const trendProjectData = {
     completedInvestment: '8900'  // 累计完成投资（万元）
   },
   bridge: {
+    totalProjects: 56,  // 项目总数
+    preliminaryProjects: 15,  // 前期数量
+    ongoingProjects: 28,  // 已开工数量
+    completedProjects: 13,  // 已完工数量
     planRebuildLength: '45.8',  // 计划改造桥梁长度
     completedRebuildLength: '32.1',  // 已完成改造桥梁长度
     planNewLength: '28.6',  // 计划新建桥梁长度
@@ -5694,6 +5762,10 @@ const trendProjectData = {
     completedInvestment: '5800'  // 累计完成投资（万元）
   },
   tunnel: {
+    totalProjects: 32,  // 项目总数
+    preliminaryProjects: 8,  // 前期数量
+    ongoingProjects: 16,  // 已开工数量
+    completedProjects: 8,  // 已完工数量
     planRebuildLength: '18.2',  // 计划改造隧道长度
     completedRebuildLength: '12.5',  // 已完成改造隧道长度
     planNewLength: '15.3',  // 计划新建隧道长度
