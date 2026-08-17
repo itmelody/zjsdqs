@@ -78,8 +78,8 @@
           </div>
           
           <div class="map-placeholder">
-            <!-- 检测概览模块：静态地图 -->
-            <template v-if="(inspectionActiveModule === null || inspectionActiveModule === 'overview') && mapStyle === 'standard'">
+            <!-- 检测概览模块：检测统计页签 -->
+            <template v-if="(inspectionActiveModule === null || inspectionActiveModule === 'overview') && overviewMapTab === 'stats' && mapStyle === 'standard'">
               <div class="static-map-container static-map-with-bars">
                 <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
                 <div class="city-bars-overlay">
@@ -90,28 +90,15 @@
                        @mouseleave="hideTooltip">
                     <div class="bar-chart-wrapper">
                       <!-- 检测概览模块使用环形图 -->
-                      <template v-if="inspectionActiveModule === null || inspectionActiveModule === 'overview'">
-                        <svg class="ring-chart" viewBox="0 0 60 60" width="60" height="60">
-                          <!-- 背景环（待检数-蓝色） -->
-                          <circle class="ring-bg" cx="30" cy="30" r="24" />
-                          <!-- 已检数环（绿色） -->
-                          <circle class="ring-checked" cx="30" cy="30" r="24"
-                            :stroke-dasharray="`${(data.checked / data.shouldCheck) * 150.8} 150.8`"
-                            :stroke-dashoffset="0"
-                          />
-                        </svg>
-                      </template>
-                      <!-- 风险整改模块使用柱状图 -->
-                      <template v-else>
-                        <div class="bar-group">
-                          <div class="bar bar-risk-total" :style="{ height: (data.riskTotal / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.riskTotal }}</span>
-                          </div>
-                          <div class="bar bar-de-grade-unqualified" :style="{ height: ((data.deGrade + data.unqualified) / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.deGrade + data.unqualified }}</span>
-                          </div>
-                        </div>
-                      </template>
+                      <svg class="ring-chart" viewBox="0 0 60 60" width="60" height="60">
+                        <!-- 背景环（待检数-蓝色） -->
+                        <circle class="ring-bg" cx="30" cy="30" r="24" />
+                        <!-- 已检数环（绿色） -->
+                        <circle class="ring-checked" cx="30" cy="30" r="24"
+                          :stroke-dasharray="`${(data.checked / data.shouldCheck) * 150.8} 150.8`"
+                          :stroke-dashoffset="0"
+                        />
+                      </svg>
                     </div>
                     <div class="city-name-label">{{ cityName.replace('市', '') }}</div>
                   </div>
@@ -119,26 +106,29 @@
                 
                 <!-- 图例 -->
                 <div class="bar-legend">
-                  <template v-if="inspectionActiveModule === null || inspectionActiveModule === 'overview'">
-                    <div class="legend-item">
-                      <span class="legend-color legend-checked"></span>
-                      <span class="legend-text">已检数（座）</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color legend-should-check"></span>
-                      <span class="legend-text">待检数（座）</span>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <div class="legend-item">
-                      <span class="legend-color legend-risk-total"></span>
-                      <span class="legend-text">风险总数（个）</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color legend-de-grade-unqualified"></span>
-                      <span class="legend-text">D/E级、不合格桥梁数（座）</span>
-                    </div>
-                  </template>
+                  <div class="legend-item">
+                    <span class="legend-color legend-checked"></span>
+                    <span class="legend-text">已检数（座）</span>
+                  </div>
+                  <div class="legend-item">
+                    <span class="legend-color legend-should-check"></span>
+                    <span class="legend-text">待检数（座）</span>
+                  </div>
+                </div>
+              </div>
+            </template>
+            
+            <!-- 检测概览模块：评价等级分布页签（GIS地图） -->
+            <template v-if="(inspectionActiveModule === null || inspectionActiveModule === 'overview') && overviewMapTab === 'grade'">
+              <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
+              <!-- GIS地图图例 -->
+              <div class="gis-map-legend">
+                <div class="legend-checkbox-panel">
+                  <label class="checkbox-item" v-for="level in gradeLevels" :key="level.key">
+                    <input type="checkbox" v-model="gradeChecked[level.key]" />
+                    <span class="checkbox-dot" :style="{ background: level.color }"></span>
+                    <span class="checkbox-label">{{ level.name }}</span>
+                  </label>
                 </div>
               </div>
             </template>
@@ -250,6 +240,14 @@
             </div>
           </div>
           
+          <!-- 检测概览模块：页签切换（地图下方，在map-placeholder外部） -->
+          <template v-if="inspectionActiveModule === null || inspectionActiveModule === 'overview'">
+            <div class="risk-map-tabs-bottom">
+              <div class="tab-btn" :class="{ active: overviewMapTab === 'grade' }" @click="overviewMapTab = 'grade'">评价等级分布</div>
+              <div class="tab-btn" :class="{ active: overviewMapTab === 'stats' }" @click="overviewMapTab = 'stats'">检测统计</div>
+            </div>
+          </template>
+          
           <!-- 风险整改模块：页签切换（地图下方，在map-placeholder外部） -->
           <template v-if="inspectionActiveModule === 'risk'">
             <div class="risk-map-tabs-bottom">
@@ -356,9 +354,12 @@ const gradeLevels = [
   { key: 'unqualified', name: '不合格', color: '#ff6b6b' }
 ]
 
-const gradeChecked = ref({
+const gradeChecked = ref<Record<string, boolean>>({
   a: true, b: true, c: true, d: true, e: true, qualified: true, unqualified: true
 })
+
+// 检测概览模块地图页签：stats-检测统计，grade-评价等级分布（默认显示检测统计）
+const overviewMapTab = ref<'stats' | 'grade'>('stats')
 
 // 风险整改模块地图页签：stats-风险统计，grade-评价等级分布（默认显示风险统计）
 const riskMapTab = ref<'stats' | 'grade'>('stats')
@@ -691,6 +692,15 @@ watch(gradeChecked, () => {
     updatePolylineVisibility()
   }
 }, { deep: true })
+
+// 监听检测概览模块页签切换
+watch(overviewMapTab, (newTab: 'stats' | 'grade') => {
+  if (newTab === 'grade' && (inspectionActiveModule.value === null || inspectionActiveModule.value === 'overview')) {
+    nextTick(() => {
+      initGisMap()
+    })
+  }
+})
 
 // 监听风险整改模块页签切换
 watch(riskMapTab, (newTab: 'stats' | 'grade') => {
