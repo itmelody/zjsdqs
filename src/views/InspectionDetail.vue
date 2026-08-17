@@ -77,14 +77,6 @@
             <span class="map-title-text">{{ inspectionActiveModule === 'overview' ? '检测概览' : '风险整改' }}</span>
           </div>
           
-          <!-- 风险整改模块：页签切换 -->
-          <template v-if="inspectionActiveModule === 'risk'">
-            <div class="risk-map-tabs">
-              <div class="tab-item" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">检测统计</div>
-              <div class="tab-item" :class="{ active: riskMapTab === 'grade' }" @click="riskMapTab = 'grade'">评价等级分布</div>
-            </div>
-          </template>
-          
           <div class="map-placeholder">
             <!-- 检测概览模块：静态地图 -->
             <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'standard'">
@@ -209,6 +201,14 @@
             <!-- 检测概览模块：卫星地图（仅显示GIS地图，不显示图例） -->
             <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'satellite'">
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
+            </template>
+            
+            <!-- 风险整改模块：页签切换（地图下方） -->
+            <template v-if="inspectionActiveModule === 'risk'">
+              <div class="risk-map-tabs-bottom">
+                <div class="tab-btn" :class="{ active: riskMapTab === 'stats' }" @click="riskMapTab = 'stats'">检测统计</div>
+                <div class="tab-btn" :class="{ active: riskMapTab === 'grade' }" @click="riskMapTab = 'grade'">评价等级分布</div>
+              </div>
             </template>
             
             <!-- 悬浮提示框（所有模块共用） -->
@@ -976,32 +976,38 @@ onBeforeUnmount(() => {
     }
   }
   
-  // 风险整改模块页签
-  .risk-map-tabs {
+  // 风险整改模块页签（地图下方）
+  .risk-map-tabs-bottom {
     display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
+    justify-content: center;
+    gap: 0;
+    margin-top: 8px;
+    background: rgba(0, 30, 60, 0.8);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    width: fit-content;
+    align-self: center;
     
-    .tab-item {
-      flex: 1;
-      padding: 8px 16px;
-      text-align: center;
-      background: rgba(0, 180, 255, 0.1);
-      border: 1px solid rgba(0, 180, 255, 0.3);
-      border-radius: 4px;
+    .tab-btn {
+      padding: 8px 24px;
+      font-size: 14px;
       cursor: pointer;
       transition: all 0.3s;
-      font-size: 14px;
       color: rgba(255, 255, 255, 0.7);
+      border-right: 1px solid rgba(0, 180, 255, 0.3);
+      
+      &:last-child {
+        border-right: none;
+      }
       
       &:hover {
-        background: rgba(0, 180, 255, 0.2);
+        background: rgba(0, 180, 255, 0.1);
         color: #fff;
       }
       
       &.active {
         background: rgba(0, 180, 255, 0.3);
-        border-color: #00b4ff;
         color: #00b4ff;
         font-weight: bold;
       }
