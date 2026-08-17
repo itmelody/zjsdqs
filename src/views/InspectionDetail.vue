@@ -732,9 +732,14 @@ onBeforeUnmount(() => {
   
   &.static-map-with-bars {
     .static-map-bg {
-      width: 100%;
-      height: 100%;
+      width: 85%;
+      height: 85%;
       object-fit: contain;
+      opacity: 0.7;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
     
     .city-bars-overlay {
