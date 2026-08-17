@@ -125,52 +125,6 @@
                   </div>
                 </div>
                 
-                <!-- 悬浮提示框 -->
-                <div v-if="showTip"
-                     class="inspection-tooltip"
-                     :style="{ left: tooltipX + 'px', top: tooltipY + 'px', position: 'fixed' }">
-                  <button class="tooltip-close-btn" @click="hideTooltip">×</button>
-                  <template v-if="inspectionActiveModule === 'overview'">
-                    <div class="tooltip-item-box">
-                      <div class="item-label">应检数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.shouldCheck || 0 }}</div>
-                      <div class="item-bar total-check-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">已检数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.checked || 0 }}</div>
-                      <div class="item-bar checked-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">待检数（座）</div>
-                      <div class="item-value">{{ (currentTooltipData?.shouldCheck || 0) - (currentTooltipData?.checked || 0) }}</div>
-                      <div class="item-bar pending-check-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">超期未检数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.overdueUncheck || 0 }}</div>
-                      <div class="item-bar overdue-uncheck-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">即将超期数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.aboutToOverdue || 0 }}</div>
-                      <div class="item-bar about-to-overdue-bar"></div>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">风险总数（个）</div>
-                      <div class="item-value">{{ currentTooltipData?.riskTotal || 0 }}</div>
-                      <div class="item-bar risk-total-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">D/E级、不合格桥梁数（座）</div>
-                      <div class="item-value">{{ (currentTooltipData?.deGrade || 0) + (currentTooltipData?.unqualified || 0) }}</div>
-                      <div class="item-bar de-grade-unqualified-bar"></div>
-                    </div>
-                  </template>
-                </div>
-                
                 <!-- 图例 -->
                 <div class="bar-legend">
                   <template v-if="inspectionActiveModule === 'overview'">
@@ -256,6 +210,52 @@
             <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'satellite'">
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
             </template>
+            
+            <!-- 悬浮提示框（所有模块共用） -->
+            <div v-if="showTip"
+                 class="inspection-tooltip"
+                 :style="{ left: tooltipX + 'px', top: tooltipY + 'px', position: 'fixed' }">
+              <button class="tooltip-close-btn" @click="hideTooltip">×</button>
+              <template v-if="inspectionActiveModule === 'overview'">
+                <div class="tooltip-item-box">
+                  <div class="item-label">应检数（座）</div>
+                  <div class="item-value">{{ currentTooltipData?.shouldCheck || 0 }}</div>
+                  <div class="item-bar total-check-bar"></div>
+                </div>
+                <div class="tooltip-item-box">
+                  <div class="item-label">已检数（座）</div>
+                  <div class="item-value">{{ currentTooltipData?.checked || 0 }}</div>
+                  <div class="item-bar checked-bar"></div>
+                </div>
+                <div class="tooltip-item-box">
+                  <div class="item-label">待检数（座）</div>
+                  <div class="item-value">{{ (currentTooltipData?.shouldCheck || 0) - (currentTooltipData?.checked || 0) }}</div>
+                  <div class="item-bar pending-check-bar"></div>
+                </div>
+                <div class="tooltip-item-box">
+                  <div class="item-label">超期未检数（座）</div>
+                  <div class="item-value">{{ currentTooltipData?.overdueUncheck || 0 }}</div>
+                  <div class="item-bar overdue-uncheck-bar"></div>
+                </div>
+                <div class="tooltip-item-box">
+                  <div class="item-label">即将超期数（座）</div>
+                  <div class="item-value">{{ currentTooltipData?.aboutToOverdue || 0 }}</div>
+                  <div class="item-bar about-to-overdue-bar"></div>
+                </div>
+              </template>
+              <template v-else>
+                <div class="tooltip-item-box">
+                  <div class="item-label">风险总数（个）</div>
+                  <div class="item-value">{{ currentTooltipData?.riskTotal || 0 }}</div>
+                  <div class="item-bar risk-total-bar"></div>
+                </div>
+                <div class="tooltip-item-box">
+                  <div class="item-label">D/E级、不合格桥梁数（座）</div>
+                  <div class="item-value">{{ (currentTooltipData?.deGrade || 0) + (currentTooltipData?.unqualified || 0) }}</div>
+                  <div class="item-bar de-grade-unqualified-bar"></div>
+                </div>
+              </template>
+            </div>
           </div>
         </div>
       </div>
