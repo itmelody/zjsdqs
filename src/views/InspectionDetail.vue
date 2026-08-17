@@ -491,7 +491,7 @@ onBeforeUnmount(() => {
 
 .page-content {
   display: grid;
-  grid-template-columns: 320px 1fr 320px;
+  grid-template-columns: 440px 1fr 460px;
   gap: 20px;
   height: calc(100vh - 180px);
 }
