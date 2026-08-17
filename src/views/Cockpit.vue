@@ -6996,17 +6996,17 @@ function openAssessmentDetailModal() {
   // 模拟数据：生成安全评估详情列表
   const mockAssessmentData = [
     { region: '杭州市', unitName: '杭州湾跨海大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 5 },
-    { region: '杭州市', unitName: '钱塘江隧道', totalHazards: 9, generalHazards: 6, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 6 },
-    { region: '宁波市', unitName: '宁波绕城高速', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
     { region: '温州市', unitName: '温州瓯江大桥', totalHazards: 7, generalHazards: 5, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 5 },
-    { region: '嘉兴市', unitName: '嘉兴高铁站枢纽', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
     { region: '湖州市', unitName: '湖州南浔古镇桥梁群', totalHazards: 5, generalHazards: 4, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 4 },
-    { region: '绍兴市', unitName: '绍兴鲁迅故里隧道', totalHazards: 8, generalHazards: 5, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 5 },
-    { region: '金华市', unitName: '金华义乌小商品城天桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
-    { region: '衢州市', unitName: '衢州烂柯山景区道路', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 4 },
     { region: '舟山市', unitName: '舟山朱家尖大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
-    { region: '台州市', unitName: '台州温岭石塘渔港', totalHazards: 5, generalHazards: 4, largerHazards: 0, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 4 },
-    { region: '丽水市', unitName: '丽水云和梯田景区道路', totalHazards: 7, generalHazards: 5, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 5 },
+    { region: '宁波市', unitName: '宁波甬江大桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
+    { region: '嘉兴市', unitName: '嘉兴南湖大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
+    { region: '绍兴市', unitName: '绍兴迎恩门大桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 4 },
+    { region: '金华市', unitName: '金华婺江大桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
+    { region: '衢州市', unitName: '衢州信安湖大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 5 },
+    { region: '台州市', unitName: '台州椒江大桥', totalHazards: 5, generalHazards: 4, largerHazards: 0, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 4 },
+    { region: '丽水市', unitName: '丽水南明湖大桥', totalHazards: 7, generalHazards: 5, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 5 },
+    { region: '宁波市', unitName: '宁波象山港大桥', totalHazards: 8, generalHazards: 5, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 6 },
   ]
   assessmentDetailData.value = mockAssessmentData
   showAssessmentDetailModalNew.value = true
