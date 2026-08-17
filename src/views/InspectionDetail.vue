@@ -252,21 +252,9 @@
               </div>
             </template>
             
-            <!-- 高德GIS地图：点位 -->
-            <template v-else>
+            <!-- 检测概览模块：卫星地图（仅显示GIS地图，不显示图例） -->
+            <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'satellite'">
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
-              <!-- GIS地图图例 -->
-              <div class="gis-map-legend">
-                <div class="legend-checkbox-panel">
-                  <label class="checkbox-item" v-for="level in gradeLevels" :key="level.key">
-                    <span class="custom-checkbox" :class="{ checked: (gradeChecked as any)[level.key] }" @click="(gradeChecked as any)[level.key] = !(gradeChecked as any)[level.key]">
-                      <svg v-if="(gradeChecked as any)[level.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
-                    </span>
-                    <span class="legend-dot" :style="{ backgroundColor: level.color }"></span>
-                    <span class="checkbox-label">{{ level.name }}</span>
-                  </label>
-                </div>
-              </div>
             </template>
           </div>
         </div>
