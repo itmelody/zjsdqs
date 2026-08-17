@@ -42,10 +42,6 @@
             <div class="hazard-sub-title">即将超期数（不足30天）</div>
             <div class="stat-value yellow">{{ inspectionOverviewData.aboutToOverdue }}<span class="stat-unit"> 座</span></div>
           </div>
-          <div class="hazard-section">
-            <div class="hazard-sub-title">超期未检数</div>
-            <div class="stat-value orange">{{ inspectionOverviewData.alreadyOverdue }}<span class="stat-unit"> 座</span></div>
-          </div>
         </div>
       </div>
 
@@ -173,10 +169,6 @@
                     <div class="legend-item">
                       <span class="legend-color legend-should-check"></span>
                       <span class="legend-text">应检数（座）</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color legend-overdue-uncheck"></span>
-                      <span class="legend-text">超期未检数（座）</span>
                     </div>
                   </template>
                   <template v-else>
