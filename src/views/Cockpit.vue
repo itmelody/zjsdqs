@@ -1697,11 +1697,6 @@
                    class="project-tooltip"
                    :style="{ left: projectTooltipX + 'px', top: projectTooltipY + 'px', position: 'fixed' }">
                 <button class="tooltip-close-btn" @click="hideProjectTooltip">×</button>
-                <div class="tooltip-item-box preliminary-box">
-                  <div class="item-label">{{ projectTooltipLabels.preliminary }}</div>
-                  <div class="item-value">{{ currentProjectTooltipData?.preliminary || 0 }}</div>
-                  <div class="item-bar preliminary-bar"></div>
-                </div>
                 <div class="tooltip-item-box total-box">
                   <div class="item-label">{{ projectTooltipLabels.total }}</div>
                   <div class="item-value">{{ currentProjectTooltipData?.total || 0 }}</div>
@@ -1715,10 +1710,6 @@
               </div>
               <!-- 图例 -->
               <div class="bar-legend">
-                <div class="legend-item">
-                  <span class="legend-color legend-project-preliminary"></span>
-                  <span class="legend-text">{{ projectTooltipLabels.preliminary }}</span>
-                </div>
                 <div class="legend-item">
                   <span class="legend-color legend-project-total"></span>
                   <span class="legend-text">{{ projectTooltipLabels.total }}</span>
@@ -5871,7 +5862,6 @@ const maxProjectValue = computed(() => {
   let max = 0
   Object.values(cityProjectStats.value).forEach(data => {
     if (data.total > max) max = data.total
-    if (data.preliminary > max) max = data.preliminary
     if (data.ongoing > max) max = data.ongoing
   })
   return max || 1
@@ -5888,19 +5878,19 @@ const projectTooltipY = ref(0)
 const projectTooltipLabels = computed(() => {
   switch (projectActiveModule.value) {
     case 'ops-road':
-      return { total: '计划改造道路长度（公里）', preliminary: '前期道路长度（公里）', ongoing: '已完成改造道路长度（公里）' }
+      return { total: '计划改造道路长度（公里）', ongoing: '已完成改造道路长度（公里）' }
     case 'ops-bridge':
-      return { total: '计划改造桥梁数（座）', preliminary: '前期桥梁数（座）', ongoing: '已完成改造桥梁数（座）' }
+      return { total: '计划改造桥梁数（座）', ongoing: '已完成改造桥梁数（座）' }
     case 'ops-tunnel':
-      return { total: '计划改造隧道数（座）', preliminary: '前期隧道数（座）', ongoing: '已完成改造隧道数（座）' }
+      return { total: '计划改造隧道数（座）', ongoing: '已完成改造隧道数（座）' }
     case 'new-road':
-      return { total: '计划新建道路长度（公里）', preliminary: '前期道路长度（公里）', ongoing: '已完成新建道路长度（公里）' }
+      return { total: '计划新建道路长度（公里）', ongoing: '已完成新建道路长度（公里）' }
     case 'new-bridge':
-      return { total: '计划新建桥梁数（座）', preliminary: '前期桥梁数（座）', ongoing: '已完成新建桥梁数（座）' }
+      return { total: '计划新建桥梁数（座）', ongoing: '已完成新建桥梁数（座）' }
     case 'new-tunnel':
-      return { total: '计划新建隧道数（座）', preliminary: '前期隧道数（座）', ongoing: '已完成新建隧道数（座）' }
+      return { total: '计划新建隧道数（座）', ongoing: '已完成新建隧道数（座）' }
     default:
-      return { total: '项目总数（个）', preliminary: '前期数量（个）', ongoing: '已开工数量（个）' }
+      return { total: '项目总数（个）', ongoing: '已开工数量（个）' }
   }
 })
 
@@ -11319,10 +11309,6 @@ watch(riskType, (val) => {
           background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
           box-shadow: 0 0 6px rgba(91,143,249,0.5);
         }
-        &.legend-project-preliminary {
-          background: linear-gradient(180deg, #f6bd16, #d4a512);
-          box-shadow: 0 0 6px rgba(246,189,22,0.5);
-        }
         &.legend-project-total {
           background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
           box-shadow: 0 0 6px rgba(91,143,249,0.5);
@@ -11669,11 +11655,6 @@ watch(riskType, (val) => {
       .item-bar {
         height: 4px;
         border-radius: 2px;
-        
-        &.preliminary-bar {
-          background: linear-gradient(90deg, #f6bd16, #d4a512);
-          box-shadow: 0 0 8px rgba(246, 189, 22, 0.6);
-        }
         
         &.total-bar {
           background: linear-gradient(90deg, #5b8ff9, #3a6fd8);
