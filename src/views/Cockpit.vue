@@ -1616,7 +1616,7 @@
       <div class="panel panel-center">
         <!-- 地图上方指标模块（列表视图和地图视图都显示） -->
         <div class="map-indicator-modules-outside">
-            <div class="indicator-module">
+            <div class="indicator-module" :class="{ 'module-highlighted': projectActiveModule === 'overview' }" @click="setProjectActiveModule('overview')" style="cursor:pointer;">
               <div class="module-title">项目概况</div>
               <div class="module-stats">
                 <div class="stat-item"><div class="stat-label">项目总数</div><div class="stat-value blue">{{ projectOverviewData.totalProjects }}<span class="stat-unit"> 个</span></div></div>
@@ -8880,10 +8880,10 @@ const monitorLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const highlightedModule = ref<'monitor' | 'inspect' | 'patrol' | 'assess' | null>('monitor') // 默认高亮物联监管
 
 // 项目管理页面 - 当前高亮模块（运维项目：ops-road/ops-bridge/ops-tunnel，新增项目：new-road/new-bridge/new-tunnel）
-const projectActiveModule = ref<'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel' | null>(null)
+const projectActiveModule = ref<'overview' | 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel' | null>('overview')
 
 // 设置项目管理页面活跃模块
-function setProjectActiveModule(module: 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel') {
+function setProjectActiveModule(module: 'overview' | 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel') {
   projectActiveModule.value = projectActiveModule.value === module ? null : module
 }
 
@@ -9669,6 +9669,8 @@ watch(cockpitTab, (val) => {
     })
   }
   if (val === 'project') {
+    // 进入项目管理页时默认选中项目概况
+    projectActiveModule.value = 'overview'
     // 项目管理页面：如果当前是列表视图，初始化项目地图
     if (projectViewMode.value === 'list') {
       nextTick(() => {
