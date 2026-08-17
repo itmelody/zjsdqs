@@ -1693,6 +1693,15 @@
                 <div class="stat-item"><div class="stat-label">累计完成投资</div><div class="stat-value red">{{ projectOverviewData.completedInvestment }}<span class="stat-unit"> 万元</span></div></div>
               </div>
             </div>
+            <div class="indicator-module" :class="{ 'module-highlighted': projectActiveModule === 'preliminary' }" @click="setProjectActiveModule('preliminary')" style="cursor:pointer;">
+              <div class="module-title">项目前期</div>
+              <div class="module-stats">
+                <div class="stat-item"><div class="stat-label">项目总数</div><div class="stat-value blue">{{ projectOverviewData.totalProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">前期数量</div><div class="stat-value yellow">{{ projectOverviewData.preliminaryProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">已开工数量</div><div class="stat-value cyan">{{ projectOverviewData.ongoingProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">已完工数量</div><div class="stat-value green">{{ projectOverviewData.completedProjects }}<span class="stat-unit"> 个</span></div></div>
+              </div>
+            </div>
           </div>
         
         <div class="card dark-card map-card">
@@ -5867,6 +5876,16 @@ const cityProjectStats = computed(() => {
         }
       })
       break
+    case 'preliminary':
+      // 项目前期：项目总投资、本年度计划投资
+      cities.forEach(city => {
+        stats[city.name + '市'] = {
+          total: Math.floor(Math.random() * 8000) + 4000,  // 项目总投资（万元）
+          preliminary: 0,
+          ongoing: Math.floor(Math.random() * 6000) + 2000  // 本年度计划投资（万元）
+        }
+      })
+      break
     case 'ops-road':
       // 运维项目-道路：计划改造长度、已完成改造长度
       cities.forEach(city => {
@@ -5960,6 +5979,8 @@ const projectTooltipY = ref(0)
 const projectTooltipLabels = computed(() => {
   switch (projectActiveModule.value) {
     case 'investment':
+      return { total: '项目总投资（万元）', ongoing: '本年度计划投资（万元）' }
+    case 'preliminary':
       return { total: '项目总投资（万元）', ongoing: '本年度计划投资（万元）' }
     case 'ops-road':
       return { total: '计划改造道路长度（公里）', ongoing: '已完成改造道路长度（公里）' }
@@ -8964,10 +8985,10 @@ const monitorLayer = ref<'road' | 'bridge' | 'tunnel'>('road')
 const highlightedModule = ref<'monitor' | 'inspect' | 'patrol' | 'assess' | null>('monitor') // 默认高亮物联监管
 
 // 项目管理页面 - 当前高亮模块（运维项目：ops-road/ops-bridge/ops-tunnel，新增项目：new-road/new-bridge/new-tunnel）
-const projectActiveModule = ref<'overview' | 'investment' | 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel' | null>('overview')
+const projectActiveModule = ref<'overview' | 'investment' | 'preliminary' | 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel' | null>('overview')
 
 // 设置项目管理页面活跃模块
-function setProjectActiveModule(module: 'overview' | 'investment' | 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel') {
+function setProjectActiveModule(module: 'overview' | 'investment' | 'preliminary' | 'ops-road' | 'ops-bridge' | 'ops-tunnel' | 'new-road' | 'new-bridge' | 'new-tunnel') {
   projectActiveModule.value = projectActiveModule.value === module ? null : module
 }
 
