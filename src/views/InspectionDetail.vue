@@ -87,7 +87,14 @@
                     <div class="bar-chart-wrapper">
                       <!-- 检测概览模块使用环形图 -->
                       <template v-if="inspectionActiveModule === 'overview'">
-                        <div class="ring-chart" :style="{ background: `conic-gradient(#5ad8a6 0% ${data.checked / data.shouldCheck * 100}%, #5b8ff9 ${data.checked / data.shouldCheck * 100}% 100%)` }">
+                        <div class="ring-chart" :style="{ 
+                          background: `conic-gradient(
+                            #5ad8a6 0% ${(data.checked / data.shouldCheck) * 100}%, 
+                            #e86452 ${(data.checked / data.shouldCheck) * 100}% ${((data.checked + data.overdueUncheck) / data.shouldCheck) * 100}%, 
+                            #f6bd16 ${((data.checked + data.overdueUncheck) / data.shouldCheck) * 100}% ${((data.checked + data.overdueUncheck + data.aboutToOverdue) / data.shouldCheck) * 100}%, 
+                            #5b8ff9 ${((data.checked + data.overdueUncheck + data.aboutToOverdue) / data.shouldCheck) * 100}% 100%
+                          )` 
+                        }">
                           <div class="ring-center">
                             <span class="ring-value">{{ data.shouldCheck }}</span>
                             <span class="ring-label">应检</span>
