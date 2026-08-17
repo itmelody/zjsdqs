@@ -4119,9 +4119,6 @@
           <template v-if="column.key === 'rectifyingMajorHazards'">
             <span class="text-orange">{{ record.rectifyingMajorHazards }}</span>
           </template>
-          <template v-if="column.key === 'rectifyingHazards'">
-            <span class="text-orange">{{ record.rectifyingHazards }}</span>
-          </template>
           <template v-if="column.key === 'rectifiedHazards'">
             <span class="text-green">{{ record.rectifiedHazards }}</span>
           </template>
@@ -6921,7 +6918,6 @@ const patrolDetailColumns = [
   { title: '较大隐患数', dataIndex: 'largerHazards', key: 'largerHazards', width: 100 },
   { title: '重大隐患数', dataIndex: 'majorHazards', key: 'majorHazards', width: 100 },
   { title: '整改中重大隐患数', dataIndex: 'rectifyingMajorHazards', key: 'rectifyingMajorHazards', width: 140 },
-  { title: '整改中隐患数', dataIndex: 'rectifyingHazards', key: 'rectifyingHazards', width: 120 },
   { title: '已整改隐患数', dataIndex: 'rectifiedHazards', key: 'rectifiedHazards', width: 120 },
 ]
 
@@ -6929,18 +6925,18 @@ const patrolDetailColumns = [
 function openPatrolDetailModal() {
   // 模拟数据：生成日常巡检详情列表
   const mockPatrolData = [
-    { region: '杭州市', bridgeName: '半山桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 2, rectifiedHazards: 3 },
-    { region: '杭州市', bridgeName: '钱塘江大桥', totalHazards: 8, generalHazards: 5, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 0, rectifyingHazards: 3, rectifiedHazards: 5 },
-    { region: '宁波市', bridgeName: '宁波大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 2 },
-    { region: '温州市', bridgeName: '温州大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 2, rectifiedHazards: 4 },
-    { region: '嘉兴市', bridgeName: '嘉兴大桥', totalHazards: 2, generalHazards: 2, largerHazards: 0, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 0, rectifiedHazards: 2 },
-    { region: '湖州市', bridgeName: '湖州大桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 3 },
-    { region: '绍兴市', bridgeName: '绍兴大桥', totalHazards: 7, generalHazards: 4, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 3, rectifiedHazards: 4 },
-    { region: '金华市', bridgeName: '金华大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 2 },
-    { region: '衢州市', bridgeName: '衢州大桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifyingHazards: 2, rectifiedHazards: 3 },
-    { region: '舟山市', bridgeName: '舟山大桥', totalHazards: 2, generalHazards: 1, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifyingHazards: 1, rectifiedHazards: 1 },
-    { region: '台州市', bridgeName: '台州大桥', totalHazards: 4, generalHazards: 3, largerHazards: 0, majorHazards: 1, rectifyingMajorHazards: 1, rectifyingHazards: 1, rectifiedHazards: 3 },
-    { region: '丽水市', bridgeName: '丽水大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifyingHazards: 2, rectifiedHazards: 4 },
+    { region: '杭州市', bridgeName: '半山桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 3 },
+    { region: '杭州市', bridgeName: '钱塘江大桥', totalHazards: 8, generalHazards: 5, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 5 },
+    { region: '宁波市', bridgeName: '宁波大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
+    { region: '温州市', bridgeName: '温州大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 4 },
+    { region: '嘉兴市', bridgeName: '嘉兴大桥', totalHazards: 2, generalHazards: 2, largerHazards: 0, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
+    { region: '湖州市', bridgeName: '湖州大桥', totalHazards: 4, generalHazards: 3, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
+    { region: '绍兴市', bridgeName: '绍兴大桥', totalHazards: 7, generalHazards: 4, largerHazards: 2, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 4 },
+    { region: '金华市', bridgeName: '金华大桥', totalHazards: 3, generalHazards: 2, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 2 },
+    { region: '衢州市', bridgeName: '衢州大桥', totalHazards: 5, generalHazards: 3, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 3 },
+    { region: '舟山市', bridgeName: '舟山大桥', totalHazards: 2, generalHazards: 1, largerHazards: 1, majorHazards: 0, rectifyingMajorHazards: 0, rectifiedHazards: 1 },
+    { region: '台州市', bridgeName: '台州大桥', totalHazards: 4, generalHazards: 3, largerHazards: 0, majorHazards: 1, rectifyingMajorHazards: 1, rectifiedHazards: 3 },
+    { region: '丽水市', bridgeName: '丽水大桥', totalHazards: 6, generalHazards: 4, largerHazards: 1, majorHazards: 1, rectifyingMajorHazards: 0, rectifiedHazards: 4 },
   ]
   patrolDetailData.value = mockPatrolData
   showPatrolDetailModal.value = true
