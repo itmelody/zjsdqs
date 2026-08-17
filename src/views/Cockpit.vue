@@ -674,7 +674,7 @@
         <div class="dark-card stat-card-compact hazard-module-card" :class="{ 'module-highlighted': highlightedModule === 'inspect' }" @click="highlightModule('inspect')">
           <div class="card-title-row">
             <div class="card-title">设施检测</div>
-            <span class="detail-btn static-detail-btn">详情 &gt;</span>
+            <a-button type="link" size="small" class="detail-btn" @click.stop="goToInspectionDetail">详情 &gt;</a-button>
           </div>
           <div class="hazard-section">
             <div class="hazard-sub-title">应检数</div>
