@@ -74,12 +74,12 @@
           
           <!-- 地图标题 -->
           <div class="map-title-bar">
-            <span class="map-title-text">{{ inspectionActiveModule === 'overview' ? '检测概览' : '风险整改' }}</span>
+            <span class="map-title-text">{{ (inspectionActiveModule === null || inspectionActiveModule === 'overview') ? '检测概览' : '风险整改' }}</span>
           </div>
           
           <div class="map-placeholder">
             <!-- 检测概览模块：静态地图 -->
-            <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'standard'">
+            <template v-if="(inspectionActiveModule === null || inspectionActiveModule === 'overview') && mapStyle === 'standard'">
               <div class="static-map-container static-map-with-bars">
                 <img src="/zhejiang-province-map.png" alt="浙江省地图" class="static-map-bg" />
                 <div class="city-bars-overlay">
@@ -90,7 +90,7 @@
                        @mouseleave="hideTooltip">
                     <div class="bar-chart-wrapper">
                       <!-- 检测概览模块使用环形图 -->
-                      <template v-if="inspectionActiveModule === 'overview'">
+                      <template v-if="inspectionActiveModule === null || inspectionActiveModule === 'overview'">
                         <svg class="ring-chart" viewBox="0 0 60 60" width="60" height="60">
                           <!-- 背景环（待检数-蓝色） -->
                           <circle class="ring-bg" cx="30" cy="30" r="24" />
@@ -119,7 +119,7 @@
                 
                 <!-- 图例 -->
                 <div class="bar-legend">
-                  <template v-if="inspectionActiveModule === 'overview'">
+                  <template v-if="inspectionActiveModule === null || inspectionActiveModule === 'overview'">
                     <div class="legend-item">
                       <span class="legend-color legend-checked"></span>
                       <span class="legend-text">已检数（座）</span>
@@ -199,7 +199,7 @@
             </template>
             
             <!-- 检测概览模块：卫星地图（仅显示GIS地图，不显示图例） -->
-            <template v-if="inspectionActiveModule === 'overview' && mapStyle === 'satellite'">
+            <template v-if="(inspectionActiveModule === null || inspectionActiveModule === 'overview') && mapStyle === 'satellite'">
               <div ref="gisMapRef" class="amap-container" style="height: calc(100% - 80px); margin-top: 8px;"></div>
             </template>
             
@@ -310,11 +310,11 @@ function goBack() {
 }
 
 // 当前高亮模块
-const inspectionActiveModule = ref<'overview' | 'risk'>('overview')
+const inspectionActiveModule = ref<'overview' | 'risk' | null>(null)
 
 // 设置活跃模块
 function setInspectionActiveModule(module: 'overview' | 'risk') {
-  inspectionActiveModule.value = inspectionActiveModule.value === module ? null : module
+  inspectionActiveModule.value = module
 }
 
 // 检测概览数据
