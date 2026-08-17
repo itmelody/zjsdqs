@@ -1620,8 +1620,9 @@
               <div class="module-title">项目概况</div>
               <div class="module-stats">
                 <div class="stat-item"><div class="stat-label">项目总数</div><div class="stat-value blue">{{ projectOverviewData.totalProjects }}<span class="stat-unit"> 个</span></div></div>
-                <div class="stat-item"><div class="stat-label">在建数量</div><div class="stat-value cyan">{{ projectOverviewData.ongoingProjects }}<span class="stat-unit"> 个</span></div></div>
-                <div class="stat-item"><div class="stat-label">完工数量</div><div class="stat-value green">{{ projectOverviewData.completedProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">前期数量</div><div class="stat-value yellow">{{ projectOverviewData.preliminaryProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">已开工数量</div><div class="stat-value cyan">{{ projectOverviewData.ongoingProjects }}<span class="stat-unit"> 个</span></div></div>
+                <div class="stat-item"><div class="stat-label">已完工数量</div><div class="stat-value green">{{ projectOverviewData.completedProjects }}<span class="stat-unit"> 个</span></div></div>
               </div>
             </div>
             <div class="indicator-module">
@@ -1692,10 +1693,15 @@
                 </div>
               </div>
               <!-- 悬浮提示框（fixed定位） -->
-              <div v-if="showProjectTip" 
+              <div v-if="showProjectTip"
                    class="project-tooltip"
                    :style="{ left: projectTooltipX + 'px', top: projectTooltipY + 'px', position: 'fixed' }">
                 <button class="tooltip-close-btn" @click="hideProjectTooltip">×</button>
+                <div class="tooltip-item-box preliminary-box">
+                  <div class="item-label">{{ projectTooltipLabels.preliminary }}</div>
+                  <div class="item-value">{{ currentProjectTooltipData?.preliminary || 0 }}</div>
+                  <div class="item-bar preliminary-bar"></div>
+                </div>
                 <div class="tooltip-item-box total-box">
                   <div class="item-label">{{ projectTooltipLabels.total }}</div>
                   <div class="item-value">{{ currentProjectTooltipData?.total || 0 }}</div>
@@ -1709,6 +1715,10 @@
               </div>
               <!-- 图例 -->
               <div class="bar-legend">
+                <div class="legend-item">
+                  <span class="legend-color legend-project-preliminary"></span>
+                  <span class="legend-text">{{ projectTooltipLabels.preliminary }}</span>
+                </div>
                 <div class="legend-item">
                   <span class="legend-color legend-project-total"></span>
                   <span class="legend-text">{{ projectTooltipLabels.total }}</span>
@@ -5770,8 +5780,9 @@ const projectNewData = {
 // 项目管理页面 - 地图上方指标数据
 const projectOverviewData = {
   totalProjects: 209,  // 项目总数
-  ongoingProjects: 152,  // 在建数量
-  completedProjects: 57,  // 完工数量
+  preliminaryProjects: 38,  // 前期数量
+  ongoingProjects: 152,  // 已开工数量
+  completedProjects: 57,  // 已完工数量
   totalInvestment: '26300',  // 项目总投资
   yearPlanInvestment: '18100',  // 本年度计划投资
   completedInvestment: '12600'  // 累计完成投资
@@ -5779,7 +5790,7 @@ const projectOverviewData = {
 
 // 项目管理页面 - 各市项目统计数据（根据当前高亮模块动态切换）
 const cityProjectStats = computed(() => {
-  const stats: Record<string, { total: number; ongoing: number }> = {}
+  const stats: Record<string, { total: number; preliminary: number; ongoing: number }> = {}
   
   // 根据当前高亮模块返回不同的数据
   switch (projectActiveModule.value) {
@@ -5788,6 +5799,7 @@ const cityProjectStats = computed(() => {
       cities.forEach(city => {
         stats[city.name + '市'] = {
           total: Math.floor(Math.random() * 80) + 40,  // 计划改造道路长度（公里）
+          preliminary: Math.floor(Math.random() * 20) + 5,  // 前期道路长度（公里）
           ongoing: Math.floor(Math.random() * 60) + 20  // 已完成改造道路长度（公里）
         }
       })
@@ -5797,6 +5809,7 @@ const cityProjectStats = computed(() => {
       cities.forEach(city => {
         stats[city.name + '市'] = {
           total: Math.floor(Math.random() * 30) + 10,  // 计划改造桥梁数（座）
+          preliminary: Math.floor(Math.random() * 8) + 2,   // 前期桥梁数（座）
           ongoing: Math.floor(Math.random() * 20) + 5   // 已完成改造桥梁数（座）
         }
       })
@@ -5806,6 +5819,7 @@ const cityProjectStats = computed(() => {
       cities.forEach(city => {
         stats[city.name + '市'] = {
           total: Math.floor(Math.random() * 15) + 5,  // 计划改造隧道数（座）
+          preliminary: Math.floor(Math.random() * 5) + 1,   // 前期隧道数（座）
           ongoing: Math.floor(Math.random() * 10) + 2  // 已完成改造隧道数（座）
         }
       })
@@ -5815,6 +5829,7 @@ const cityProjectStats = computed(() => {
       cities.forEach(city => {
         stats[city.name + '市'] = {
           total: Math.floor(Math.random() * 50) + 25,  // 计划新建道路长度（公里）
+          preliminary: Math.floor(Math.random() * 15) + 5,  // 前期道路长度（公里）
           ongoing: Math.floor(Math.random() * 40) + 15  // 已完成新建道路长度（公里）
         }
       })
@@ -5824,6 +5839,7 @@ const cityProjectStats = computed(() => {
       cities.forEach(city => {
         stats[city.name + '市'] = {
           total: Math.floor(Math.random() * 20) + 8,  // 计划新建桥梁数（座）
+          preliminary: Math.floor(Math.random() * 6) + 2,  // 前期桥梁数（座）
           ongoing: Math.floor(Math.random() * 15) + 4  // 已完成新建桥梁数（座）
         }
       })
@@ -5833,6 +5849,7 @@ const cityProjectStats = computed(() => {
       cities.forEach(city => {
         stats[city.name + '市'] = {
           total: Math.floor(Math.random() * 12) + 4,  // 计划新建隧道数（座）
+          preliminary: Math.floor(Math.random() * 4) + 1,   // 前期隧道数（座）
           ongoing: Math.floor(Math.random() * 8) + 2   // 已完成新建隧道数（座）
         }
       })
@@ -5841,8 +5858,9 @@ const cityProjectStats = computed(() => {
       // 默认显示项目总数和在建数量
       cities.forEach(city => {
         const total = Math.floor(Math.random() * 30) + 15
+        const preliminary = Math.floor(Math.random() * 8) + 2   // 前期数量
         const ongoing = Math.floor(Math.random() * 20) + 5
-        stats[city.name + '市'] = { total, ongoing }
+        stats[city.name + '市'] = { total, preliminary, ongoing }
       })
   }
   
@@ -5853,6 +5871,7 @@ const maxProjectValue = computed(() => {
   let max = 0
   Object.values(cityProjectStats.value).forEach(data => {
     if (data.total > max) max = data.total
+    if (data.preliminary > max) max = data.preliminary
     if (data.ongoing > max) max = data.ongoing
   })
   return max || 1
@@ -5861,7 +5880,7 @@ const maxProjectValue = computed(() => {
 // 项目管理页面 - 悬浮提示框状态
 const showProjectTip = ref(false)
 const currentProjectTooltipCity = ref('')
-const currentProjectTooltipData = ref<{ total: number; ongoing: number } | null>(null)
+const currentProjectTooltipData = ref<{ total: number; preliminary: number; ongoing: number } | null>(null)
 const projectTooltipX = ref(0)
 const projectTooltipY = ref(0)
 
@@ -5869,19 +5888,19 @@ const projectTooltipY = ref(0)
 const projectTooltipLabels = computed(() => {
   switch (projectActiveModule.value) {
     case 'ops-road':
-      return { total: '计划改造道路长度（公里）', ongoing: '已完成改造道路长度（公里）' }
+      return { total: '计划改造道路长度（公里）', preliminary: '前期道路长度（公里）', ongoing: '已完成改造道路长度（公里）' }
     case 'ops-bridge':
-      return { total: '计划改造桥梁数（座）', ongoing: '已完成改造桥梁数（座）' }
+      return { total: '计划改造桥梁数（座）', preliminary: '前期桥梁数（座）', ongoing: '已完成改造桥梁数（座）' }
     case 'ops-tunnel':
-      return { total: '计划改造隧道数（座）', ongoing: '已完成改造隧道数（座）' }
+      return { total: '计划改造隧道数（座）', preliminary: '前期隧道数（座）', ongoing: '已完成改造隧道数（座）' }
     case 'new-road':
-      return { total: '计划新建道路长度（公里）', ongoing: '已完成新建道路长度（公里）' }
+      return { total: '计划新建道路长度（公里）', preliminary: '前期道路长度（公里）', ongoing: '已完成新建道路长度（公里）' }
     case 'new-bridge':
-      return { total: '计划新建桥梁数（座）', ongoing: '已完成新建桥梁数（座）' }
+      return { total: '计划新建桥梁数（座）', preliminary: '前期桥梁数（座）', ongoing: '已完成新建桥梁数（座）' }
     case 'new-tunnel':
-      return { total: '计划新建隧道数（座）', ongoing: '已完成新建隧道数（座）' }
+      return { total: '计划新建隧道数（座）', preliminary: '前期隧道数（座）', ongoing: '已完成新建隧道数（座）' }
     default:
-      return { total: '项目总数（个）', ongoing: '在建数量（个）' }
+      return { total: '项目总数（个）', preliminary: '前期数量（个）', ongoing: '已开工数量（个）' }
   }
 })
 
@@ -5994,7 +6013,7 @@ function viewNewProjectDetail(item: any) {
   }
 }
 
-function showProjectTooltip(cityName: string, data: { total: number; ongoing: number }, event: MouseEvent) {
+function showProjectTooltip(cityName: string, data: { total: number; preliminary: number; ongoing: number }, event: MouseEvent) {
   showProjectTip.value = true
   currentProjectTooltipCity.value = cityName.replace('市', '')
   currentProjectTooltipData.value = data
@@ -11300,6 +11319,10 @@ watch(riskType, (val) => {
           background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
           box-shadow: 0 0 6px rgba(91,143,249,0.5);
         }
+        &.legend-project-preliminary {
+          background: linear-gradient(180deg, #f6bd16, #d4a512);
+          box-shadow: 0 0 6px rgba(246,189,22,0.5);
+        }
         &.legend-project-total {
           background: linear-gradient(180deg, #5b8ff9, #3a6fd8);
           box-shadow: 0 0 6px rgba(91,143,249,0.5);
@@ -11646,6 +11669,11 @@ watch(riskType, (val) => {
       .item-bar {
         height: 4px;
         border-radius: 2px;
+        
+        &.preliminary-bar {
+          background: linear-gradient(90deg, #f6bd16, #d4a512);
+          box-shadow: 0 0 8px rgba(246, 189, 22, 0.6);
+        }
         
         &.total-bar {
           background: linear-gradient(90deg, #5b8ff9, #3a6fd8);
