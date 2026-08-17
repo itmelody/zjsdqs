@@ -91,14 +91,15 @@
                     <div class="bar-chart-wrapper">
                       <!-- 检测概览模块使用环形图 -->
                       <template v-if="inspectionActiveModule === 'overview'">
-                        <div class="ring-chart" :style="{ 
-                          background: `conic-gradient(
-                            #5ad8a6 0% ${data.checked / data.shouldCheck * 100}%, 
-                            #5b8ff9 ${data.checked / data.shouldCheck * 100}% 100%
-                          )` 
-                        }">
-                          <div class="ring-center"></div>
-                        </div>
+                        <svg class="ring-chart" viewBox="0 0 60 60" width="60" height="60">
+                          <!-- 背景环（待检数-蓝色） -->
+                          <circle class="ring-bg" cx="30" cy="30" r="24" />
+                          <!-- 已检数环（绿色） -->
+                          <circle class="ring-checked" cx="30" cy="30" r="24"
+                            :stroke-dasharray="`${(data.checked / data.shouldCheck) * 150.8} 150.8`"
+                            :stroke-dashoffset="0"
+                          />
+                        </svg>
                       </template>
                       <!-- 风险整改模块使用柱状图 -->
                       <template v-else>
@@ -433,20 +434,6 @@ function initGisMap() {
 
 onMounted(() => {
   // 默认显示静态地图
-  
-  // 强制触发环形图重绘，解决首次渲染conic-gradient不显示的问题
-  nextTick(() => {
-    setTimeout(() => {
-      const ringCharts = document.querySelectorAll('.ring-chart') as NodeListOf<HTMLElement>
-      ringCharts.forEach(chart => {
-        // 通过临时修改样式触发重绘
-        chart.style.transform = 'scale(0.99)'
-        setTimeout(() => {
-          chart.style.transform = 'scale(1)'
-        }, 50)
-      })
-    }, 100)
-  })
 })
 
 onBeforeUnmount(() => {
@@ -773,49 +760,28 @@ onBeforeUnmount(() => {
           padding: 8px 6px;
           margin-bottom: 4px;
           
-          // 环形图样式
+          // 环形图样式（SVG实现）
           .ring-chart {
             width: 60px;
             height: 60px;
-            border-radius: 50%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px rgba(91, 143, 249, 0.3);
-            will-change: transform;
-            z-index: 0;
+            display: block;
+            filter: drop-shadow(0 0 6px rgba(91, 143, 249, 0.4));
             
-            &::before {
-              content: '';
-              position: absolute;
-              width: 40px;
-              height: 40px;
-              background: rgba(0, 0, 0, 0.7);
-              border-radius: 50%;
-              z-index: 1;
+            .ring-bg {
+              fill: none;
+              stroke: #5b8ff9;
+              stroke-width: 10;
+              opacity: 0.3;
             }
             
-            .ring-center {
-              position: relative;
-              z-index: 1;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              
-              .ring-value {
-                font-size: 14px;
-                font-weight: bold;
-                color: #fff;
-                line-height: 1;
-              }
-              
-              .ring-label {
-                font-size: 10px;
-                color: rgba(255, 255, 255, 0.7);
-                margin-top: 2px;
-              }
+            .ring-checked {
+              fill: none;
+              stroke: #5ad8a6;
+              stroke-width: 10;
+              stroke-linecap: round;
+              transform: rotate(-90deg);
+              transform-origin: 30px 30px;
+              transition: stroke-dasharray 0.6s ease;
             }
           }
           
