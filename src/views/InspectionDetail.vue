@@ -360,8 +360,8 @@ const gradeChecked = ref({
   a: true, b: true, c: true, d: true, e: true, qualified: true, unqualified: true
 })
 
-// 风险整改模块地图页签：stats-风险统计，grade-评价等级分布（默认显示评价等级分布）
-const riskMapTab = ref<'stats' | 'grade'>('grade')
+// 风险整改模块地图页签：stats-风险统计，grade-评价等级分布（默认显示风险统计）
+const riskMapTab = ref<'stats' | 'grade'>('stats')
 
 // 城市列表
 const cityList = ['杭州市', '宁波市', '温州市', '嘉兴市', '湖州市', '绍兴市', '金华市', '衢州市', '舟山市', '台州市', '丽水市']
