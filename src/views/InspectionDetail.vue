@@ -433,6 +433,20 @@ function initGisMap() {
 
 onMounted(() => {
   // 默认显示静态地图
+  
+  // 强制触发环形图重绘，解决首次渲染conic-gradient不显示的问题
+  nextTick(() => {
+    setTimeout(() => {
+      const ringCharts = document.querySelectorAll('.ring-chart') as NodeListOf<HTMLElement>
+      ringCharts.forEach(chart => {
+        // 通过临时修改样式触发重绘
+        chart.style.transform = 'scale(0.99)'
+        setTimeout(() => {
+          chart.style.transform = 'scale(1)'
+        }, 50)
+      })
+    }, 100)
+  })
 })
 
 onBeforeUnmount(() => {
