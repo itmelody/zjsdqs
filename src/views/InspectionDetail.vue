@@ -125,8 +125,10 @@
               <div class="gis-map-legend">
                 <div class="legend-checkbox-panel">
                   <label class="checkbox-item" v-for="level in gradeLevels" :key="level.key">
-                    <input type="checkbox" v-model="gradeChecked[level.key]" />
-                    <span class="checkbox-dot" :style="{ background: level.color }"></span>
+                    <span class="custom-checkbox" :class="{ checked: gradeChecked[level.key] }" @click="gradeChecked[level.key] = !gradeChecked[level.key]">
+                      <svg v-if="gradeChecked[level.key]" viewBox="0 0 12 12" class="check-icon"><path d="M2,6 L5,9 L10,3" stroke="#5b8ff9" stroke-width="2" fill="none"/></svg>
+                    </span>
+                    <span class="legend-dot" :style="{ backgroundColor: level.color }"></span>
                     <span class="checkbox-label">{{ level.name }}</span>
                   </label>
                 </div>
@@ -358,8 +360,8 @@ const gradeChecked = ref<Record<string, boolean>>({
   a: true, b: true, c: true, d: true, e: true, qualified: true, unqualified: true
 })
 
-// 检测概览模块地图页签：stats-检测统计，grade-评价等级分布（默认显示检测统计）
-const overviewMapTab = ref<'stats' | 'grade'>('stats')
+// 检测概览模块地图页签：stats-检测统计，grade-评价等级分布（默认显示评价等级分布）
+const overviewMapTab = ref<'stats' | 'grade'>('grade')
 
 // 风险整改模块地图页签：stats-风险统计，grade-评价等级分布（默认显示风险统计）
 const riskMapTab = ref<'stats' | 'grade'>('stats')
