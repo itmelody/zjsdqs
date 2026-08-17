@@ -137,12 +137,11 @@
         </div>
         <div class="pm-modal-table-wrap">
           <table class="dark-table pm-bordered">
-            <thead><tr><th>市区县</th><th>设施ID</th><th>设施名称</th><th>设备ID</th><th>设备名称</th><th>点位名称</th><th>是否在线</th><th>点位最新时间</th><th>点位最新值</th></tr></thead>
+            <thead><tr><th>市区县</th><th>设施ID</th><th>设施名称</th><th>设备ID</th><th>设备名称</th><th>点位名称</th><th>是否在线</th></tr></thead>
             <tbody>
               <tr v-for="row in devicePageData" :key="row.id">
                 <td>{{ row.area }}</td><td>{{ row.facId }}</td><td>{{ row.facName }}</td><td>{{ row.devId }}</td><td>{{ row.devName }}</td><td>{{ row.point }}</td>
                 <td><span :class="row.online ? 'status-green' : 'status-red'">{{ row.online ? '在线' : '离线' }}</span></td>
-                <td>{{ row.time }}</td><td>{{ row.value }}</td>
               </tr>
             </tbody>
           </table>

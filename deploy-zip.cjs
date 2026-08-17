@@ -63,7 +63,7 @@ c.on('ready', async () => {
     console.log('  Nginx reloaded successfully.');
   }
 
-  console.log('\n✅ Deploy complete! Access at: http://114.107.227.158/stdqs/');
+  console.log('\n✅ Deploy complete! Access at: http://114.107.227.158:81/stdqs/');
   c.end();
 });
 
