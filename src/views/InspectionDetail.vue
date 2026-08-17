@@ -106,11 +106,8 @@
                           <div class="bar bar-risk-total" :style="{ height: (data.riskTotal / maxValue * 100) + 'px' }">
                             <span class="bar-value">{{ data.riskTotal }}</span>
                           </div>
-                          <div class="bar bar-de-grade" :style="{ height: (data.deGrade / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.deGrade }}</span>
-                          </div>
-                          <div class="bar bar-unqualified" :style="{ height: (data.unqualified / maxValue * 100) + 'px' }">
-                            <span class="bar-value">{{ data.unqualified }}</span>
+                          <div class="bar bar-de-grade-unqualified" :style="{ height: ((data.deGrade + data.unqualified) / maxValue * 100) + 'px' }">
+                            <span class="bar-value">{{ data.deGrade + data.unqualified }}</span>
                           </div>
                         </div>
                       </template>
@@ -158,14 +155,9 @@
                       <div class="item-bar risk-total-bar"></div>
                     </div>
                     <div class="tooltip-item-box">
-                      <div class="item-label">D/E级桥梁数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.deGrade || 0 }}</div>
-                      <div class="item-bar de-grade-bar"></div>
-                    </div>
-                    <div class="tooltip-item-box">
-                      <div class="item-label">不合格桥梁数（座）</div>
-                      <div class="item-value">{{ currentTooltipData?.unqualified || 0 }}</div>
-                      <div class="item-bar unqualified-bar"></div>
+                      <div class="item-label">D/E级、不合格桥梁数（座）</div>
+                      <div class="item-value">{{ (currentTooltipData?.deGrade || 0) + (currentTooltipData?.unqualified || 0) }}</div>
+                      <div class="item-bar de-grade-unqualified-bar"></div>
                     </div>
                   </template>
                 </div>
@@ -188,12 +180,8 @@
                       <span class="legend-text">风险总数（个）</span>
                     </div>
                     <div class="legend-item">
-                      <span class="legend-color legend-de-grade"></span>
-                      <span class="legend-text">D/E级桥梁数（座）</span>
-                    </div>
-                    <div class="legend-item">
-                      <span class="legend-color legend-unqualified"></span>
-                      <span class="legend-text">不合格桥梁数（座）</span>
+                      <span class="legend-color legend-de-grade-unqualified"></span>
+                      <span class="legend-text">D/E级、不合格桥梁数（座）</span>
                     </div>
                   </template>
                 </div>
@@ -394,8 +382,7 @@ const maxValue = computed(() => {
       if (data.aboutToOverdue > max) max = data.aboutToOverdue
     } else {
       if (data.riskTotal > max) max = data.riskTotal
-      if (data.deGrade > max) max = data.deGrade
-      if (data.unqualified > max) max = data.unqualified
+      if (data.deGrade + data.unqualified > max) max = data.deGrade + data.unqualified
     }
   })
   return max || 1
@@ -860,14 +847,9 @@ onBeforeUnmount(() => {
                 box-shadow: 0 0 8px rgba(255, 152, 69, 0.5);
               }
               
-              &.bar-de-grade {
+              &.bar-de-grade-unqualified {
                 background: linear-gradient(180deg, #e86452, #d15c4d);
                 box-shadow: 0 0 8px rgba(232, 100, 82, 0.5);
-              }
-              
-              &.bar-unqualified {
-                background: linear-gradient(180deg, #ff6b6b, #e85555);
-                box-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
               }
             }
           }
@@ -963,12 +945,8 @@ onBeforeUnmount(() => {
         background: linear-gradient(90deg, #ff9845, #e88535);
       }
       
-      &.de-grade-bar {
+      &.de-grade-unqualified-bar {
         background: linear-gradient(90deg, #e86452, #d15c4d);
-      }
-      
-      &.unqualified-bar {
-        background: linear-gradient(90deg, #ff6b6b, #e85555);
       }
     }
   }
@@ -1020,14 +998,9 @@ onBeforeUnmount(() => {
         box-shadow: 0 0 6px rgba(255, 152, 69, 0.5);
       }
       
-      &.legend-de-grade {
+      &.legend-de-grade-unqualified {
         background: linear-gradient(180deg, #e86452, #d15c4d);
         box-shadow: 0 0 6px rgba(232, 100, 82, 0.5);
-      }
-      
-      &.legend-unqualified {
-        background: linear-gradient(180deg, #ff6b6b, #e85555);
-        box-shadow: 0 0 6px rgba(255, 107, 107, 0.5);
       }
     }
     
