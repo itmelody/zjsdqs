@@ -476,12 +476,12 @@ function hideTooltip() {
 // GIS地图引用
 const gisMapRef = ref<HTMLElement>()
 let gisMap: any = null
+let gisMarkers: any[] = []
 
 // 进入页面时立即刷新一次（在组件挂载前执行，避免显示初始页面）
 const hasRefreshed = sessionStorage.getItem('inspectionDetailHasRefreshed')
 if (!hasRefreshed) {
   sessionStorage.setItem('inspectionDetailHasRefreshed', 'true')
-  // 使用 nextTick 确保 DOM 准备好后立即刷新
   setTimeout(() => {
     window.location.reload()
   }, 0)
@@ -489,14 +489,99 @@ if (!hasRefreshed) {
   sessionStorage.removeItem('inspectionDetailHasRefreshed')
 }
 
+// 城市坐标（用于GIS地图打点）
+const cityCoordinates: Record<string, [number, number]> = {
+  '杭州市': [120.15, 30.27],
+  '宁波市': [121.55, 29.87],
+  '温州市': [120.65, 28.00],
+  '嘉兴市': [120.76, 30.77],
+  '湖州市': [120.09, 30.89],
+  '绍兴市': [120.58, 30.00],
+  '金华市': [119.65, 29.08],
+  '衢州市': [118.87, 28.97],
+  '舟山市': [122.10, 30.00],
+  '台州市': [121.42, 28.66],
+  '丽水市': [119.92, 28.47]
+}
+
+// 生成GIS地图上的等级分布标记点
+function generateGradeMarkers() {
+  const markers: { grade: string; color: string; lng: number; lat: number }[] = []
+  const gradeKeys = ['a', 'b', 'c', 'd', 'e', 'qualified', 'unqualified']
+  const gradeColors: Record<string, string> = {}
+  gradeLevels.forEach(l => { gradeColors[l.key] = l.color })
+  
+  cityList.forEach(city => {
+    const [lng, lat] = cityCoordinates[city]
+    gradeKeys.forEach(key => {
+      // 每个城市每个等级生成1-5个随机点
+      const count = Math.floor(Math.random() * 5) + 1
+      for (let i = 0; i < count; i++) {
+        markers.push({
+          grade: key,
+          color: gradeColors[key],
+          lng: lng + (Math.random() - 0.5) * 0.3,
+          lat: lat + (Math.random() - 0.5) * 0.2
+        })
+      }
+    })
+  })
+  return markers
+}
+
 // 初始化GIS地图
 function initGisMap() {
-  if (!gisMapRef.value) return
+  const AMap = (window as any).AMap
+  if (!gisMapRef.value || !AMap) return
   
-  // 这里应该初始化高德地图
-  // 由于是示例代码，暂时不实现具体逻辑
-  console.log('Init GIS Map')
+  if (gisMap) gisMap.destroy()
+  
+  gisMap = new AMap.Map(gisMapRef.value, {
+    zoom: 8,
+    center: [120.15, 29.2],
+    viewMode: '2D',
+    dragEnable: true,
+    zoomEnable: true,
+    mapStyle: 'amap://styles/dark',
+  })
+  
+  // 添加等级分布标记点
+  gisMarkers = []
+  const markerData = generateGradeMarkers()
+  markerData.forEach(m => {
+    const marker = new AMap.Marker({
+      position: new AMap.LngLat(m.lng, m.lat),
+      content: `<div style="width:10px;height:10px;border-radius:50%;background:${m.color};border:1px solid rgba(255,255,255,0.5);"></div>`,
+      offset: new AMap.Pixel(-5, -5),
+      extData: { grade: m.grade }
+    })
+    marker.setMap(gisMap)
+    gisMarkers.push(marker)
+  })
+  
+  // 根据当前勾选状态显示/隐藏标记
+  updateMarkerVisibility()
 }
+
+// 更新标记点可见性
+function updateMarkerVisibility() {
+  gisMarkers.forEach(marker => {
+    const grade = marker.getExtData().grade
+    const visible = (gradeChecked.value as any)[grade]
+    if (visible) {
+      marker.show()
+    } else {
+      marker.hide()
+    }
+  })
+}
+
+// 监听等级勾选变化
+watch(gradeChecked, () => {
+  if (gisMap) {
+    updateMarkerVisibility()
+  }
+}, { deep: true })
 
 // 监听风险整改模块页签切换
 watch(riskMapTab, (newTab: 'stats' | 'grade') => {
