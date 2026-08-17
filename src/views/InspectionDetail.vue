@@ -93,8 +93,8 @@
                       <template v-if="inspectionActiveModule === 'overview'">
                         <div class="ring-chart" :style="{ 
                           background: `conic-gradient(
-                            #5ad8a6 0% ${(data.checked / data.shouldCheck) * 100}%, 
-                            #5b8ff9 ${(data.checked / data.shouldCheck) * 100}% 100%
+                            #5ad8a6 0% ${data.checked / data.shouldCheck * 100}%, 
+                            #5b8ff9 ${data.checked / data.shouldCheck * 100}% 100%
                           )` 
                         }">
                           <div class="ring-center"></div>
@@ -357,9 +357,11 @@ function generateCityStats() {
   }> = {}
   
   cityList.forEach(city => {
+    const shouldCheck = Math.floor(Math.random() * 300) + 200
+    const checked = Math.floor(Math.random() * (shouldCheck - 50)) + 50 // 确保已检数 < 应检数
     stats[city] = {
-      shouldCheck: Math.floor(Math.random() * 300) + 200,
-      checked: Math.floor(Math.random() * 280) + 180,
+      shouldCheck: shouldCheck,
+      checked: checked,
       overdueUncheck: Math.floor(Math.random() * 20) + 5,
       aboutToOverdue: Math.floor(Math.random() * 30) + 10,
       riskTotal: Math.floor(Math.random() * 15) + 5,
