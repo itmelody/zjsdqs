@@ -768,6 +768,7 @@ onBeforeUnmount(() => {
             justify-content: center;
             box-shadow: 0 0 10px rgba(91, 143, 249, 0.3);
             will-change: transform;
+            z-index: 0;
             
             &::before {
               content: '';
@@ -776,6 +777,7 @@ onBeforeUnmount(() => {
               height: 40px;
               background: rgba(0, 0, 0, 0.7);
               border-radius: 50%;
+              z-index: 1;
             }
             
             .ring-center {
