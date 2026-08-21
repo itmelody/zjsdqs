@@ -65,6 +65,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '吴敏',
     policeContactPhone: '0578-3120004',
     roadLocation: '缙云县大桥北路三里灯具市场段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-07-20', type: '常规检测', evalGrade: 'B', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-07-01', type: '经常检查', evalGrade: 'B', result: '' },
+    ],
+
   },
   {
     key: '3',
@@ -94,6 +99,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '蒋华',
     policeContactPhone: '0574-86200004',
     roadLocation: '镇海区骆驼街道马家桥至南一路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-06-15', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-06-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '4',
@@ -123,6 +133,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '秦刚',
     policeContactPhone: '0571-88300004',
     roadLocation: '拱墅区金昌路至谢村路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-05-10', type: '常规检测', evalGrade: 'B', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-05-01', type: '经常检查', evalGrade: 'B', result: '' },
+    ],
+
   },
   {
     key: '5',
@@ -152,6 +167,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '罗辉',
     policeContactPhone: '0573-85500004',
     roadLocation: '嘉兴港区电厂一号进场路全段',
+    detectRecords: [
+      { id: 1, name: '定期检测', checkTime: '2026-04-18', type: '定期检测', evalGrade: 'C', result: '已整改销号' },
+      { id: 2, name: '经常检查', checkTime: '2026-04-01', type: '经常检查', evalGrade: 'C', result: '' },
+    ],
+
   },
   {
     key: '6',
@@ -181,6 +201,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '曾鸣',
     policeContactPhone: '0575-84100004',
     roadLocation: '柯桥区创意路及怡华北路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-07-05', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-07-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '7',
@@ -210,6 +235,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '范斌',
     policeContactPhone: '0572-2100004',
     roadLocation: '湖州市南太湖新区宿渎港路全段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-06-30', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-06-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '8',
@@ -239,6 +269,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '范斌',
     policeContactPhone: '0572-2100004',
     roadLocation: '湖州市南太湖新区大船湾路全段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-03-22', type: '常规检测', evalGrade: 'B', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-03-01', type: '经常检查', evalGrade: 'B', result: '' },
+    ],
+
   },
   {
     key: '9',
@@ -268,6 +303,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '赵刚',
     policeContactPhone: '0571-88500004',
     roadLocation: '余杭区文一西路东西大道至狮山路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-08-01', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-08-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '10',
@@ -297,6 +337,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '刘洋',
     policeContactPhone: '0571-87900004',
     roadLocation: '西湖区西溪路紫金港路至天目山路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-02-15', type: '常规检测', evalGrade: 'B', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-02-01', type: '经常检查', evalGrade: 'B', result: '' },
+    ],
+
   },
   {
     key: '11',
@@ -326,6 +371,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '蒋华',
     policeContactPhone: '0574-86200004',
     roadLocation: '镇海区庄市大道宁镇路至逸夫路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-07-12', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-07-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '12',
@@ -355,6 +405,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '薛军',
     policeContactPhone: '0577-6310004',
     roadLocation: '平阳县昆鳌大道火车站大道至吉祥路段',
+    detectRecords: [
+      { id: 1, name: '定期检测', checkTime: '2025-12-10', type: '定期检测', evalGrade: 'C', result: '已整改销号' },
+      { id: 2, name: '经常检查', checkTime: '2025-12-01', type: '经常检查', evalGrade: 'C', result: '' },
+    ],
+
   },
   {
     key: '13',
@@ -384,6 +439,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '施峰',
     policeContactPhone: '0579-8550004',
     roadLocation: '义乌市稠州北路银海路至诚信大道段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-06-28', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-06-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '14',
@@ -413,6 +473,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '文斌',
     policeContactPhone: '0576-8880004',
     roadLocation: '椒江区市府大道机场路至东环大道段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-05-25', type: '常规检测', evalGrade: 'B', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-05-01', type: '经常检查', evalGrade: 'B', result: '' },
+    ],
+
   },
   {
     key: '15',
@@ -442,6 +507,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '阮超',
     policeContactPhone: '0570-3030004',
     roadLocation: '柯城区府东街衢江路至荷花路段',
+    detectRecords: [
+      { id: 1, name: '定期检测', checkTime: '2025-10-05', type: '定期检测', evalGrade: 'D', result: '已整改销号' },
+      { id: 2, name: '经常检查', checkTime: '2025-10-01', type: '经常检查', evalGrade: 'D', result: '' },
+    ],
+
   },
   {
     key: '16',
@@ -471,6 +541,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '乐威',
     policeContactPhone: '0580-2020004',
     roadLocation: '定海区昌洲大道文化路至东皋路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-07-18', type: '常规检测', evalGrade: 'A', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-07-01', type: '经常检查', evalGrade: 'A', result: '' },
+    ],
+
   },
   {
     key: '17',
@@ -500,6 +575,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '任远',
     policeContactPhone: '0573-8280004',
     roadLocation: '南湖区中环南路城南路至纺工路段',
+    detectRecords: [
+      { id: 1, name: '常规检测', checkTime: '2026-04-30', type: '常规检测', evalGrade: 'B', result: '' },
+      { id: 2, name: '经常检查', checkTime: '2026-04-01', type: '经常检查', evalGrade: 'B', result: '' },
+    ],
+
   },
   {
     key: '18',
@@ -529,6 +609,11 @@ const mockRoads: RoadItem[] = [
     policeContact: '贾磊',
     policeContactPhone: '0572-5030004',
     roadLocation: '安吉县递铺路天荒坪路至玉华路段',
+    detectRecords: [
+      { id: 1, name: '定期检测', checkTime: '2026-01-20', type: '定期检测', evalGrade: 'C', result: '已整改销号' },
+      { id: 2, name: '经常检查', checkTime: '2026-01-01', type: '经常检查', evalGrade: 'C', result: '' },
+    ],
+
   },
 ]
 

@@ -805,8 +805,8 @@
             </div>
           </a-tab-pane>
 
-          <!-- 通航资料卡 Tab（人行天桥时不显示） -->
-          <a-tab-pane v-if="!isOverpass && currentViewRecord" key="nav" tab="通航资料卡">
+          <!-- 通航资料卡 Tab（人行天桥时不显示，仅涉航桥梁显示） -->
+          <a-tab-pane v-if="!isOverpass && currentViewRecord && (isView ? currentViewRecord.isNavigationBridge : true)" key="nav" tab="通航资料卡">
             <!-- 查看模式：对齐线上布局（span=12/24 混合、radio、InputNumber、textarea） -->
             <div v-if="isView" class="bridge-sub-card-form nav-card-view">
               <a-form layout="horizontal" :label-col="{ style: { width: '180px' } }">
@@ -864,7 +864,7 @@
 
           <!-- 子桥资料卡 Tab（查看模式：固定子桥1/子桥2；编辑模式：动态列表） -->
           <!-- 查看模式：子桥1 -->
-          <a-tab-pane v-if="!isOverpass && isView && currentViewRecord" key="sub1" tab="子桥1资料卡">
+          <a-tab-pane v-if="!isOverpass && isView && currentViewRecord && (currentViewRecord as any).subBridges && (currentViewRecord as any).subBridges.length > 0" key="sub1" tab="子桥1资料卡">
             <div class="bridge-sub-card-form">
               <!-- 资料卡下载 -->
               <div style="margin-bottom: 12px">
@@ -917,7 +917,7 @@
           </a-tab-pane>
 
           <!-- 查看模式：子桥2 -->
-          <a-tab-pane v-if="!isOverpass && isView && currentViewRecord" key="sub2" tab="子桥2资料卡">
+          <a-tab-pane v-if="!isOverpass && isView && currentViewRecord && (currentViewRecord as any).subBridges && (currentViewRecord as any).subBridges.length > 1" key="sub2" tab="子桥2资料卡">
             <div class="bridge-sub-card-form">
               <!-- 资料卡下载 -->
               <div style="margin-bottom: 12px">
