@@ -1,18 +1,162 @@
 // 隧道信息接口
 export interface TunnelItem {
-  key: string                    // 唯一标识
-  region: string                 // 归属地区
-  name: string                   // 隧道名称
-  type?: string                  // 隧道类型
-  cityClassification?: string    // 城市道路隧道分类
-  buildTime?: string             // 建成时间
-  isUnderground: boolean         // 是否地下隧道
-  hasMonitorDevice: boolean      // 是否设置监控设施
-  hasMonitorFacility: boolean    // 是否设置监测设施
-  evalLevel?: string             // 综合评价等级
-  evalYear?: number              // 评价年份
-  dataComplete: boolean          // 数据是否完善
-  publishStatus?: string         // 发布状态
+  key: string
+  region: string
+  name: string
+  type?: string
+  cityClassification?: string
+  buildTime?: string
+  isUnderground: boolean
+  hasMonitorDevice: boolean
+  hasMonitorFacility: boolean
+  evalLevel?: string
+  evalYear?: number
+  dataComplete: boolean
+  publishStatus?: string
+  detectTime?: string
+  isOverdue?: string
+  status?: string
+  liningType?: string
+  hasMultiUnit?: boolean
+  // 三级责任体系
+  industryUnit?: string
+  industryPerson?: string
+  industryContact?: string
+  facilityManageUnit?: string
+  facilityManagePerson?: string
+  facilityManageContact?: string
+  facilityMaintainUnit?: string
+  facilityMaintainPerson?: string
+  facilityMaintainContact?: string
+  policeUnit?: string
+  policeContact?: string
+  policeContactPhone?: string
+  tunnelLocation?: string
+  // 隧道资料卡（hasMultiUnit=否时使用）
+  cardData?: TunnelUnitCard
+  // 隧道单元资料卡
+  tunnelUnits?: TunnelUnitCard[]
+  // 人行地道资料卡（type=人行地道时使用）
+  underpassCard?: UnderpassCard
+  // 检测整改记录
+  detectRecords?: TunnelDetectRecord[]
+}
+
+// 人行地道资料卡（导则表A.2）
+export interface UnderpassCard {
+  // 一般资料
+  name?: string
+  roadName?: string
+  crossOver?: string
+  manageUnit?: string
+  buildUnit?: string
+  designUnit?: string
+  supervisorUnit?: string
+  constructionUnit?: string
+  buildDate?: string
+  totalLength?: string
+  passageWidth?: string
+  height?: string
+  // 地道土建
+  liningStructure?: string
+  sidewalkPavement?: string
+  expansionJointType?: string
+  roadCrossSlope?: string
+  // 附属设施
+  lightingName?: string
+  lightingCount?: string
+  powerName?: string
+  powerCount?: string
+  drainageName?: string
+  drainageCount?: string
+  ventilationName?: string
+  ventilationCount?: string
+  fireFightingName?: string
+  fireFightingCount?: string
+  elevatorBrand?: string
+  elevatorCount?: string
+  // 制表信息
+  audit?: string
+  review?: string
+  draft?: string
+  cardDate?: string
+}
+
+// 隧道单元资料卡（对齐导则表A.1）
+export interface TunnelUnitCard {
+  name: string
+  // 一般资料
+  roadName?: string
+  district?: string
+  manageUnit?: string
+  maintainUnit?: string
+  crossOver?: string
+  buildDate?: string
+  buildUnit?: string
+  totalCost?: string
+  surveyUnit?: string
+  maintainCategory?: string
+  designUnit?: string
+  maintainGrade?: string
+  superviseUnit?: string
+  roadGrade?: string
+  constructUnit?: string
+  designLanes?: string
+  designLoad?: string
+  designSpeed?: string
+  designFlow?: string
+  emergencyPhone?: string
+  // 结构资料
+  roadCrossSection?: string
+  motorPavement?: string
+  nonMotorPavement?: string
+  sidewalkPavement?: string
+  drivewayLengthSingle?: string
+  drivewayWidth?: string
+  drivewayLength?: string
+  sidewalkWidth?: string
+  motorMaxSlope?: string
+  nonMotorMaxSlope?: string
+  crossSlope?: string
+  waterproofGrade?: string
+  geology?: string
+  liningType?: string
+  liningThickness?: string
+  portalForm?: string
+  ceilingDecoration?: string
+  ceilingDecorationArea?: string
+  wallDecoration?: string
+  wallDecorationArea?: string
+  crashWallDecoration?: string
+  crashWallDecorationArea?: string
+  motorClearHeight?: string
+  nonMotorClearHeight?: string
+  designFloodLevel?: string
+  // 附属设施
+  sewagePumpCount?: string
+  rainPumpCount?: string
+  railingForm?: string
+  railingLength?: string
+  drainForm?: string
+  drainLength?: string
+  topDrainForm?: string
+  // 隧道概况
+  overview?: string
+  // 制表信息
+  review?: string
+  check?: string
+  drafting?: string
+  cardDate?: string
+}
+
+// 隧道检测整改记录
+export interface TunnelDetectRecord {
+  id: number
+  name: string
+  checkTime: string
+  type: string
+  grade: string
+  result: string
 }
 
 // 搜索参数接口
@@ -20,6 +164,13 @@ export interface TunnelSearchParams {
   region?: string
   name?: string
   type?: string
+  cityClassification?: string
+  isUnderground?: string
+  evalLevel?: string
+  status?: string
+  dataComplete?: string
+  publishStatus?: string
+  isOverdue?: string
   page?: number
   pageSize?: number
 }
