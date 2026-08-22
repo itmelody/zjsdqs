@@ -665,11 +665,7 @@
               <a-form :model="bridgeCardForm" layout="horizontal" :label-col="{ style: { width: '110px' } }" :disabled="isView">
                 <div v-for="grp in bridgeCardEditGroups" :key="grp.title" class="card-section">
                   <div class="card-section-title">{{ grp.title }}</div>
-                  <a-form-item v-if="grp.single" :label="bridgeCardEditFields[grp.start].label">
-                    <a-input v-model:value="bridgeCardForm[bridgeCardEditFields[grp.start].field]" style="width: 40%" />
-                  </a-form-item>
                   <a-table
-                    v-else
                     :columns="cardThreeCols"
                     :data-source="bridgeCardEditGridData(grp.start, grp.end)"
                     :show-header="false"
@@ -975,13 +971,8 @@
               <a-form :model="subCardEditForms[sk.key]" layout="horizontal" :label-col="{ style: { width: '100px' } }">
                 <div v-for="grp in subCardEditGroups" :key="grp.title" class="card-section">
                   <div class="card-section-title">{{ grp.title }}</div>
-                  <!-- 单行分组（制表单位） -->
-                  <a-form-item v-if="grp.single" :label="subCardEditFields[grp.start].label">
-                    <a-input v-model:value="subCardEditForms[sk.key][subCardEditFields[grp.start].field]" style="width: 40%" />
-                  </a-form-item>
                   <!-- 3列分组 -->
                   <a-table
-                    v-else
                     :columns="cardThreeCols"
                     :data-source="subCardEditGridData(sk.key, grp.start, grp.end)"
                     :show-header="false"
@@ -1963,7 +1954,6 @@ const ATextarea = markRaw(Textarea)
 
 // 资料卡表单数据
 const bridgeCardForm = reactive<Record<string, any>>({
-  unit: '',
   cardName: '',
   roadName: '',
   crossLevel: '',
@@ -2085,8 +2075,6 @@ const cardThreeCols: TableColumnsType = [
 
 // 桥梁资料卡编辑字段配置（对齐导则表A.1，每行3字段）
 const bridgeCardEditFields: Array<{ label: string; field: string; component?: any; disabled?: boolean; props?: Record<string, any>; suffix?: string }> = [
-  // 制表单位
-  { label: '制表单位', field: 'unit' },
   // 一般资料（含基础信息4字段 + 导则26字段 = 30字段）
   { label: '桥梁名称', field: 'cardName', disabled: true },
   { label: '所在道路', field: 'roadName' },
@@ -2174,15 +2162,14 @@ const bridgeCardEditFields: Array<{ label: string; field: string; component?: an
   { label: '通信电缆', field: 'telecomCable' },
 ]
 
-// 桥梁资料卡编辑分组（对齐导则6分组 + 制表单位）
+// 桥梁资料卡编辑分组（对齐导则6分组）
 const bridgeCardEditGroups = [
-  { title: '制表单位', start: 0, end: 1, single: true },
-  { title: '一般资料', start: 1, end: 31 },
-  { title: '上部结构', start: 31, end: 48 },
-  { title: '下部结构-桥墩', start: 48, end: 56 },
-  { title: '下部结构-桥台', start: 56, end: 67 },
-  { title: '附属工程', start: 67, end: 76 },
-  { title: '附挂管线', start: 76, end: 80 },
+  { title: '一般资料', start: 0, end: 30 },
+  { title: '上部结构', start: 30, end: 47 },
+  { title: '下部结构-桥墩', start: 47, end: 55 },
+  { title: '下部结构-桥台', start: 55, end: 66 },
+  { title: '附属工程', start: 66, end: 75 },
+  { title: '附挂管线', start: 75, end: 79 },
 ]
 
 // 桥梁资料卡编辑字段 → 3列表格数据（每行3组 label-value-label-value-label-value）
@@ -2609,7 +2596,6 @@ watch(
 
 // 子桥编辑字段配置（对齐线上子桥3示例：每行3字段）
 const subCardEditFields: Array<{ label: string; field: string; component?: any; disabled?: boolean; span?: number; props?: Record<string, any>; suffix?: string }> = [
-  { label: '制表单位', field: 'unitName', span: 1 },
   // 一般资料
   { label: '桥梁名称', field: 'cardName', disabled: true },
   { label: '所在道路', field: 'roadName' },
@@ -2698,15 +2684,13 @@ const subCardEditFields: Array<{ label: string; field: string; component?: any; 
 ]
 
 // 子桥分组配置（标题 + 字段范围索引，用于编辑表单分组渲染）
-// 制表单位单独一行（index 0），其余分组3列
 const subCardEditGroups = [
-  { title: '制表单位', start: 0, end: 1, single: true },
-  { title: '一般资料', start: 1, end: 30 },
-  { title: '上部结构', start: 31, end: 47 },
-  { title: '下部结构-桥墩', start: 48, end: 55 },
-  { title: '下部结构-桥台', start: 56, end: 66 },
-  { title: '附属工程', start: 67, end: 75 },
-  { title: '附挂管线', start: 76, end: 79 },
+  { title: '一般资料', start: 0, end: 30 },
+  { title: '上部结构', start: 30, end: 47 },
+  { title: '下部结构-桥墩', start: 47, end: 55 },
+  { title: '下部结构-桥台', start: 55, end: 66 },
+  { title: '附属工程', start: 66, end: 75 },
+  { title: '附挂管线', start: 75, end: 79 },
 ]
 
 // 是否正在批量填充子桥表单（避免 watch 误触发重建结构类型）
@@ -2740,7 +2724,6 @@ function addSubCard() {
   resetSubCardEditForm(key)
   // 自动命名
   subCardEditForms[key].cardName = `子桥${count + 1}`
-  subCardEditForms[key].unitName = '测试站桥'
   // 同步基础信息"结构类型"字段：追加 ;子桥N<子桥结构类型>（对齐线上行为）
   const subName = `子桥${count + 1}`
   const st = (subCardEditForms[key].structureType as string) || ''
@@ -2758,7 +2741,6 @@ function addSubCard() {
 function resetSubCardEditForm(key: string) {
   subCardEditForms[key] = {}
   subCardEditFields.forEach((f) => { subCardEditForms[key][f.field] = '' })
-  subCardEditForms[key].unitName = ''
 }
 
 // 收集子桥编辑表单数据（提交时合并回记录）
